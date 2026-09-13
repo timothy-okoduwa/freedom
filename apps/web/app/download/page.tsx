@@ -4,12 +4,14 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { Footer } from '../../components/Footer';
 
+const DOWNLOAD_URL = 'https://github.com/timothy-okoduwa/freedom/releases/download/v1.0.0/Freedom-1.0.0-arm64.dmg';
+
 export default function DownloadPage() {
   useEffect(() => {
     // Automatically trigger DMG download on mount
     const timer = setTimeout(() => {
       const link = document.createElement('a');
-      link.href = '/Freedom.dmg';
+      link.href = DOWNLOAD_URL;
       link.download = 'Freedom.dmg';
       document.body.appendChild(link);
       link.click();
@@ -38,7 +40,7 @@ export default function DownloadPage() {
           <p className="text-sm sm:text-base text-[#64748B] max-w-lg mx-auto font-sans leading-relaxed">
             Your download will begin automatically. If it didn&apos;t start,{' '}
             <a
-              href="/Freedom.dmg"
+              href={DOWNLOAD_URL}
               download="Freedom.dmg"
               className="text-[#2F6FED] font-bold underline underline-offset-4 hover:text-[#1E56C9] transition-colors"
             >
