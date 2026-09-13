@@ -1,0 +1,4 @@
+
+> @freedom/firestore-schema@1.0.0 typecheck /Users/timothy.okoduwa-benefit.finance/Documents/freedom/packages/firestore-schema
+> tsc --noEmit
+

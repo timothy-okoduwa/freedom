@@ -1,0 +1,4 @@
+
+> @freedom/desktop@1.0.0 typecheck /Users/timothy.okoduwa-benefit.finance/Documents/freedom/apps/desktop
+> tsc --noEmit && tsc -p tsconfig.electron.json --noEmit
+

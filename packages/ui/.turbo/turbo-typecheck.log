@@ -1,0 +1,4 @@
+
+> @freedom/ui@1.0.0 typecheck /Users/timothy.okoduwa-benefit.finance/Documents/freedom/packages/ui
+> tsc --noEmit
+

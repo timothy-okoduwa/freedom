@@ -1,0 +1,21 @@
+{
+  "extends": "@freedom/config/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./renderer/*"]
+    }
+  },
+  "include": [
+    "renderer/next-env.d.ts",
+    "renderer/**/*.ts",
+    "renderer/**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": ["node_modules", "electron", "dist-electron"]
+}

@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+      allow read: if true; // publicStats must be readable for leaderboards
+      allow write: if request.auth.uid == uid;
+    }
+
+    match /dayPlans/{planId} {
+      allow read, write: if request.auth.uid == resource.data.userId
+                          || request.auth.uid == request.resource.data.userId;
+    }
+
+    match /dailyStats/{statId} {
+      allow read, write: if request.auth.uid == resource.data.userId
+                          || request.auth.uid == request.resource.data.userId;
+    }
+
+    match /friendships/{friendshipId} {
+      allow read: if request.auth.uid == resource.data.userAId
+                  || request.auth.uid == resource.data.userBId;
+      allow create: if request.auth.uid == request.resource.data.requestedBy
+                    && (request.auth.uid == request.resource.data.userAId
+                        || request.auth.uid == request.resource.data.userBId);
+      allow update: if (request.auth.uid == resource.data.userAId
+                         || request.auth.uid == resource.data.userBId)
+                    && request.resource.data.status in ['accepted', 'declined'];
+    }
+
+    match /teams/{teamId} {
+      allow read: if true;
+      allow create: if request.auth.uid == request.resource.data.ownerId;
+      allow update, delete: if request.auth.uid == resource.data.ownerId;
+    }
+
+    match /teamMemberships/{membershipId} {
+      allow read: if true;
+      allow create: if request.auth.uid == membershipId
+                    && request.resource.data.userId == request.auth.uid;
+      allow delete: if request.auth.uid == membershipId
+                    || get(/databases/$(database)/documents/teams/$(resource.data.teamId)).data.ownerId == request.auth.uid;
+    }
+  }
+}

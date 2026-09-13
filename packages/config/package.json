@@ -1,0 +1,14 @@
+{
+  "name": "@freedom/config",
+  "version": "1.0.0",
+  "private": true,
+  "main": "tailwind.preset.js",
+  "exports": {
+    "./tailwind.preset.js": "./tailwind.preset.js",
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  },
+  "files": [
+    "tailwind.preset.js",
+    "tsconfig.base.json"
+  ]
+}

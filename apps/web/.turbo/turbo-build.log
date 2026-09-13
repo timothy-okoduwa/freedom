@@ -1,0 +1,34 @@
+
+> @freedom/web@1.0.0 build /Users/timothy.okoduwa-benefit.finance/Documents/freedom/apps/web
+> next build
+
+   ▲ Next.js 15.5.25
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 935ms
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/8) ...
+   Generating static pages (2/8) 
+   Generating static pages (4/8) 
+   Generating static pages (6/8) 
+ ✓ Generating static pages (8/8)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    8.03 kB         131 kB
+├ ○ /_not-found                            996 B         104 kB
+├ ○ /changelog                             176 B         109 kB
+├ ○ /pricing                               183 B         123 kB
+├ ○ /privacy                               176 B         109 kB
+└ ○ /terms                                 176 B         109 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/5b9299ae-cbd7f3d14e643c2f.js  54.2 kB
+  ├ chunks/797-7622bf7aef49b61a.js       46.7 kB
+  └ other shared chunks (total)          1.91 kB
+
+
+○  (Static)  prerendered as static content
+

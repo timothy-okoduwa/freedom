@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    color: #111111;
+    background-color: #FFFFFF;
+  }
+
+  body {
+    overflow-x: hidden;
+    font-family: var(--font-sans);
+  }
+}
+
+/* Custom retro styling helpers */
+.mac-gloss {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+.pixel-art {
+  image-rendering: pixelated;
+}
+
+/* Sky clouds background for pricing section */
+.sky-bg {
+  background: linear-gradient(180deg, #3A88E9 0%, #6BA3EF 45%, #9DC5F8 80%, #FFFFFF 100%);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAFAFA;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4D4D4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A3A3A3;
+}
