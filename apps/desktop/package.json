@@ -10,8 +10,51 @@
     "build:renderer": "next build renderer",
     "build:electron": "tsc -p tsconfig.electron.json",
     "build": "next build renderer && tsc -p tsconfig.electron.json",
+    "pack:dmg": "next build renderer && tsc -p tsconfig.electron.json && CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --mac dmg",
     "test": "vitest run",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.electron.json --noEmit"
+  },
+  "build": {
+    "appId": "com.freedom.desktop",
+    "productName": "Freedom",
+    "asar": true,
+    "compression": "maximum",
+    "directories": {
+      "output": "dist-dmg"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "out/**/*",
+      "public/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "dist-electron/main.js"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg"
+      ],
+      "icon": "public/freedom.png",
+      "identity": null
+    },
+    "dmg": {
+      "title": "Freedom Setup",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
   },
   "dependencies": {
     "@freedom/config": "workspace:*",
@@ -37,6 +80,7 @@
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.1.2",
     "electron": "^34.2.0",
+    "electron-builder": "^25.1.8",
     "nodemon": "^3.1.9",
     "postcss": "^8.5.2",
     "tailwindcss": "^3.4.17",
