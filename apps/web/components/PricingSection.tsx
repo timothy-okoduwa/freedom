@@ -1,9 +1,44 @@
-import React from 'react';
+'use client';
+
+import React, { useRef } from 'react';
+import Link from 'next/link';
 import { MacWindow } from '@freedom/ui';
+import { DraggableSticker } from './DraggableSticker';
 
 export const PricingSection: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <section id="pricing" className="relative py-28 px-4 overflow-hidden sky-bg text-black">
+    <section id="pricing" ref={containerRef} className="relative py-28 px-4 overflow-hidden sky-bg text-black select-none">
+      {/* Draggable Stickers in PricingSection */}
+      <DraggableSticker
+        src="/stuff/naruto.gif"
+        alt="Naruto Running"
+        soundSrc="/stuff/naruto.mp3"
+        containerRef={containerRef}
+        className="absolute left-[3%] top-[80px] hidden lg:block rotate-[-6deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Naruto theme 🎶"
+      />
+
+      <DraggableSticker
+        src="/stuff/cat.jpg"
+        alt="Cat"
+        containerRef={containerRef}
+        className="absolute right-[3%] top-[80px] hidden lg:block rotate-[12deg]"
+        imageClassName="w-14 h-14 object-cover rounded-xl border-2 border-black shadow-lg"
+        badgeText="Cat 🐱"
+      />
+
+      <DraggableSticker
+        src="/stuff/gif-pokemon.webp"
+        alt="Pokemon"
+        soundSrc="/stuff/pokemon.mp3"
+        containerRef={containerRef}
+        className="absolute right-[5%] bottom-[120px] hidden xl:block rotate-[-8deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Pokemon theme 🎶"
+      />
       {/* Fluffy SVG Cloud Silhouettes floating in the sky */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-80">
         <svg className="absolute left-[5%] top-[10%] w-64 h-32 text-white/50 animate-float-slow" viewBox="0 0 200 100" fill="currentColor">
@@ -74,13 +109,12 @@ export const PricingSection: React.FC = () => {
               </div>
 
               <div className="pt-8">
-                <a
-                  href="/Freedom.dmg"
-                  download="Freedom.dmg"
+                <Link
+                  href="/download"
                   className="block w-full text-center py-2.5 rounded-xl bg-[#FAFAFA] border border-[#E5E5E5] text-xs font-semibold text-black hover:bg-neutral-100 transition-all shadow-xs"
                 >
                   download free
-                </a>
+                </Link>
               </div>
             </div>
           </MacWindow>
@@ -147,9 +181,8 @@ export const PricingSection: React.FC = () => {
                 </div>
 
                 <div className="pt-8">
-                  <a
-                    href="/Freedom.dmg"
-                    download="Freedom.dmg"
+                  <Link
+                    href="/download"
                     className="relative overflow-hidden block w-full text-center py-2.5 rounded-xl bg-black text-white text-xs font-semibold hover:bg-neutral-800 transition-all shadow-md active:scale-98"
                   >
                     <div
@@ -159,7 +192,7 @@ export const PricingSection: React.FC = () => {
                       }}
                     />
                     <span>get freedom (mac)</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </MacWindow>
@@ -210,7 +243,7 @@ export const PricingSection: React.FC = () => {
 
               <div className="pt-8">
                 <a
-                  href="https://github.com"
+                  href="https://github.com/timothy-okoduwa/freedom"
                   target="_blank"
                   rel="noreferrer"
                   className="block w-full text-center py-2.5 rounded-xl bg-[#FAFAFA] border border-[#E5E5E5] text-xs font-semibold text-black hover:bg-neutral-100 transition-all shadow-xs"
@@ -234,13 +267,12 @@ export const PricingSection: React.FC = () => {
                 <span className="text-white font-bold">No ads, no subscriptions, no catch.</span>
               </div>
             </div>
-            <a
-              href="/Freedom.dmg"
-              download="Freedom.dmg"
+            <Link
+              href="/download"
               className="px-4 py-2 rounded-xl bg-white text-black text-xs font-bold hover:bg-neutral-200 transition-colors whitespace-nowrap"
             >
               download now
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Menubar } from '../../components/Menubar';
 import { Footer } from '../../components/Footer';
 import { waitlistService, type WaitlistEntry } from '../../lib/firebase';
+import { Monitor, Terminal, Lock, Copy, Check, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function WindowsWaitlistPage() {
   const [email, setEmail] = useState('');
@@ -113,22 +114,21 @@ export default function WindowsWaitlistPage() {
                   className="w-full sm:w-auto shrink-0 px-6 py-3 rounded-xl bg-[#2F6FED] hover:bg-[#255CBD] text-white text-sm font-semibold shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <span>{isSubmitting ? 'Joining...' : 'Join Waitlist'}</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
 
               <div className="flex items-center justify-between px-2 text-xs font-mono text-[#777]">
-                <span>🔒 Encrypted & Private</span>
+                <span className="flex items-center gap-1">
+                  <Lock className="w-3.5 h-3.5 text-[#2F6FED]" /> Encrypted & Private
+                </span>
                 <span className="font-semibold text-[#111]">14,892+ on waitlist</span>
               </div>
             </form>
           ) : (
             <div className="p-6 rounded-2xl bg-[#F0FDF4] border border-[#1FAE6B]/30 text-center space-y-4 shadow-md animate-in fade-in zoom-in-95 duration-200">
-              <div className="w-12 h-12 rounded-full bg-[#1FAE6B]/15 text-[#1FAE6B] flex items-center justify-center mx-auto text-xl font-bold">
-                ✓
+              <div className="w-12 h-12 rounded-full bg-[#1FAE6B]/15 text-[#1FAE6B] flex items-center justify-center mx-auto shadow-xs">
+                <CheckCircle2 className="w-7 h-7" />
               </div>
               <div>
                 <h3 className="text-lg font-extrabold text-[#111]">You are on the priority list!</h3>
@@ -146,7 +146,8 @@ export default function WindowsWaitlistPage() {
                   onClick={copyReferralLink}
                   className="flex-1 py-2.5 px-4 rounded-xl bg-white border border-[#1FAE6B]/40 text-[#111] text-xs font-semibold hover:bg-neutral-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <span>{copied ? '✓ Link Copied!' : '📋 Copy Referral Link'}</span>
+                  {copied ? <Check className="w-3.5 h-3.5 text-[#1FAE6B]" /> : <Copy className="w-3.5 h-3.5 text-[#2F6FED]" />}
+                  <span>{copied ? 'Link Copied!' : 'Copy Referral Link'}</span>
                 </button>
 
                 <button
@@ -255,7 +256,7 @@ export default function WindowsWaitlistPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 rounded-2xl bg-white border border-[#E5E5E5] shadow-2xs space-y-3">
               <div className="w-10 h-10 rounded-xl bg-[#F0F4FF] text-[#2F6FED] flex items-center justify-center font-mono font-bold text-lg">
-                🪟
+                <Monitor className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-bold text-[#111]">Taskbar Floating Pill</h3>
               <p className="text-sm text-[#555] leading-relaxed">
@@ -265,7 +266,7 @@ export default function WindowsWaitlistPage() {
 
             <div className="p-6 rounded-2xl bg-white border border-[#E5E5E5] shadow-2xs space-y-3">
               <div className="w-10 h-10 rounded-xl bg-[#F0F4FF] text-[#2F6FED] flex items-center justify-center font-mono font-bold text-lg">
-                🐧
+                <Terminal className="w-5 h-5" />
               </div>
               <h3 className="text-lg font-bold text-[#111]">WSL2 & VS Code Integration</h3>
               <p className="text-sm text-[#555] leading-relaxed">

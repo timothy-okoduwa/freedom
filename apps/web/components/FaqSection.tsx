@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Accordion } from '@freedom/ui';
+import { DraggableSticker } from './DraggableSticker';
 
 const FAQ_ITEMS = [
   {
@@ -55,9 +56,23 @@ const FAQ_ITEMS = [
 ];
 
 export const FaqSection: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <section id="faq" className="max-w-3xl mx-auto px-4 py-24 sm:py-32">
-      {/* Label */}
+    <section id="faq" ref={containerRef} className="max-w-3xl mx-auto px-4 py-24 sm:py-32 relative select-none">
+      {/* Smaller Question GIF positioned on right side without pushing centered layout */}
+      <div className="absolute right-0 md:-right-24 top-16 hidden sm:block z-10">
+        <div className="p-2 rounded-xl bg-white/90 backdrop-blur-xs border border-black/10 shadow-lg flex flex-col items-center rotate-[6deg] hover:rotate-0 transition-transform">
+          <img
+            src="/stuff/question.gif"
+            alt="Question Mark Animation"
+            className="w-24 sm:w-32 h-auto object-contain rounded-lg"
+          />
+          <span className="text-[9px] font-mono text-[#888] mt-1 font-medium">got questions?</span>
+        </div>
+      </div>
+
+      {/* Centered Label & Header */}
       <div className="text-center space-y-3 mb-12">
         <span className="text-xs uppercase font-mono tracking-widest text-[#2F6FED] font-semibold">
           faq
@@ -72,6 +87,26 @@ export const FaqSection: React.FC = () => {
 
       {/* Accordion Component */}
       <Accordion items={FAQ_ITEMS} defaultOpenId="what-is-freedom" />
+
+      {/* Side Draggable Stickers */}
+      <DraggableSticker
+        src="/stuff/spongbob.gif"
+        alt="Spongebob"
+        containerRef={containerRef}
+        className="absolute -left-16 top-24 hidden lg:block rotate-[-8deg]"
+        imageClassName="w-14 h-14 object-contain drop-shadow-xl"
+        badgeText="Spongebob 🧽"
+      />
+
+      <DraggableSticker
+        src="/stuff/naruto.gif"
+        alt="Naruto"
+        soundSrc="/stuff/naruto.mp3"
+        containerRef={containerRef}
+        className="absolute -left-16 bottom-24 hidden lg:block rotate-[6deg]"
+        imageClassName="w-14 h-14 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Naruto theme 🎶"
+      />
     </section>
   );
 };

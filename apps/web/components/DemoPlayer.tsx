@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MacWindow, ProgressRing } from '@freedom/ui';
+import { DraggableSticker } from './DraggableSticker';
 
 export const DemoPlayer: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [secondsRemaining, setSecondsRemaining] = useState(1458); // ~24m 18s
   const [isPaused, setIsPaused] = useState(false);
   const [activeTaskTitle, setActiveTaskTitle] = useState('Ship Freedom Monorepo Architecture');
@@ -34,7 +36,35 @@ export const DemoPlayer: React.FC = () => {
   };
 
   return (
-    <section className="max-w-4xl mx-auto px-4 -mt-6 sm:-mt-10 mb-24 relative z-30">
+    <section ref={containerRef} className="max-w-4xl mx-auto px-4 -mt-6 sm:-mt-10 mb-24 relative z-30 select-none">
+      {/* Draggable GIF Stickers around DemoPlayer */}
+      <DraggableSticker
+        src="/stuff/spongbob.gif"
+        alt="Spongebob"
+        containerRef={containerRef}
+        className="absolute -left-12 -top-10 hidden lg:block rotate-[-8deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Spongebob 🧽"
+      />
+
+      <DraggableSticker
+        src="/stuff/naruto.gif"
+        alt="Naruto"
+        soundSrc="/stuff/naruto.mp3"
+        containerRef={containerRef}
+        className="absolute -right-12 -top-10 hidden lg:block rotate-[6deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Naruto theme 🎶"
+      />
+
+      <DraggableSticker
+        src="/stuff/jon-hamm-dancing.gif"
+        alt="Jon Hamm"
+        containerRef={containerRef}
+        className="absolute -left-16 bottom-4 hidden xl:block rotate-[12deg]"
+        imageClassName="w-20 h-auto object-contain rounded-xl border border-black/10 shadow-lg"
+        badgeText="Jon Hamm 🕺"
+      />
       <MacWindow
         title="Freedom Execution Engine v2.0"
         caption="freedom-runtime.mov"

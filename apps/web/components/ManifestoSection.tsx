@@ -2,9 +2,12 @@
 
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { DraggableSticker } from './DraggableSticker';
+import { useResizeKey } from '../hooks/useResizeKey';
 
 export const ManifestoSection: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const resetKey = useResizeKey();
 
   const NUM_FOLDERS = 22;
   const train1Refs = useRef<(HTMLDivElement | null)[]>([]);
@@ -174,31 +177,58 @@ export const ManifestoSection: React.FC = () => {
         ))}
       </div>
 
-      {/* DRAGGABLE FUN STICKERS (Larger & Bounded) */}
-      {/* 1. Pokemon Gif */}
-      <motion.div
-        drag
-        dragConstraints={containerRef}
-        dragElastic={0}
-        whileHover={{ scale: 1.25, zIndex: 50 }}
-        whileTap={{ scale: 0.95 }}
-        className="absolute left-[12%] top-[22%] hidden lg:block cursor-grab active:cursor-grabbing z-20"
-      >
-        <img
-          src="/stuff/gif-pokemon.webp"
-          alt="Bouncing Pokemon Sticker"
-          className="w-18 h-18 object-contain drop-shadow-xl"
-        />
-      </motion.div>
+      {/* DRAGGABLE FUN STICKERS (Bounded & Proportional) */}
+      {/* 1. Pokemon Gif with Sound */}
+      <DraggableSticker
+        src="/stuff/gif-pokemon.webp"
+        alt="Bouncing Pokemon"
+        soundSrc="/stuff/pokemon.mp3"
+        containerRef={containerRef}
+        className="absolute left-[10%] top-[20%] hidden lg:block rotate-[4deg]"
+        imageClassName="w-14 h-14 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Pokemon theme 🎶"
+      />
 
-      {/* 2. Among Us Imposter */}
+      {/* 2. Naruto Gif with Sound */}
+      <DraggableSticker
+        src="/stuff/naruto.gif"
+        alt="Naruto Running"
+        soundSrc="/stuff/naruto.mp3"
+        containerRef={containerRef}
+        className="absolute left-[8%] bottom-[15%] hidden lg:block rotate-[-6deg]"
+        imageClassName="w-14 h-14 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Naruto theme 🎶"
+      />
+
+      {/* 3. Spongebob Gif */}
+      <DraggableSticker
+        src="/stuff/spongbob.gif"
+        alt="Spongebob"
+        containerRef={containerRef}
+        className="absolute right-[8%] top-[18%] hidden lg:block rotate-[-4deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Spongebob 🧽"
+      />
+
+      {/* 4. Cat Photo */}
+      <DraggableSticker
+        src="/stuff/cat.jpg"
+        alt="Freedom Cat"
+        containerRef={containerRef}
+        className="absolute right-[12%] bottom-[16%] hidden lg:block rotate-[8deg]"
+        imageClassName="w-16 h-16 object-cover rounded-2xl border-2 border-black shadow-xl"
+        badgeText="Freedom Cat 🐱"
+      />
+
+      {/* 5. Among Us Imposter */}
       <motion.div
+        key={`${resetKey}-imposter`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
         whileHover={{ scale: 1.25, zIndex: 50 }}
         whileTap={{ scale: 0.95 }}
-        className="absolute left-[14%] bottom-[18%] hidden lg:block cursor-grab active:cursor-grabbing z-20"
+        className="absolute left-[22%] bottom-[12%] hidden xl:block cursor-grab active:cursor-grabbing z-20"
       >
         <div className="w-11 h-14 bg-slate-800 rounded-t-2xl rounded-b-lg relative flex items-center justify-center p-1 border-2 border-black shadow-xl">
           <div className="w-6 h-4 bg-cyan-400 rounded-full border border-black absolute top-3 left-2" />
@@ -207,6 +237,7 @@ export const ManifestoSection: React.FC = () => {
 
       {/* 3. You've Got Mail Retro Icon */}
       <motion.div
+        key={`${resetKey}-mail`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
@@ -222,6 +253,7 @@ export const ManifestoSection: React.FC = () => {
 
       {/* 4. Retro PC Desktop Icon */}
       <motion.div
+        key={`${resetKey}-retropc`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}

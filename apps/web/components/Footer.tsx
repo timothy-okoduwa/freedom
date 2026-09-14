@@ -26,14 +26,14 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a href="#features" className="hover:text-black transition-colors">
+                <Link href="/#features" className="hover:text-black transition-colors">
                   features
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#pricing" className="hover:text-black transition-colors">
+                <Link href="/#pricing" className="hover:text-black transition-colors">
                   pricing
-                </a>
+                </Link>
               </li>
               <li>
                 <Link href="/changelog" className="hover:text-black transition-colors">
@@ -49,14 +49,14 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-[#6B6B6B]">
               <li>
-                <a href="#the-dream" className="hover:text-black transition-colors">
+                <Link href="/#the-dream" className="hover:text-black transition-colors">
                   the manifesto
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#faq" className="hover:text-black transition-colors">
+                <Link href="/#faq" className="hover:text-black transition-colors">
                   frequently asked
-                </a>
+                </Link>
               </li>
               <li>
                 <Link href="/trust" className="hover:text-black transition-colors">
@@ -93,7 +93,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a
-                  href="https://github.com"
+                  href="https://github.com/timothy-okoduwa/freedom"
                   target="_blank"
                   rel="noreferrer"
                   className="hover:text-black transition-colors"

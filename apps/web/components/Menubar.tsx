@@ -70,18 +70,18 @@ export const Menubar: React.FC = () => {
             <span>freedom</span>
           </Link>
           <nav className="hidden md:flex items-center gap-4 text-[#555555] font-normal">
-            <a href="#features" className="hover:text-black transition-colors">
+            <Link href="/#features" className="hover:text-black transition-colors">
               features
-            </a>
-            <a href="#pricing" className="hover:text-black transition-colors">
+            </Link>
+            <Link href="/#pricing" className="hover:text-black transition-colors">
               pricing
-            </a>
-            <a href="#the-dream" className="hover:text-black transition-colors">
+            </Link>
+            <Link href="/#the-dream" className="hover:text-black transition-colors">
               the dream
-            </a>
-            <a href="#faq" className="hover:text-black transition-colors">
+            </Link>
+            <Link href="/#faq" className="hover:text-black transition-colors">
               faq
-            </a>
+            </Link>
             <Link href="/trust" className="hover:text-black transition-colors">
               trust
             </Link>

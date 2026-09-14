@@ -1,11 +1,52 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { MacWindow, ProgressRing } from '@freedom/ui';
+import { DraggableSticker } from './DraggableSticker';
 
 export const FeatureRows: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <section id="features" className="max-w-6xl mx-auto px-4 py-16 sm:py-24 space-y-24 sm:space-y-36">
+    <section id="features" ref={containerRef} className="max-w-6xl mx-auto px-4 py-16 sm:py-24 space-y-24 sm:space-y-36 relative select-none">
+      {/* Draggable Stickers in FeatureRows */}
+      <DraggableSticker
+        src="/stuff/naruto.gif"
+        alt="Naruto Running"
+        soundSrc="/stuff/naruto.mp3"
+        containerRef={containerRef}
+        className="absolute left-2 top-20 hidden lg:block rotate-[-6deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Naruto theme 🎶"
+      />
+
+      <DraggableSticker
+        src="/stuff/cat.jpg"
+        alt="Cat"
+        containerRef={containerRef}
+        className="absolute right-2 top-24 hidden lg:block rotate-[10deg]"
+        imageClassName="w-14 h-14 object-cover rounded-xl border-2 border-black shadow-lg"
+        badgeText="Cat 🐱"
+      />
+
+      <DraggableSticker
+        src="/stuff/spongbob.gif"
+        alt="Spongebob"
+        containerRef={containerRef}
+        className="absolute left-2 top-[48%] hidden xl:block rotate-[8deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Spongebob 🧽"
+      />
+
+      <DraggableSticker
+        src="/stuff/gif-pokemon.webp"
+        alt="Pokemon"
+        soundSrc="/stuff/pokemon.mp3"
+        containerRef={containerRef}
+        className="absolute right-2 top-[75%] hidden lg:block rotate-[-4deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Pokemon theme 🎶"
+      />
       {/* SECTION HEADER */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
         <span className="text-xs uppercase font-mono tracking-widest text-[#2F6FED] font-semibold">

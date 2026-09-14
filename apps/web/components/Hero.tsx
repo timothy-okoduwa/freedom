@@ -3,9 +3,12 @@
 import React, { useRef } from 'react';
 import { MacWindow } from '@freedom/ui';
 import { motion } from 'framer-motion';
+import { DraggableSticker } from './DraggableSticker';
+import { useResizeKey } from '../hooks/useResizeKey';
 
 export const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const resetKey = useResizeKey();
 
   return (
     <section ref={containerRef} className="relative pt-24 pb-16 md:pt-32 md:pb-24 px-4 overflow-hidden min-h-[880px] flex flex-col items-center justify-center select-none">
@@ -21,6 +24,7 @@ export const Hero: React.FC = () => {
 
       {/* 1. TOP-CENTER MAC WINDOW (Small, elevated high above headline with 80px+ clearance) */}
       <motion.div
+        key={`${resetKey}-topcenter`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
@@ -44,12 +48,15 @@ export const Hero: React.FC = () => {
 
       {/* 2. TOP-LEFT TALL VERTICAL MAC WINDOW */}
       <motion.div
+        key={`${resetKey}-topleft`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
-        whileHover={{ scale: 1.05, zIndex: 50 }}
+        initial={{ rotate: -4 }}
+        animate={{ rotate: -4 }}
+        whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
         whileTap={{ scale: 0.98 }}
-        className="absolute left-3 xl:left-8 top-8 hidden md:block rotate-[-4deg] cursor-grab active:cursor-grabbing z-20 w-[200px]"
+        className="absolute left-3 xl:left-8 top-8 hidden md:block cursor-grab active:cursor-grabbing z-20 w-[200px]"
       >
         <MacWindow caption="it-executes-too-omg.mov">
           <div className="p-3 bg-[#FAFAFA] text-xs font-sans space-y-2">
@@ -78,12 +85,15 @@ export const Hero: React.FC = () => {
 
       {/* 3. TOP-RIGHT HORIZONTAL MAC WINDOW */}
       <motion.div
+        key={`${resetKey}-topright`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
-        whileHover={{ scale: 1.05, zIndex: 50 }}
+        initial={{ rotate: 5 }}
+        animate={{ rotate: 5 }}
+        whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
         whileTap={{ scale: 0.98 }}
-        className="absolute right-3 xl:right-8 top-8 hidden md:block rotate-[5deg] cursor-grab active:cursor-grabbing z-20 w-[210px]"
+        className="absolute right-3 xl:right-8 top-8 hidden md:block cursor-grab active:cursor-grabbing z-20 w-[210px]"
       >
         <MacWindow caption="usecase.mov">
           <div className="p-3 bg-white flex items-center gap-3">
@@ -118,12 +128,15 @@ export const Hero: React.FC = () => {
 
       {/* 4. BOTTOM-LEFT MAC WINDOW */}
       <motion.div
+        key={`${resetKey}-bottomleft`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
-        whileHover={{ scale: 1.05, zIndex: 50 }}
+        initial={{ rotate: 3 }}
+        animate={{ rotate: 3 }}
+        whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
         whileTap={{ scale: 0.98 }}
-        className="absolute left-3 xl:left-8 top-[540px] hidden lg:block rotate-[3deg] cursor-grab active:cursor-grabbing z-20 w-[210px]"
+        className="absolute left-3 xl:left-8 top-[540px] hidden lg:block cursor-grab active:cursor-grabbing z-20 w-[210px]"
       >
         <MacWindow caption="nohandstricklol.mov">
           <div className="p-2 bg-slate-900 text-white rounded-b-lg">
@@ -141,12 +154,15 @@ export const Hero: React.FC = () => {
 
       {/* 5. BOTTOM-RIGHT TALL VERTICAL MAC WINDOW */}
       <motion.div
+        key={`${resetKey}-bottomright`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
-        whileHover={{ scale: 1.05, zIndex: 50 }}
+        initial={{ rotate: -4 }}
+        animate={{ rotate: -4 }}
+        whileHover={{ scale: 1.05, rotate: 0, zIndex: 50 }}
         whileTap={{ scale: 0.98 }}
-        className="absolute right-3 xl:right-8 top-[540px] hidden lg:block rotate-[-4deg] cursor-grab active:cursor-grabbing z-20 w-[200px]"
+        className="absolute right-3 xl:right-8 top-[540px] hidden lg:block cursor-grab active:cursor-grabbing z-20 w-[200px]"
       >
         <MacWindow caption="daddyshome.mov">
           <div className="p-3 bg-white space-y-2">
@@ -164,15 +180,53 @@ export const Hero: React.FC = () => {
         </MacWindow>
       </motion.div>
 
-      {/* DENSE SCATTERED DRAGGABLE STICKERS (Organized outside center text) */}
+      {/* DENSE SCATTERED DRAGGABLE STICKERS */}
+
+      {/* Naruto Draggable Sticker (Hero Top Left with Sound) */}
+      <DraggableSticker
+        src="/stuff/naruto.gif"
+        alt="Naruto Running"
+        soundSrc="/stuff/naruto.mp3"
+        containerRef={containerRef}
+        className="absolute left-[5%] xl:left-[8%] top-[190px] hidden lg:block"
+        rotate={-5}
+        imageClassName="w-14 h-14 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Naruto theme 🎶"
+      />
+
+      {/* Spongebob Draggable Sticker (Hero Top Right) */}
+      <DraggableSticker
+        src="/stuff/spongbob.gif"
+        alt="Spongebob Dancing"
+        containerRef={containerRef}
+        className="absolute right-[5%] xl:right-[8%] top-[190px] hidden lg:block"
+        rotate={6}
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Spongebob 🧽"
+      />
+
+      {/* Cat Draggable Sticker (Hero Middle Left) */}
+      <DraggableSticker
+        src="/stuff/cat.jpg"
+        alt="Funny Cat"
+        containerRef={containerRef}
+        className="absolute left-[14%] xl:left-[17%] top-[480px] hidden lg:block"
+        rotate={-12}
+        imageClassName="w-14 h-14 object-cover rounded-xl border-2 border-black shadow-lg"
+        badgeText="Freedom Cat 🐱"
+      />
+
       {/* Sticker 1: 100% Free Badge (Top Left) */}
       <motion.div
+        key={`${resetKey}-freebadge`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
-        whileHover={{ scale: 1.1, zIndex: 50 }}
+        initial={{ rotate: -6 }}
+        animate={{ rotate: -6 }}
+        whileHover={{ scale: 1.1, rotate: 0, zIndex: 50 }}
         whileTap={{ scale: 0.95 }}
-        className="absolute left-[18%] xl:left-[21%] top-[5%] hidden lg:block rotate-[-6deg] cursor-grab active:cursor-grabbing z-20"
+        className="absolute left-[18%] xl:left-[21%] top-[5%] hidden lg:block cursor-grab active:cursor-grabbing z-20"
       >
         <div className="px-3 py-1.5 rounded-full bg-[#1FAE6B] text-white text-[11px] font-mono font-bold shadow-lg border border-white/20 flex items-center gap-1.5">
           <span>⚡</span>
@@ -182,6 +236,7 @@ export const Hero: React.FC = () => {
 
       {/* Sticker 2: Black-Square Flower (Top Right) */}
       <motion.div
+        key={`${resetKey}-flower`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
@@ -193,24 +248,20 @@ export const Hero: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Sticker 3: Pokemon Gif (Right Middle) */}
-      <motion.div
-        drag
-        dragConstraints={containerRef}
-        dragElastic={0}
-        whileHover={{ scale: 1.2, zIndex: 50 }}
-        whileTap={{ scale: 0.9 }}
-        className="absolute right-[16%] xl:right-[19%] top-[560px] hidden lg:block cursor-grab active:cursor-grabbing z-20"
-      >
-        <img
-          src="/stuff/gif-pokemon.webp"
-          alt="Pokemon"
-          className="w-14 h-14 object-contain drop-shadow-xl"
-        />
-      </motion.div>
+      {/* Pokemon Draggable Sticker (Hero Bottom Right with Sound) */}
+      <DraggableSticker
+        src="/stuff/gif-pokemon.webp"
+        alt="Pokemon"
+        soundSrc="/stuff/pokemon.mp3"
+        containerRef={containerRef}
+        className="absolute right-[16%] xl:right-[19%] top-[560px] hidden lg:block"
+        imageClassName="w-14 h-14 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Pokemon theme 🎶"
+      />
 
       {/* Sticker 4: Vintage Phone Gif (Bottom Left) */}
       <motion.div
+        key={`${resetKey}-vintagephone`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
@@ -227,6 +278,7 @@ export const Hero: React.FC = () => {
 
       {/* Sticker 5: Retro PC Icon (Left Middle) */}
       <motion.div
+        key={`${resetKey}-retropcleft`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
@@ -244,6 +296,7 @@ export const Hero: React.FC = () => {
 
       {/* Sticker 6: System Icon 1 (Right Middle) */}
       <motion.div
+        key={`${resetKey}-sysiconright`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
@@ -261,6 +314,7 @@ export const Hero: React.FC = () => {
 
       {/* Sticker 7: Blue Folder 1 (Left Side) */}
       <motion.div
+        key={`${resetKey}-bluefolder`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
@@ -275,6 +329,7 @@ export const Hero: React.FC = () => {
 
       {/* Sticker 8: Trash Icon (Middle Left) */}
       <motion.div
+        key={`${resetKey}-trash`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
@@ -290,11 +345,14 @@ export const Hero: React.FC = () => {
 
       {/* Sticker 9: Hello My Name Is Freedom Badge (Right Side) */}
       <motion.div
+        key={`${resetKey}-namebadge`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
-        whileHover={{ scale: 1.2, zIndex: 50 }}
-        className="absolute right-[16%] xl:right-[18%] top-[240px] hidden lg:block rotate-[7deg] cursor-grab active:cursor-grabbing z-20"
+        initial={{ rotate: 7 }}
+        animate={{ rotate: 7 }}
+        whileHover={{ scale: 1.2, rotate: 0, zIndex: 50 }}
+        className="absolute right-[16%] xl:right-[18%] top-[240px] hidden lg:block cursor-grab active:cursor-grabbing z-20"
       >
         <div className="px-3 py-1.5 rounded-lg bg-[#FF3B30] text-white text-[11px] font-mono font-bold shadow-xl border border-white/20">
           hello my name is <span className="underline">freedom</span>
@@ -303,21 +361,27 @@ export const Hero: React.FC = () => {
 
       {/* ASCII DECORATIONS IN WHITESPACE */}
       <motion.div
+        key={`${resetKey}-ascii1`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
-        whileHover={{ scale: 1.2, zIndex: 50 }}
-        className="absolute left-[16%] top-[160px] hidden xl:block cursor-grab active:cursor-grabbing rotate-[-8deg] font-mono text-sm font-bold text-[#475569]"
+        initial={{ rotate: -8 }}
+        animate={{ rotate: -8 }}
+        whileHover={{ scale: 1.2, rotate: 0, zIndex: 50 }}
+        className="absolute left-[16%] top-[160px] hidden xl:block cursor-grab active:cursor-grabbing font-mono text-sm font-bold text-[#475569]"
       >
         ^ ω ^
       </motion.div>
 
       <motion.div
+        key={`${resetKey}-ascii2`}
         drag
         dragConstraints={containerRef}
         dragElastic={0}
-        whileHover={{ scale: 1.2, zIndex: 50 }}
-        className="absolute right-[28%] top-[110px] hidden xl:block cursor-grab active:cursor-grabbing rotate-[6deg] font-mono text-sm font-bold text-[#475569]"
+        initial={{ rotate: 6 }}
+        animate={{ rotate: 6 }}
+        whileHover={{ scale: 1.2, rotate: 0, zIndex: 50 }}
+        className="absolute right-[28%] top-[110px] hidden xl:block cursor-grab active:cursor-grabbing font-mono text-sm font-bold text-[#475569]"
       >
         ¯\_(ツ)_/¯
       </motion.div>

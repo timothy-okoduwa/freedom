@@ -4,6 +4,7 @@ class GlobalAudioStore {
   private audio: HTMLAudioElement | null = null;
   private isPlaying = false;
   private listeners: Set<(playing: boolean) => void> = new Set();
+  private activeDucks = 0;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -36,6 +37,20 @@ class GlobalAudioStore {
 
     this.notify();
     return this.isPlaying;
+  }
+
+  public duckVolume() {
+    this.activeDucks++;
+    if (this.audio) {
+      this.audio.volume = 0.05;
+    }
+  }
+
+  public restoreVolume() {
+    this.activeDucks = Math.max(0, this.activeDucks - 1);
+    if (this.activeDucks === 0 && this.audio) {
+      this.audio.volume = 1.0;
+    }
   }
 
   public getIsPlaying(): boolean {

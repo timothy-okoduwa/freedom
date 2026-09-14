@@ -3,12 +3,15 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Footer } from '../../components/Footer';
+import { ShieldCheck, Zap, Copy, Check } from 'lucide-react';
 
 const DOWNLOAD_URL = 'https://github.com/timothy-okoduwa/freedom/releases/download/v1.0.0/Freedom-1.0.0-arm64.dmg';
-const TERMINAL_CMD = 'sudo xattr -rd com.apple.quarantine /Applications/Freedom.app';
+const TERMINAL_CMD = 'xattr -cr /Applications/Freedom.app';
+const TERMINAL_CMD_SUDO = 'sudo xattr -rd com.apple.quarantine /Applications/Freedom.app';
 
 export default function DownloadPage() {
-  const [copied, setCopied] = useState(false);
+  const [copiedCmd, setCopiedCmd] = useState(false);
+  const [copiedSudo, setCopiedSudo] = useState(false);
 
   useEffect(() => {
     // Automatically trigger DMG download on mount
@@ -23,11 +26,16 @@ export default function DownloadPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const copyCommand = () => {
+  const copyText = (text: string, isSudo: boolean) => {
     if (typeof window !== 'undefined') {
-      navigator.clipboard.writeText(TERMINAL_CMD);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      navigator.clipboard.writeText(text);
+      if (isSudo) {
+        setCopiedSudo(true);
+        setTimeout(() => setCopiedSudo(false), 2500);
+      } else {
+        setCopiedCmd(true);
+        setTimeout(() => setCopiedCmd(false), 2500);
+      }
     }
   };
 
@@ -173,75 +181,74 @@ export default function DownloadPage() {
           </div>
         </div>
 
-        {/* macOS Unidentified Developer / "App is Damaged" Troubleshooting Card */}
+        {/* macOS Sequoia & Sonoma Unidentified Developer / "App is Damaged" Troubleshooting Card */}
         <div className="max-w-4xl mx-auto pt-10 text-left">
           <div className="rounded-3xl bg-white border border-[#E2E8F0] shadow-xl p-6 sm:p-8 space-y-6">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#FFFBEB] border border-[#FCD34D] text-[#D97706] flex items-center justify-center text-2xl font-bold shrink-0">
-                ⚠️
+              <div className="w-12 h-12 rounded-2xl bg-[#EFF6FF] border border-[#BFDBFE] text-[#2F6FED] flex items-center justify-center font-bold shrink-0">
+                <ShieldCheck className="w-6 h-6" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-extrabold text-[#0F172A] tracking-tight">
-                  Does macOS say &quot;Freedom is damaged&quot; or &quot;Unidentified Developer&quot;?
+                  Fix &quot;Freedom is damaged&quot; or &quot;Can&apos;t be opened&quot; on macOS
                 </h3>
                 <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed">
-                  Freedom is an open-source productivity client built independently. Because it is not yet signed with a paid $99/yr Apple Developer certificate, macOS Gatekeeper may show a warning when opening it for the first time.
+                  On macOS Sequoia and Sonoma, Apple strictly blocks independent open-source apps downloaded from the web by attaching a quarantine attribute (`com.apple.quarantine`). Because Freedom is an open-source build without a paid Apple Developer certificate, right-click and System Settings options will not show up until you run the quick 5-second fix below.
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-              {/* Solution 1: Right-Click Open */}
-              <div className="p-5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-2">
-                <div className="flex items-center gap-2 font-bold text-sm text-[#0F172A]">
-                  <span className="w-6 h-6 rounded-full bg-[#2F6FED] text-white text-xs font-mono flex items-center justify-center">1</span>
-                  <span>Right-Click &quot;Open&quot; (Easiest)</span>
+            {/* #1 GUARANTEED SOLUTION BOX */}
+            <div className="p-6 rounded-2xl bg-[#0F172A] text-white space-y-4 shadow-md">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2.5 font-bold text-base text-[#38BDF8]">
+                  <span className="w-7 h-7 rounded-full bg-[#38BDF8] text-[#0F172A] flex items-center justify-center font-extrabold">
+                    <Zap className="w-4 h-4 fill-current" />
+                  </span>
+                  <span>1-Step Guaranteed Fix (Takes 5 seconds)</span>
                 </div>
-                <ol className="list-decimal list-inside text-xs text-[#475569] space-y-1.5 pl-1 leading-relaxed">
-                  <li>Open your <strong className="text-[#0F172A]">Applications</strong> folder.</li>
-                  <li>Right-click (or <kbd className="px-1 py-0.5 rounded bg-white border font-mono">Control-click</kbd>) <strong className="text-[#0F172A]">Freedom.app</strong>.</li>
-                  <li>Click <strong className="text-[#0F172A]">Open</strong> from the context menu.</li>
-                  <li>Click <strong className="text-[#2F6FED]">Open</strong> in the macOS security prompt.</li>
-                </ol>
+                <span className="text-xs font-mono text-[#94A3B8]">Open Terminal on your Mac</span>
               </div>
 
-              {/* Solution 2: System Settings */}
-              <div className="p-5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-2">
-                <div className="flex items-center gap-2 font-bold text-sm text-[#0F172A]">
-                  <span className="w-6 h-6 rounded-full bg-[#2F6FED] text-white text-xs font-mono flex items-center justify-center">2</span>
-                  <span>System Settings Security</span>
-                </div>
-                <ol className="list-decimal list-inside text-xs text-[#475569] space-y-1.5 pl-1 leading-relaxed">
-                  <li>Open <strong className="text-[#0F172A]">System Settings</strong> on your Mac.</li>
-                  <li>Go to <strong className="text-[#0F172A]">Privacy & Security</strong>.</li>
-                  <li>Scroll down to the <strong className="text-[#0F172A]">Security</strong> section.</li>
-                  <li>Click <strong className="text-[#2F6FED]">Open Anyway</strong> next to Freedom.</li>
-                </ol>
-              </div>
-            </div>
+              <ol className="list-decimal list-inside text-xs text-[#E2E8F0] space-y-2 leading-relaxed">
+                <li>Make sure <strong className="text-white">Freedom.app</strong> is moved into your <strong className="text-white">Applications</strong> folder.</li>
+                <li>Open <strong className="text-white">Terminal</strong> (Press <kbd className="px-1.5 py-0.5 rounded bg-white/20 font-mono text-white">Cmd + Space</kbd>, type <strong className="text-white">Terminal</strong>, and press Enter).</li>
+                <li>Copy and paste the command below, then press Enter:</li>
+              </ol>
 
-            {/* Solution 3: Terminal Command for "Damaged and can't be opened" */}
-            <div className="p-5 rounded-2xl bg-[#0F172A] text-white space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2 font-bold text-sm">
-                  <span className="w-6 h-6 rounded-full bg-[#38BDF8] text-[#0F172A] text-xs font-mono flex items-center justify-center font-extrabold">3</span>
-                  <span>If macOS says &quot;App is damaged and can&apos;t be opened&quot;</span>
-                </div>
-                <span className="text-[11px] font-mono text-[#94A3B8]">Run in Terminal</span>
-              </div>
-              <p className="text-xs text-[#94A3B8] leading-relaxed">
-                This removes macOS quarantine attributes applied to unsigned downloaded apps:
-              </p>
-              <div className="flex items-center justify-between gap-2 p-3 rounded-xl bg-black/50 border border-white/10 font-mono text-xs overflow-x-auto text-[#38BDF8]">
-                <code>{TERMINAL_CMD}</code>
+              {/* Terminal Command Box */}
+              <div className="p-3.5 rounded-xl bg-black/60 border border-white/15 font-mono text-xs text-[#38BDF8] flex items-center justify-between gap-3 overflow-x-auto">
+                <code className="whitespace-nowrap">{TERMINAL_CMD}</code>
                 <button
                   type="button"
-                  onClick={copyCommand}
-                  className="shrink-0 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-sans font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+                  onClick={() => copyText(TERMINAL_CMD, false)}
+                  className="shrink-0 px-4 py-2 rounded-lg bg-[#38BDF8] hover:bg-[#0284C7] text-[#0F172A] text-xs font-sans font-bold transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-sm"
                 >
-                  <span>{copied ? '✓ Copied' : '📋 Copy'}</span>
+                  {copiedCmd ? <Check className="w-4 h-4 text-[#0F172A]" /> : <Copy className="w-4 h-4 text-[#0F172A]" />}
+                  <span>{copiedCmd ? 'Copied!' : 'Copy Command'}</span>
                 </button>
               </div>
+
+              <p className="text-[11px] font-mono text-[#94A3B8] pt-1">
+                Once executed, double-click <strong className="text-white font-sans">Freedom.app</strong> in your Applications folder and it will launch instantly!
+              </p>
+            </div>
+
+            {/* Alternative Sudo Option */}
+            <div className="p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-2 text-xs text-[#475569]">
+              <div className="flex items-center justify-between font-bold text-[#0F172A]">
+                <span>Alternative Command (If permission denied)</span>
+                <button
+                  type="button"
+                  onClick={() => copyText(TERMINAL_CMD_SUDO, true)}
+                  className="text-[#2F6FED] font-mono text-[11px] hover:underline"
+                >
+                  {copiedSudo ? '✓ Copied' : 'Copy Sudo Command'}
+                </button>
+              </div>
+              <code className="block p-2 rounded bg-white border border-[#E2E8F0] font-mono text-[11px] text-[#0F172A]">
+                {TERMINAL_CMD_SUDO}
+              </code>
             </div>
           </div>
         </div>

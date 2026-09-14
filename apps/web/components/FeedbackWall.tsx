@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
+import Link from 'next/link';
 import { MacWindow } from '@freedom/ui';
+import { DraggableSticker } from './DraggableSticker';
 
 interface Testimonial {
   name: string;
@@ -78,8 +80,39 @@ const TESTIMONIALS: Testimonial[] = [
 ];
 
 export const FeedbackWall: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <section className="py-20 sm:py-28 overflow-hidden bg-white">
+    <section ref={containerRef} className="py-20 sm:py-28 overflow-hidden bg-white relative select-none">
+      {/* Draggable Stickers */}
+      <DraggableSticker
+        src="/stuff/spongbob.gif"
+        alt="Spongebob"
+        containerRef={containerRef}
+        className="absolute left-[4%] top-[120px] hidden lg:block rotate-[-7deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Spongebob 🧽"
+      />
+
+      <DraggableSticker
+        src="/stuff/naruto.gif"
+        alt="Naruto"
+        soundSrc="/stuff/naruto.mp3"
+        containerRef={containerRef}
+        className="absolute right-[4%] top-[120px] hidden lg:block rotate-[5deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Naruto theme 🎶"
+      />
+
+      <DraggableSticker
+        src="/stuff/gif-pokemon.webp"
+        alt="Pokemon"
+        soundSrc="/stuff/pokemon.mp3"
+        containerRef={containerRef}
+        className="absolute left-[5%] bottom-[120px] hidden xl:block rotate-[10deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Pokemon theme 🎶"
+      />
       {/* Label */}
       <div className="text-center mb-6">
         <span className="text-xs uppercase font-mono tracking-widest text-[#2F6FED] font-semibold">
@@ -143,14 +176,23 @@ export const FeedbackWall: React.FC = () => {
       </div>
 
       {/* Ticker Banner */}
-      <div className="max-w-xl mx-auto mt-16 px-4">
+      <div className="max-w-xl mx-auto mt-16 px-4 space-y-5">
         <div className="p-4 rounded-2xl bg-[#FAFAFA] border border-[#E5E5E5] text-center shadow-xs flex items-center justify-center gap-2 text-xs sm:text-sm text-[#111]">
           <span className="w-2 h-2 rounded-full bg-[#1FAE6B] animate-ping" />
           <span className="font-semibold">25,000+ productive days run</span>
           <span className="text-[#888]">·</span>
-          <a href="/Freedom.dmg" download="Freedom.dmg" className="text-[#2F6FED] font-semibold hover:underline">
+          <Link href="/download" className="text-[#2F6FED] font-semibold hover:underline">
             join them today →
-          </a>
+          </Link>
+        </div>
+
+        {/* Jon Hamm Dancing GIF right under the 25,000+ productive days run div */}
+        <div className="flex justify-center pt-1">
+          <img
+            src="/stuff/jon-hamm-dancing.gif"
+            alt="Jon Hamm Dancing"
+            className="w-28 sm:w-36 h-auto object-contain rounded-xl shadow-lg border border-black/10 hover:scale-105 transition-transform cursor-pointer"
+          />
         </div>
       </div>
     </section>
