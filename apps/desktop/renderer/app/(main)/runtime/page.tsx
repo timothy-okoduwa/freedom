@@ -49,9 +49,10 @@ export default function RuntimePage() {
     startedAt: new Date().toISOString(),
   };
 
-  const currentItem = activeItem || (isTourActive ? mockActiveItem : null);
-  const currentPlan = activePlan || (isTourActive ? mockActivePlan : null);
-  const currentRemainingMs = activeItem ? remainingMs : (isTourActive ? 24 * 60 * 1000 + 18000 : 0);
+  const hasRealActive = Boolean(activeItem && activePlan);
+  const currentItem = hasRealActive ? activeItem : (isTourActive ? mockActiveItem : null);
+  const currentPlan = hasRealActive ? activePlan : (isTourActive ? mockActivePlan : null);
+  const currentRemainingMs = hasRealActive ? remainingMs : (isTourActive ? 24 * 60 * 1000 + 18000 : 0);
 
   if (!currentItem || !currentPlan) {
     return (

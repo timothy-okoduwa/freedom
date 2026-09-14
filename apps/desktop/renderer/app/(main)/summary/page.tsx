@@ -43,7 +43,8 @@ export default function SummaryPage() {
   };
 
   const realPlan = activePlan || todayPlan;
-  const plan = realPlan || (isTourActive ? mockTourPlan : null);
+  const hasRealItems = Boolean(realPlan && realPlan.items && realPlan.items.length > 0);
+  const plan = hasRealItems ? realPlan : (isTourActive ? mockTourPlan : null);
 
   if (loading) {
     return (
