@@ -363,6 +363,28 @@ export default function SettingsPage() {
         </div>
       </Card>
 
+      {/* Product Tour & Help */}
+      <Card variant="default" className="p-6 space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-[#111] dark:text-white">Interactive Product Tour</h3>
+            <p className="text-xs text-[#6B6B6B] dark:text-[#A1A1AA] mt-0.5">
+              Replay the step-by-step walkthrough to review Freedom features and shortcuts.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => window.dispatchEvent(new Event('freedom_open_product_tour'))}
+            className="flex items-center gap-1.5 cursor-pointer bg-[#EFF6FF] dark:bg-blue-950/50 text-[#2F6FED] border border-[#BFDBFE] dark:border-blue-800 hover:bg-[#DBEAFE]"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Replay Product Tour</span>
+          </Button>
+        </div>
+      </Card>
+
       {/* Unlocked Free Tier Notice */}
       <Card variant="surface" className="p-6 space-y-2 bg-[#F0FDF4] dark:bg-emerald-950/20 border border-[#BBF7D0] dark:border-emerald-800/40 rounded-2xl">
         <div className="flex items-center justify-between">

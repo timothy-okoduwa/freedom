@@ -1,6 +1,7 @@
 import { Hero } from '../components/Hero';
 import { DemoPlayer } from '../components/DemoPlayer';
 import { FeatureRows } from '../components/FeatureRows';
+import { FeatureSuiteGrid } from '../components/FeatureSuiteGrid';
 import { ManifestoSection } from '../components/ManifestoSection';
 import { FeedbackWall } from '../components/FeedbackWall';
 import { PricingSection } from '../components/PricingSection';
@@ -13,6 +14,7 @@ export default function LandingPage() {
       <Hero />
       <DemoPlayer />
       <FeatureRows />
+      <FeatureSuiteGrid />
       <ManifestoSection />
       <FeedbackWall />
       <PricingSection />

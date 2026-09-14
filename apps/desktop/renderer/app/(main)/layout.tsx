@@ -21,6 +21,7 @@ import {
   AppWindow,
 } from 'lucide-react';
 import { FreedomLogo } from '@freedom/ui';
+import { ProductTourModal } from '../../components/ProductTourModal';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -33,6 +34,26 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     }
     return true;
   });
+
+  const [showTour, setShowTour] = useState(false);
+
+  // Check if tour should auto-display for new users
+  useEffect(() => {
+    if (user && !authChecking) {
+      const localSeen = localStorage.getItem(`freedom_walkthrough_seen_${user.uid}`) === 'true';
+      const firestoreSeen = Boolean(user.hasSeenWalkthrough);
+      if (!localSeen && !firestoreSeen) {
+        setShowTour(true);
+      }
+    }
+  }, [user, authChecking]);
+
+  // Listen for manual tour replay events from Settings or Help
+  useEffect(() => {
+    const handleOpenTour = () => setShowTour(true);
+    window.addEventListener('freedom_open_product_tour', handleOpenTour);
+    return () => window.removeEventListener('freedom_open_product_tour', handleOpenTour);
+  }, []);
 
   // Apply theme on load
   useEffect(() => {
@@ -200,6 +221,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto p-6 sm:p-10">{children}</main>
+      <ProductTourModal isOpen={showTour} onClose={() => setShowTour(false)} />
     </div>
   );
 }

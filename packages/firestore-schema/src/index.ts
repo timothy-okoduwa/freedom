@@ -21,6 +21,7 @@ export interface User {
   countryCode?: string;
   countryFlag?: string;
   authProvider: AuthProvider;
+  hasSeenWalkthrough?: boolean;
 
   subscriptionTier: SubscriptionTier;
   publicStats: UserPublicStats;

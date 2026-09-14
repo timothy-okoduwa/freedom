@@ -228,6 +228,7 @@ export const authService = {
         avatarUrl,
         countryFlag,
         authProvider: provider,
+        hasSeenWalkthrough: false,
         subscriptionTier: 'free',
         publicStats: {
           totalProductiveMinutes: 0,
@@ -255,6 +256,7 @@ export const authService = {
         leaderboardOptIn: true,
         avatarUrl,
         authProvider: provider,
+        hasSeenWalkthrough: false,
         subscriptionTier: 'free',
         publicStats: {
           totalProductiveMinutes: 0,
