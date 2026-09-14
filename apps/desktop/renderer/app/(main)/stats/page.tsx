@@ -210,8 +210,8 @@ export default function StatsPage() {
         />
       </div>
 
-      {/* Task Completion Ratios */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Task Completion Ratios & Weekly Output Chart */}
+      <div data-tour="stats-chart-card" className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card variant="default" className="p-6 space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
           <h3 className="text-sm font-bold text-[#111] dark:text-white">Execution Reliability</h3>
           <div className="space-y-2 text-xs">

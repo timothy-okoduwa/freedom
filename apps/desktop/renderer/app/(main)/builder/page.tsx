@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { DayPlan, DayPlanItem } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
+import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService, getLocalDateString } from '../../../lib/firebase';
 import { Card, Button, Modal } from '@freedom/ui';
 import {
@@ -52,7 +53,18 @@ export default function BuilderPage() {
     }
   }, [user?.uid, activePlan]);
 
-  const totalMinutes = items.reduce((acc, item) => acc + item.plannedDurationMinutes, 0);
+  const { isOpen: isTourActive } = useTourStore();
+
+  // Mock items for tour when user has no tasks yet
+  const mockTourItems: DayPlanItem[] = [
+    { id: 'mock-1', type: 'task', title: '🚀 Core Feature Engineering', plannedDurationMinutes: 45, actualMinutes: 0, extensionMinutes: 0, order: 1, state: 'pending' },
+    { id: 'mock-2', type: 'break', title: '☕ Coffee & Quick Hydration', plannedDurationMinutes: 10, actualMinutes: 0, extensionMinutes: 0, order: 2, state: 'pending' },
+    { id: 'mock-3', type: 'task', title: '💻 UI Component Polish', plannedDurationMinutes: 30, actualMinutes: 0, extensionMinutes: 0, order: 3, state: 'pending' },
+  ];
+
+  const displayItems = isTourActive && items.length === 0 ? mockTourItems : items;
+
+  const totalMinutes = displayItems.reduce((acc, item) => acc + item.plannedDurationMinutes, 0);
   const totalHours = (totalMinutes / 60).toFixed(1);
   const isOver24h = totalMinutes > 24 * 60;
 
@@ -251,7 +263,7 @@ export default function BuilderPage() {
       </div>
 
       {/* Empty State */}
-      {items.length === 0 && (
+      {displayItems.length === 0 && (
         <div className="py-14 text-center rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30">
           <Laptop className="w-9 h-9 text-zinc-400 mx-auto mb-2" />
           <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">No tasks in your day plan yet</h3>
@@ -274,8 +286,8 @@ export default function BuilderPage() {
       )}
 
       {/* Ordered Queue Cards with Drag & Drop */}
-      <div className="space-y-2.5">
-        {items.map((item, index) => {
+      <div data-tour="builder-item-list" className="space-y-2.5">
+        {displayItems.map((item, index) => {
           const isBreak = item.type === 'break';
           const runningNow = isRunningNow(item);
           const ranBefore = isRanBefore(item);

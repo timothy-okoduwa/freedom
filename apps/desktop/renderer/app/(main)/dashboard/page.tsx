@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { DayPlan } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
+import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService, getLocalDateString } from '../../../lib/firebase';
 import { Card } from '@freedom/ui';
 import {
@@ -116,29 +117,42 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        {/* Adaptive Action CTA */}
-        {activeItem ? (
-          <Link
-            href="/runtime"
-            className="px-6 py-2.5 rounded-xl bg-[#2F6FED] text-white text-xs font-semibold shadow-md hover:bg-[#2558BE] transition-all flex items-center gap-2"
+        <div className="flex items-center gap-3">
+          {/* Replay Product Tour Button */}
+          <button
+            type="button"
+            data-tour="dashboard-replay-tour-btn"
+            onClick={() => useTourStore.getState().startTour()}
+            className="px-4 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-[#E5E5E5] dark:border-[#27272A] text-xs font-semibold text-[#333] dark:text-[#E5E5E5] hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all flex items-center gap-2 cursor-pointer shadow-2xs"
           >
-            <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-            <span>View Active Session ({activeItem.title})</span>
-          </Link>
-        ) : (
-          <Link
-            href="/builder"
-            data-tour="dashboard-builder-btn"
-            className="px-6 py-2.5 rounded-xl bg-black dark:bg-white text-white dark:text-black text-xs font-semibold shadow-md hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all flex items-center gap-2"
-          >
-            <CalendarPlus className="w-4 h-4" />
-            <span>Build Day Plan</span>
-          </Link>
-        )}
+            <Sparkles className="w-4 h-4 text-[#2F6FED]" />
+            <span>Replay Product Tour</span>
+          </button>
+
+          {/* Adaptive Action CTA */}
+          {activeItem ? (
+            <Link
+              href="/runtime"
+              className="px-6 py-2.5 rounded-xl bg-[#2F6FED] text-white text-xs font-semibold shadow-md hover:bg-[#2558BE] transition-all flex items-center gap-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+              <span>View Active Session ({activeItem.title})</span>
+            </Link>
+          ) : (
+            <Link
+              href="/builder"
+              data-tour="dashboard-builder-btn"
+              className="px-6 py-2.5 rounded-xl bg-black dark:bg-white text-white dark:text-black text-xs font-semibold shadow-md hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all flex items-center gap-2"
+            >
+              <CalendarPlus className="w-4 h-4" />
+              <span>Build Day Plan</span>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Overview Stat Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div data-tour="dashboard-overview-cards" className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card variant="surface" className="p-5 flex flex-col justify-between space-y-2 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl shadow-2xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-mono uppercase tracking-wider text-[#6B6B6B] dark:text-[#A1A1AA]">

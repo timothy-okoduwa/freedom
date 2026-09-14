@@ -666,7 +666,7 @@ export default function LeaderboardPage() {
 
       {/* FRIENDS TAB */}
       {activeTab === 'friends' && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-tour="leaderboard-friends-card">
           {/* Pending Requests Banner */}
           {pendingRequests.length > 0 && (
             <Card variant="surface" className="p-4 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl space-y-3">

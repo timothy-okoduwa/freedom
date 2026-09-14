@@ -22,11 +22,13 @@ import {
 } from 'lucide-react';
 import { FreedomLogo } from '@freedom/ui';
 import { SpotlightTourOverlay } from '../../components/SpotlightTourOverlay';
+import { useTourStore } from '../../stores/useTourStore';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, setUser, activeItem, loadActiveSession } = useSessionStore();
+  const { startTour } = useTourStore();
 
   const [authChecking, setAuthChecking] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -35,25 +37,23 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
     return true;
   });
 
-  const [showTour, setShowTour] = useState(false);
-
   // Check if tour should auto-display for new users
   useEffect(() => {
     if (user && !authChecking) {
       const localSeen = localStorage.getItem(`freedom_walkthrough_seen_${user.uid}`) === 'true';
       const firestoreSeen = Boolean(user.hasSeenWalkthrough);
       if (!localSeen && !firestoreSeen) {
-        setShowTour(true);
+        startTour();
       }
     }
-  }, [user, authChecking]);
+  }, [user, authChecking, startTour]);
 
   // Listen for manual tour replay events from Settings or Help
   useEffect(() => {
-    const handleOpenTour = () => setShowTour(true);
+    const handleOpenTour = () => startTour();
     window.addEventListener('freedom_open_product_tour', handleOpenTour);
     return () => window.removeEventListener('freedom_open_product_tour', handleOpenTour);
-  }, []);
+  }, [startTour]);
 
   // Apply theme on load
   useEffect(() => {
@@ -132,7 +132,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="flex h-screen bg-[#FAFAFA] dark:bg-[#09090B] text-[#111111] dark:text-[#EDEDED] overflow-hidden select-none">
       {/* Persistent Left Nav Rail */}
-      <aside className="w-60 bg-white dark:bg-[#121215] border-r border-[#E5E5E5] dark:border-[#27272A] flex flex-col justify-between p-4 z-20 transition-colors">
+      <aside data-tour="nav-rail" className="w-60 bg-white dark:bg-[#121215] border-r border-[#E5E5E5] dark:border-[#27272A] flex flex-col justify-between p-4 z-20 transition-colors">
         <div className="space-y-6">
           {/* Logo & Streak Badge */}
           <div className="flex items-center justify-between px-2 pt-2">
@@ -222,7 +222,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto p-6 sm:p-10">{children}</main>
-      <SpotlightTourOverlay isOpen={showTour} onClose={() => setShowTour(false)} />
+      <SpotlightTourOverlay />
     </div>
   );
 }

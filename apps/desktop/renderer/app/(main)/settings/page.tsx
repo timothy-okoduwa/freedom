@@ -162,7 +162,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Appearance: Light and Dark Mode */}
-      <Card variant="default" className="p-6 space-y-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+      <Card variant="default" data-tour="settings-theme-card" className="p-6 space-y-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-[#111] dark:text-white">Theme & Appearance</h3>
@@ -215,7 +215,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* Task Completion Sound Feedback */}
-      <Card variant="default" className="p-6 space-y-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+      <Card variant="default" data-tour="settings-sound-card" className="p-6 space-y-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-[#2F6FED] flex items-center justify-center">
@@ -269,7 +269,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* Profile & Dicebear Avatar */}
-      <Card variant="default" className="p-6 space-y-5 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+      <Card variant="default" data-tour="settings-profile-card" className="p-6 space-y-5 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-bold text-[#111] dark:text-white">User Profile & Dicebear Avatar</h3>
           <span className="text-[11px] text-neutral-400 font-mono">https://api.dicebear.com</span>
@@ -322,7 +322,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* Execution Preferences */}
-      <Card variant="default" className="p-6 space-y-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+      <Card variant="default" data-tour="settings-goal-card" className="p-6 space-y-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
         <h3 className="text-sm font-bold text-[#111] dark:text-white">Execution Preferences</h3>
 
         <div>

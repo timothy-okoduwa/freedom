@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import type { DayPlan, DayPlanItem } from '@freedom/firestore-schema';
+import type { DayPlan } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
+import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService } from '../../../lib/firebase';
-import { Card, Button } from '@freedom/ui';
+import { Card } from '@freedom/ui';
 import {
   History,
   Calendar,
@@ -21,6 +22,8 @@ import {
 
 export default function HistoryPage() {
   const { user } = useSessionStore();
+  const { isOpen: isTourActive } = useTourStore();
+
   const [plans, setPlans] = useState<DayPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,11 +50,39 @@ export default function HistoryPage() {
     }
   }, [user?.uid]);
 
+  const mockTourPlans: DayPlan[] = [
+    {
+      id: 'mock-hist-1',
+      userId: 'mock-user',
+      date: '2026-09-13',
+      state: 'completed',
+      items: [
+        { id: 'h1', type: 'task', title: '🚀 Production Deployment & Verification', plannedDurationMinutes: 60, actualMinutes: 58, extensionMinutes: 0, order: 1, state: 'completed' },
+        { id: 'h2', type: 'break', title: '☕ Recovery Break', plannedDurationMinutes: 10, actualMinutes: 10, extensionMinutes: 0, order: 2, state: 'completed' },
+        { id: 'h3', type: 'task', title: '💻 Codebase Refactoring & Optimization', plannedDurationMinutes: 45, actualMinutes: 45, extensionMinutes: 0, order: 3, state: 'completed' },
+      ],
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 'mock-hist-2',
+      userId: 'mock-user',
+      date: '2026-09-12',
+      state: 'completed',
+      items: [
+        { id: 'h4', type: 'task', title: '⚡ Performance Tuning & Memory Audit', plannedDurationMinutes: 45, actualMinutes: 40, extensionMinutes: 0, order: 1, state: 'completed' },
+        { id: 'h5', type: 'task', title: '🎯 Firestore Security Rule Lockdown', plannedDurationMinutes: 30, actualMinutes: 30, extensionMinutes: 0, order: 2, state: 'completed' },
+      ],
+      createdAt: new Date().toISOString(),
+    },
+  ];
+
+  const displayPlans = plans.length > 0 ? plans : isTourActive ? mockTourPlans : [];
+
   const toggleExpand = (date: string) => {
     setExpandedDates((prev) => ({ ...prev, [date]: !prev[date] }));
   };
 
-  const filteredPlans = plans.filter((plan) => {
+  const filteredPlans = displayPlans.filter((plan) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     const matchesDate = plan.date.toLowerCase().includes(q);
@@ -106,14 +137,13 @@ export default function HistoryPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {filteredPlans.map((plan) => {
-            const isExpanded = expandedDates[plan.date] ?? false;
+        <div className="space-y-4" data-tour="history-list-card">
+          {filteredPlans.map((plan, planIdx) => {
+            const isExpanded = expandedDates[plan.date] ?? (isTourActive || planIdx === 0);
             const completedCount = plan.items.filter((i) => i.state === 'completed').length;
             const totalCount = plan.items.length;
             const isFullyDone = totalCount > 0 && completedCount === totalCount;
             const totalPlannedMins = plan.items.reduce((acc, i) => acc + i.plannedDurationMinutes, 0);
-            const totalActualMins = plan.items.reduce((acc, i) => acc + (i.actualMinutes || i.plannedDurationMinutes), 0);
 
             const dateFormatted = new Date(plan.date + 'T00:00:00').toLocaleDateString('en-US', {
               weekday: 'short',
@@ -126,6 +156,7 @@ export default function HistoryPage() {
               <Card
                 key={plan.id || plan.date}
                 variant="default"
+                data-tour={planIdx === 0 ? "history-detail-card" : undefined}
                 className="overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#18181B] shadow-2xs"
               >
                 {/* Day Header Row */}
@@ -147,13 +178,9 @@ export default function HistoryPage() {
                             <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                             Completed
                           </span>
-                        ) : completedCount > 0 ? (
+                        ) : (
                           <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-500/20">
                             {completedCount}/{totalCount} Done
-                          </span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-                            Incomplete
                           </span>
                         )}
                       </div>

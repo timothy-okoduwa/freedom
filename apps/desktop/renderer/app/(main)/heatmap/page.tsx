@@ -2,12 +2,14 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useSessionStore } from '../../../stores/useSessionStore';
+import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService } from '../../../lib/firebase';
 import type { DayPlan } from '@freedom/firestore-schema';
 import { Card, HeatmapGrid, type HeatmapDay } from '@freedom/ui';
 
 export default function HeatmapPage() {
   const { user, activePlan } = useSessionStore();
+  const { isOpen: isTourActive } = useTourStore();
   const [plans, setPlans] = useState<DayPlan[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,7 @@ export default function HeatmapPage() {
     return map;
   }, [plans, activePlan]);
 
-  // Build the real past 126 days (18 weeks) calendar activity
+  // Build the past 126 days (18 weeks) calendar activity
   const heatmapDays = useMemo<HeatmapDay[]>(() => {
     const days: HeatmapDay[] = [];
     const today = new Date();
@@ -55,8 +57,16 @@ export default function HeatmapPage() {
           tasksCompleted: completed,
           tasksTotal: total,
         });
+      } else if (isTourActive) {
+        // Render sample activity pattern for tour walkthrough if empty
+        const samplePct = (i * 17) % 5 === 0 ? 100 : (i * 13) % 3 === 0 ? 75 : (i * 7) % 2 === 0 ? 50 : 0;
+        days.push({
+          date: dateStr,
+          completionPct: samplePct,
+          tasksCompleted: samplePct > 0 ? Math.ceil(samplePct / 25) : 0,
+          tasksTotal: samplePct > 0 ? 4 : 0,
+        });
       } else {
-        // Real empty past day: 0% completion
         days.push({
           date: dateStr,
           completionPct: 0,
@@ -66,9 +76,8 @@ export default function HeatmapPage() {
       }
     }
     return days;
-  }, [allPlans]);
+  }, [allPlans, isTourActive]);
 
-  // Real Metric Computations
   const activeFocusDays = useMemo(
     () => heatmapDays.filter((d) => d.completionPct > 0).length,
     [heatmapDays]
@@ -86,7 +95,7 @@ export default function HeatmapPage() {
     return Math.round(sum / active.length);
   }, [heatmapDays]);
 
-  const currentStreak = user?.publicStats?.currentStreak ?? 0;
+  const currentStreak = Math.max(user?.publicStats?.currentStreak ?? 0, isTourActive ? 12 : 0);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -126,7 +135,7 @@ export default function HeatmapPage() {
       </Card>
 
       {/* Heatmap Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" data-tour="heatmap-stats-card">
         <Card variant="surface" className="p-4 text-center bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-xl shadow-2xs">
           <div className="text-2xl font-bold font-mono text-[#111] dark:text-white">
             {activeFocusDays}

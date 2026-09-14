@@ -3,14 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSessionStore } from '../../../stores/useSessionStore';
+import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService } from '../../../lib/firebase';
 import { calculateProductivityScore } from '../../../lib/timerEngine';
 import type { DayPlan } from '@freedom/firestore-schema';
 import { Card, StatTile } from '@freedom/ui';
-import { CalendarPlus, ArrowRight, CheckCircle2, Flame, Clock } from 'lucide-react';
+import { CalendarPlus, ArrowRight, CheckCircle2, Flame, Clock, Target } from 'lucide-react';
 
 export default function SummaryPage() {
   const { user, activePlan } = useSessionStore();
+  const { isOpen: isTourActive } = useTourStore();
+
   const [todayPlan, setTodayPlan] = useState<DayPlan | null>(null);
   const [loading, setLoading] = useState(!activePlan);
 
@@ -25,7 +28,22 @@ export default function SummaryPage() {
     }
   }, [activePlan, user?.uid]);
 
-  const plan = activePlan || todayPlan;
+  const mockTourPlan: DayPlan = {
+    id: 'mock-summary-plan',
+    userId: 'mock-user',
+    date: '2026-09-14',
+    state: 'completed',
+    items: [
+      { id: 'm-1', type: 'task', title: '🚀 Core Architecture Refactor', plannedDurationMinutes: 45, actualMinutes: 42, extensionMinutes: 0, order: 1, state: 'completed' },
+      { id: 'm-2', type: 'break', title: '☕ Midday Hydration & Walk', plannedDurationMinutes: 10, actualMinutes: 10, extensionMinutes: 0, order: 2, state: 'completed' },
+      { id: 'm-3', type: 'task', title: '💻 UI Component Library Sync', plannedDurationMinutes: 60, actualMinutes: 58, extensionMinutes: 0, order: 3, state: 'completed' },
+      { id: 'm-4', type: 'task', title: '⚡ Firebase Telemetry Pipeline', plannedDurationMinutes: 30, actualMinutes: 32, extensionMinutes: 0, order: 4, state: 'completed' },
+    ],
+    createdAt: new Date().toISOString(),
+  };
+
+  const realPlan = activePlan || todayPlan;
+  const plan = realPlan || (isTourActive ? mockTourPlan : null);
 
   if (loading) {
     return (
@@ -35,7 +53,7 @@ export default function SummaryPage() {
     );
   }
 
-  // If no plan has been created yet, show clean empty state (NO MOCK DATA)
+  // If no plan has been created yet and tour is NOT active, show empty state
   if (!plan || !plan.items || plan.items.length === 0) {
     return (
       <div className="max-w-3xl mx-auto space-y-8">
@@ -75,8 +93,8 @@ export default function SummaryPage() {
     );
   }
 
-  const currentStreak = user?.publicStats?.currentStreak ?? 0;
-  const { score, completionPct, planningAccuracy, breakdown } = calculateProductivityScore(
+  const currentStreak = Math.max(user?.publicStats?.currentStreak ?? 0, isTourActive ? 5 : 0);
+  const { score, completionPct, planningAccuracy } = calculateProductivityScore(
     plan,
     currentStreak
   );
@@ -127,7 +145,7 @@ export default function SummaryPage() {
       </Card>
 
       {/* Metric Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" data-tour="summary-variance-card">
         <StatTile
           label="Completion Rate"
           value={`${completionPct}%`}
@@ -148,8 +166,8 @@ export default function SummaryPage() {
         />
       </div>
 
-      {/* Task-by-Task Breakdown */}
-      <Card variant="default" className="p-6 space-y-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+      {/* Task-by-Task Breakdown & Streak Audit */}
+      <Card variant="default" data-tour="summary-streak-card" className="p-6 space-y-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
         <h3 className="text-sm font-bold text-[#111] dark:text-white">Item Execution Log</h3>
         <div className="space-y-2 text-xs font-mono">
           {plan.items.map((item, idx) => {
