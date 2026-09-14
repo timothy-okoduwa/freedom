@@ -21,7 +21,7 @@ import {
   AppWindow,
 } from 'lucide-react';
 import { FreedomLogo } from '@freedom/ui';
-import { ProductTourModal } from '../../components/ProductTourModal';
+import { SpotlightTourOverlay } from '../../components/SpotlightTourOverlay';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -98,15 +98,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   }, [loadActiveSession, setUser, router]);
 
   const navItems = [
-    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Plan Builder', href: '/builder', icon: CalendarPlus },
-    { label: 'Runtime Engine', href: '/runtime', icon: Timer, badge: activeItem ? 'LIVE' : undefined },
-    { label: 'Daily Summary', href: '/summary', icon: CheckSquare },
-    { label: 'Task History', href: '/history', icon: History },
-    { label: 'Statistics', href: '/stats', icon: BarChart3 },
-    { label: 'Heatmap', href: '/heatmap', icon: Calendar },
-    { label: 'Leaderboard', href: '/leaderboard', icon: Trophy },
-    { label: 'Settings', href: '/settings', icon: Settings },
+    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, tourId: 'nav-dashboard' },
+    { label: 'Plan Builder', href: '/builder', icon: CalendarPlus, tourId: 'nav-builder' },
+    { label: 'Runtime Engine', href: '/runtime', icon: Timer, badge: activeItem ? 'LIVE' : undefined, tourId: 'nav-runtime' },
+    { label: 'Daily Summary', href: '/summary', icon: CheckSquare, tourId: 'nav-summary' },
+    { label: 'Task History', href: '/history', icon: History, tourId: 'nav-history' },
+    { label: 'Statistics', href: '/stats', icon: BarChart3, tourId: 'nav-stats' },
+    { label: 'Heatmap', href: '/heatmap', icon: Calendar, tourId: 'nav-heatmap' },
+    { label: 'Leaderboard', href: '/leaderboard', icon: Trophy, tourId: 'nav-leaderboard' },
+    { label: 'Settings', href: '/settings', icon: Settings, tourId: 'nav-settings' },
   ];
 
   const handleSignOut = async () => {
@@ -155,6 +155,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 <Link
                   key={item.href}
                   href={item.href}
+                  data-tour={item.tourId}
                   className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                     isActive
                       ? 'bg-[#EAF1FE] dark:bg-[#2F6FED]/20 text-[#2F6FED] font-semibold'
@@ -221,7 +222,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto p-6 sm:p-10">{children}</main>
-      <ProductTourModal isOpen={showTour} onClose={() => setShowTour(false)} />
+      <SpotlightTourOverlay isOpen={showTour} onClose={() => setShowTour(false)} />
     </div>
   );
 }
