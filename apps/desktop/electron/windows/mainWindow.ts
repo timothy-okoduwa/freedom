@@ -5,6 +5,13 @@ import { getAppIconPath } from '../utils/appIcon';
 let mainWindow: BrowserWindow | null = null;
 
 export function createMainWindow(rendererUrl: string, isSessionActive: () => boolean): BrowserWindow {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+    return mainWindow;
+  }
+
   const iconPath = getAppIconPath();
   mainWindow = new BrowserWindow({
     width: 1120,

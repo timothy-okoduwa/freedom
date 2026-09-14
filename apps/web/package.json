@@ -13,6 +13,7 @@
     "@freedom/firestore-schema": "workspace:*",
     "@freedom/ui": "workspace:*",
     "clsx": "^2.1.1",
+    "firebase": "^12.19.0",
     "framer-motion": "^12.4.7",
     "lucide-react": "^0.475.0",
     "next": "^15.1.7",

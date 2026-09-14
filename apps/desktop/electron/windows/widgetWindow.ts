@@ -17,17 +17,18 @@ export function createWidgetWindow(rendererUrl: string): BrowserWindow {
   widgetWindow = new BrowserWindow({
     x: initialX,
     y: initialY,
-    width: 46,
-    height: 94,
+    width: 160,
+    height: 52,
     frame: false,
     transparent: true,
     backgroundColor: '#00000000',
     alwaysOnTop: true,
-    resizable: false,
+    resizable: true,
     skipTaskbar: true,
     hasShadow: false,
     focusable: false, // Prevents stealing focus from the user's active apps!
     show: false,
+    type: 'panel', // macOS floating panel type: floats across all spaces & full screen apps
     webPreferences: {
       preload: path.join(__dirname, '../preload.js'),
       contextIsolation: true,
@@ -35,8 +36,14 @@ export function createWidgetWindow(rendererUrl: string): BrowserWindow {
     },
   });
 
-  widgetWindow.setAlwaysOnTop(true, 'floating');
-  widgetWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  if (process.platform === 'darwin') {
+    widgetWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+    widgetWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
+    widgetWindow.setHiddenInMissionControl(true);
+  } else {
+    widgetWindow.setAlwaysOnTop(true, 'floating', 1);
+    widgetWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  }
 
   widgetWindow.loadURL(`${rendererUrl}/widget`);
 
@@ -55,7 +62,20 @@ export function createWidgetWindow(rendererUrl: string): BrowserWindow {
 }
 
 export function showWidget() {
-  widgetWindow?.showInactive(); // show without focusing
+  if (!widgetWindow) return;
+  if (process.platform === 'darwin') {
+    widgetWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+    widgetWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
+    widgetWindow.setHiddenInMissionControl(true);
+  } else {
+    widgetWindow.setAlwaysOnTop(true, 'floating', 1);
+    widgetWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  }
+  widgetWindow.showInactive(); // show without focusing
+  if (process.platform === 'darwin') {
+    widgetWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
+    widgetWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+  }
 }
 
 export function hideWidget() {
@@ -67,9 +87,9 @@ export function toggleWidgetExpanded(expand?: boolean) {
   isExpanded = expand !== undefined ? expand : !isExpanded;
 
   if (isExpanded) {
-    widgetWindow.setSize(280, 140);
+    widgetWindow.setSize(340, 160);
   } else {
-    widgetWindow.setSize(46, 94);
+    widgetWindow.setSize(160, 52);
   }
 }
 

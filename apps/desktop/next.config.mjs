@@ -7,6 +7,8 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  output: 'export',
+  images: { unoptimized: true },
   transpilePackages: ['@freedom/ui', '@freedom/config', '@freedom/firestore-schema'],
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
 };

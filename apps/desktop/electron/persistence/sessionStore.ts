@@ -1,9 +1,10 @@
 import Store from 'electron-store';
-import type { DayPlan, ActiveItemState } from '@freedom/firestore-schema';
+import type { DayPlan, ActiveItemState, User } from '@freedom/firestore-schema';
 
 export interface PersistedSession {
   activeItemState: ActiveItemState | null;
   currentDayPlan: DayPlan | null;
+  user: User | null;
   widgetPosition: { x: number; y: number } | null;
   lastPersistedAt: string;
 }
@@ -13,6 +14,7 @@ const store = new Store<PersistedSession>({
   defaults: {
     activeItemState: null,
     currentDayPlan: null,
+    user: null,
     widgetPosition: null,
     lastPersistedAt: new Date().toISOString(),
   },
@@ -32,6 +34,12 @@ export const sessionStore = {
   setCurrentDayPlan(plan: DayPlan | null) {
     store.set('currentDayPlan', plan);
     store.set('lastPersistedAt', new Date().toISOString());
+  },
+  getUser(): User | null {
+    return store.get('user');
+  },
+  setUser(user: User | null) {
+    store.set('user', user);
   },
   getWidgetPosition(): { x: number; y: number } | null {
     return store.get('widgetPosition');

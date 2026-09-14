@@ -133,15 +133,34 @@ export function initSessionChannels() {
   // Restore persisted session from disk on startup
   const persistedItem = sessionStore.getActiveItem();
   const persistedPlan = sessionStore.getCurrentDayPlan();
+  const todayStr = new Date().toISOString().split('T')[0];
+
   if (persistedItem && persistedPlan) {
-    activeItem = persistedItem;
-    activePlan = persistedPlan;
-    cancelIdleWidgetHide();
-    startTicker();
-    showWidget();
+    // If the plan is from a previous day and no active task is executing, reset for the new day
+    if (persistedPlan.date !== todayStr && !activeItem) {
+      activeItem = null;
+      activePlan = null;
+      sessionStore.clearSession();
+      scheduleIdleWidgetHide();
+    } else {
+      activeItem = persistedItem;
+      activePlan = persistedPlan;
+      cancelIdleWidgetHide();
+      startTicker();
+      showWidget();
+    }
   } else {
     scheduleIdleWidgetHide();
   }
+
+  ipcMain.handle('session:get-user', () => {
+    return sessionStore.getUser();
+  });
+
+  ipcMain.handle('session:set-user', (_event, user: any) => {
+    sessionStore.setUser(user);
+    return true;
+  });
 
   ipcMain.handle('session:get-active', () => ({
     activeItem,
@@ -190,34 +209,6 @@ export function initSessionChannels() {
   ipcMain.handle('session:update-plan-items', (_event, updatedItems: DayPlanItem[]) => {
     if (!activePlan) return false;
     activePlan.items = updatedItems;
-
-    // If session was idle/finished and a new uncompleted task was added, start executing the new task!
-    if (!activeItem) {
-      const nextPending = updatedItems.find((i) => i.state === 'pending');
-      if (nextPending) {
-        nextPending.state = 'running';
-        nextPending.startedAt = new Date().toISOString();
-        activePlan.state = 'running';
-
-        activeItem = {
-          dayPlanId: activePlan.id,
-          itemId: nextPending.id,
-          itemType: nextPending.type,
-          title: nextPending.title,
-          plannedDurationMinutes: nextPending.plannedDurationMinutes,
-          startedAt: nextPending.startedAt,
-          extensionMinutes: 0,
-          pausedAt: null,
-          accumulatedPauseMs: 0,
-        };
-
-        sessionStore.setActiveItem(activeItem);
-        cancelIdleWidgetHide();
-        startTicker();
-        showWidget();
-      }
-    }
-
     sessionStore.setCurrentDayPlan(activePlan);
     broadcastSessionUpdate();
     return true;

@@ -4,6 +4,8 @@ const electron_1 = require("electron");
 electron_1.contextBridge.exposeInMainWorld('freedom', {
     platform: process.platform,
     session: {
+        getUser: () => electron_1.ipcRenderer.invoke('session:get-user'),
+        setUser: (user) => electron_1.ipcRenderer.invoke('session:set-user', user),
         getActive: () => electron_1.ipcRenderer.invoke('session:get-active'),
         startDay: (plan) => electron_1.ipcRenderer.invoke('session:start-day', plan),
         updatePlanItems: (items) => electron_1.ipcRenderer.invoke('session:update-plan-items', items),

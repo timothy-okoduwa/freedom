@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { DayPlan } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
-import { firestoreService } from '../../../lib/firebase';
+import { firestoreService, getLocalDateString } from '../../../lib/firebase';
 import { Card } from '@freedom/ui';
 import {
   Flame,
@@ -16,10 +16,11 @@ import {
   Coffee,
   Laptop,
   CheckCircle2,
+  Moon,
 } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user, activeItem, activePlan, remainingMs } = useSessionStore();
+  const { user, activeItem, activePlan } = useSessionStore();
   const [todayPlan, setTodayPlan] = useState<DayPlan | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
 
@@ -40,12 +41,33 @@ export default function DashboardPage() {
     day: 'numeric',
   });
 
-  const streak = user?.publicStats?.currentStreak ?? 0;
-  const totalMinutes = user?.publicStats?.totalProductiveMinutes ?? 0;
+  const todayLocalDate = getLocalDateString();
+  const isTodayActivePlan = activePlan?.date === todayLocalDate;
+  const currentPlan = isTodayActivePlan ? activePlan : todayPlan;
+
+  const isPlanCompleted =
+    currentPlan &&
+    currentPlan.items &&
+    currentPlan.items.length > 0 &&
+    currentPlan.items.every((i) => i.state === 'completed' || i.state === 'skipped');
+
+  const isLayoverTask = activeItem && activePlan && activePlan.date !== todayLocalDate;
+
+  // Real-time Productive Time computation for Today
+  const todayProductiveMinutes = useMemo(() => {
+    if (!currentPlan || !currentPlan.items) return 0;
+    return currentPlan.items
+      .filter((i) => i.type === 'task' && i.state === 'completed')
+      .reduce((sum, i) => sum + (i.actualMinutes || i.plannedDurationMinutes || 0), 0);
+  }, [currentPlan]);
+
+  const totalMinutes = Math.max(user?.publicStats?.totalProductiveMinutes ?? 0, todayProductiveMinutes);
   const productiveHours = Math.floor(totalMinutes / 60);
   const productiveRemainingMinutes = totalMinutes % 60;
 
-  const currentPlan = activePlan || todayPlan;
+  // Streak computation (minimum 1 day if today's plan is completed)
+  const baseStreak = user?.publicStats?.currentStreak ?? 0;
+  const streak = isPlanCompleted ? Math.max(baseStreak, 1) : baseStreak;
 
   // Real planning accuracy computation
   const { accuracyDisplay, accuracySubtext } = useMemo(() => {
@@ -62,7 +84,7 @@ export default function DashboardPage() {
     completedTasks.forEach((task) => {
       const planned = task.plannedDurationMinutes;
       const actual = task.actualMinutes || planned;
-      const variance = Math.abs(planned - actual) / planned;
+      const variance = Math.abs(planned - actual) / Math.max(1, planned);
       accuracySum += Math.max(0, 1 - variance) * 100;
     });
     const avg = Math.round(accuracySum / completedTasks.length);
@@ -112,7 +134,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Overview Stat Tiles with Lucide Icons */}
+      {/* Overview Stat Tiles */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card variant="surface" className="p-5 flex flex-col justify-between space-y-2 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl shadow-2xs">
           <div className="flex items-center justify-between">
@@ -166,6 +188,52 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      {/* Layover Task Banner */}
+      {isLayoverTask && (
+        <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/50 flex items-center justify-between text-xs text-indigo-900 dark:text-indigo-200 shadow-2xs">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 font-bold">
+              <Moon className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-bold">Layover Session Active (Carried Over)</div>
+              <div className="text-[11px] text-indigo-700 dark:text-indigo-300 font-mono">
+                &ldquo;{activeItem?.title}&rdquo; started yesterday and is continuing into today.
+              </div>
+            </div>
+          </div>
+          <Link
+            href="/runtime"
+            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white font-semibold text-[11px] hover:bg-indigo-700 transition-colors shrink-0"
+          >
+            View Session
+          </Link>
+        </div>
+      )}
+
+      {/* Day Plan Completed Celebration Banner */}
+      {isPlanCompleted && (
+        <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 flex items-center justify-between text-xs text-emerald-900 dark:text-emerald-200 shadow-2xs">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-[#1FAE6B] dark:text-emerald-400 flex items-center justify-center shrink-0 font-bold">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="font-bold text-sm text-emerald-950 dark:text-emerald-100">Day Plan Completed! 🎉</div>
+              <div className="text-[11px] text-emerald-700 dark:text-emerald-300">
+                All {currentPlan.items.length} tasks scheduled for today have been completed.
+              </div>
+            </div>
+          </div>
+          <Link
+            href="/summary"
+            className="px-4 py-2 rounded-xl bg-[#1FAE6B] text-white font-semibold text-xs hover:bg-emerald-600 transition-colors shrink-0 shadow-xs"
+          >
+            View Daily Summary
+          </Link>
+        </div>
+      )}
+
       {/* Today's Execution Queue */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -199,7 +267,7 @@ export default function DashboardPage() {
                     isCurrent
                       ? 'bg-[#EAF1FE] dark:bg-[#2F6FED]/20 border-[#2F6FED]/40 shadow-xs'
                       : isDone
-                      ? 'bg-neutral-50 dark:bg-neutral-800/40 border-[#E5E5E5] dark:border-[#27272A] opacity-60'
+                      ? 'bg-neutral-50 dark:bg-neutral-800/40 border-[#E5E5E5] dark:border-[#27272A]'
                       : 'bg-white dark:bg-[#18181B] border-[#E5E5E5] dark:border-[#27272A]'
                   }`}
                 >
@@ -216,12 +284,16 @@ export default function DashboardPage() {
                     )}
                     <div className="truncate">
                       <div className="text-xs font-semibold text-[#111] dark:text-white truncate">{item.title}</div>
-                      {isCurrent && (
+                      {isCurrent ? (
                         <div className="text-[10px] text-[#2F6FED] font-mono font-semibold flex items-center gap-1 mt-0.5">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#2F6FED] animate-ping" />
                           <span>Active Session Running</span>
                         </div>
-                      )}
+                      ) : isDone ? (
+                        <div className="text-[10px] text-[#1FAE6B] font-mono font-semibold flex items-center gap-1 mt-0.5">
+                          <span>Completed</span>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
 

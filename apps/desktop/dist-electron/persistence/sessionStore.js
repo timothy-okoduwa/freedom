@@ -10,6 +10,7 @@ const store = new electron_store_1.default({
     defaults: {
         activeItemState: null,
         currentDayPlan: null,
+        user: null,
         widgetPosition: null,
         lastPersistedAt: new Date().toISOString(),
     },
@@ -28,6 +29,12 @@ exports.sessionStore = {
     setCurrentDayPlan(plan) {
         store.set('currentDayPlan', plan);
         store.set('lastPersistedAt', new Date().toISOString());
+    },
+    getUser() {
+        return store.get('user');
+    },
+    setUser(user) {
+        store.set('user', user);
     },
     getWidgetPosition() {
         return store.get('widgetPosition');

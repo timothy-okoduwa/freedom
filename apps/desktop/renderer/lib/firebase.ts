@@ -27,6 +27,13 @@ import {
   type Firestore,
 } from 'firebase/firestore';
 
+export function getLocalDateString(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function getDicebearAvatar(seed: string): string {
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed || 'freedom')}`;
 }
@@ -74,10 +81,9 @@ export const authService = {
     if (typeof window === 'undefined') return null;
     try {
       const raw = localStorage.getItem(CACHED_USER_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return null;
   },
 
   setCachedUser(user: User | null): void {
@@ -88,6 +94,9 @@ export const authService = {
       } else {
         localStorage.removeItem(CACHED_USER_KEY);
       }
+      if (window.freedom?.session?.setUser) {
+        window.freedom.session.setUser(user);
+      }
     } catch (e) {}
   },
 
@@ -96,17 +105,30 @@ export const authService = {
     try {
       const auth = getFirebaseAuth();
 
+      // Read disk-persisted session for instant auth restoration across app restarts
+      if (window.freedom?.session?.getUser) {
+        window.freedom.session.getUser().then((diskUser: any) => {
+          if (diskUser) {
+            localStorage.setItem(CACHED_USER_KEY, JSON.stringify(diskUser));
+            callback(diskUser);
+          }
+        });
+      }
+
       // Immediately deliver cached user so UI has immediate session recognition without flickering
       const initialCached = this.getCachedUser();
       if (initialCached) {
         callback(initialCached);
       }
 
-      // Ensure persistence is resolved before finalizing auth state
+      let isReady = false;
+
       auth.authStateReady?.().then(async () => {
+        isReady = true;
         const fbUser = auth.currentUser;
         if (fbUser) {
           const userDoc = await this.syncFirebaseUser(fbUser);
+          this.setCachedUser(userDoc);
           callback(userDoc);
         } else if (!this.getCachedUser()) {
           callback(null);
@@ -118,8 +140,7 @@ export const authService = {
           const userDoc = await this.syncFirebaseUser(fbUser);
           this.setCachedUser(userDoc);
           callback(userDoc);
-        } else {
-          this.setCachedUser(null);
+        } else if (isReady && !this.getCachedUser()) {
           callback(null);
         }
       });
@@ -304,7 +325,7 @@ export const firestoreService = {
 
   async getTodayPlan(userId: string): Promise<DayPlan | null> {
     if (typeof window === 'undefined') return null;
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
 
     try {
       const db = getFirebaseDb();

@@ -82,6 +82,9 @@ export const Menubar: React.FC = () => {
             <a href="#faq" className="hover:text-black transition-colors">
               faq
             </a>
+            <Link href="/trust" className="hover:text-black transition-colors">
+              trust
+            </Link>
             <Link href="/changelog" className="hover:text-black transition-colors">
               changelog
             </Link>

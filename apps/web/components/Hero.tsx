@@ -362,7 +362,7 @@ export const Hero: React.FC = () => {
 
           <div className="flex flex-col items-center">
             <a
-              href="#windows-waitlist"
+              href="/windows"
               className="relative overflow-hidden group flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-white text-black text-base font-semibold border border-[#E5E5E5] shadow-xs hover:bg-[#F9F9F9] transition-all active:scale-98"
             >
               <div

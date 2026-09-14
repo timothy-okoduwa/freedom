@@ -4,6 +4,8 @@ import type { DayPlan, DayPlanItem } from '@freedom/firestore-schema';
 contextBridge.exposeInMainWorld('freedom', {
   platform: process.platform,
   session: {
+    getUser: () => ipcRenderer.invoke('session:get-user'),
+    setUser: (user: any) => ipcRenderer.invoke('session:set-user', user),
     getActive: () => ipcRenderer.invoke('session:get-active'),
     startDay: (plan: DayPlan) => ipcRenderer.invoke('session:start-day', plan),
     updatePlanItems: (items: DayPlanItem[]) => ipcRenderer.invoke('session:update-plan-items', items),

@@ -21,9 +21,9 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <a href="#windows-waitlist" className="hover:text-black transition-colors">
+                <Link href="/windows" className="hover:text-black transition-colors">
                   windows waitlist
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#features" className="hover:text-black transition-colors">
@@ -57,6 +57,11 @@ export const Footer: React.FC = () => {
                 <a href="#faq" className="hover:text-black transition-colors">
                   frequently asked
                 </a>
+              </li>
+              <li>
+                <Link href="/trust" className="hover:text-black transition-colors">
+                  trust & privacy
+                </Link>
               </li>
               <li>
                 <Link href="/privacy" className="hover:text-black transition-colors">

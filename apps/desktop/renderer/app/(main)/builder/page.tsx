@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import type { DayPlan, DayPlanItem } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
-import { firestoreService } from '../../../lib/firebase';
+import { firestoreService, getLocalDateString } from '../../../lib/firebase';
 import { Card, Button, Modal } from '@freedom/ui';
 import {
   GripVertical,
@@ -139,7 +139,7 @@ export default function BuilderPage() {
     const plan: DayPlan = {
       id: planId,
       userId: uid,
-      date: new Date().toISOString().split('T')[0],
+      date: getLocalDateString(),
       state: 'running',
       items,
       createdAt: activePlan?.createdAt || existingToday?.createdAt || new Date().toISOString(),

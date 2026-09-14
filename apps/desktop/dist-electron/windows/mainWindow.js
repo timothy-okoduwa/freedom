@@ -10,6 +10,13 @@ const path_1 = __importDefault(require("path"));
 const appIcon_1 = require("../utils/appIcon");
 let mainWindow = null;
 function createMainWindow(rendererUrl, isSessionActive) {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        if (mainWindow.isMinimized())
+            mainWindow.restore();
+        mainWindow.show();
+        mainWindow.focus();
+        return mainWindow;
+    }
     const iconPath = (0, appIcon_1.getAppIconPath)();
     mainWindow = new electron_1.BrowserWindow({
         width: 1120,

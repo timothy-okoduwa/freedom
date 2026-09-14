@@ -71,23 +71,28 @@ export default function WidgetPage() {
 
   const clickTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const isDraggingRef = React.useRef<boolean>(false);
+  const startPosRef = React.useRef<{ x: number; y: number } | null>(null);
 
   const handlePillMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+
     let prevX = e.screenX;
     let prevY = e.screenY;
-    let totalMoved = 0;
+    startPosRef.current = { x: prevX, y: prevY };
     isDraggingRef.current = false;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const dx = moveEvent.screenX - prevX;
       const dy = moveEvent.screenY - prevY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      totalMoved += dist;
+      const totalMovedX = Math.abs(moveEvent.screenX - (startPosRef.current?.x ?? prevX));
+      const totalMovedY = Math.abs(moveEvent.screenY - (startPosRef.current?.y ?? prevY));
+      const totalDist = Math.sqrt(totalMovedX * totalMovedX + totalMovedY * totalMovedY);
 
-      if (dist > 0) {
-        if (totalMoved > 4) {
-          isDraggingRef.current = true;
-        }
+      if (totalDist > 4) {
+        isDraggingRef.current = true;
+      }
+
+      if (dx !== 0 || dy !== 0) {
         window.freedom?.widget?.moveBy(dx, dy);
         prevX = moveEvent.screenX;
         prevY = moveEvent.screenY;
@@ -113,11 +118,11 @@ export default function WidgetPage() {
     }
 
     if (e.detail === 1) {
-      // Single Click: wait 260ms to confirm no second click follows
+      // Single Click: wait 220ms to confirm no second click follows, then expand/collapse
       clickTimerRef.current = setTimeout(() => {
         toggleExpand(); // ONLY expands/collapses the pill widget
         clickTimerRef.current = null;
-      }, 260);
+      }, 220);
     } else if (e.detail >= 2) {
       // Double Click: cancel single-click expansion and focus main app window ONLY
       if (clickTimerRef.current) {
@@ -128,29 +133,25 @@ export default function WidgetPage() {
     }
   };
 
-  // COLLAPSED: Freedom Signature Focus Capsule
+  // COLLAPSED: Freedom Signature Focus Capsule (Sleek Horizontal Pill)
   if (!isExpanded) {
     const isBreak = activeItem?.itemType === 'break';
     const accentColor = isBreak ? '#10B981' : '#2F6FED';
 
     return (
-      <div
-        className="w-screen h-screen flex items-center justify-center select-none bg-transparent overflow-hidden p-0 m-0"
-        style={{ WebkitAppRegion: 'drag' } as any}
-      >
+      <div className="w-screen h-screen flex items-center justify-center select-none bg-transparent overflow-hidden p-0 m-0">
         <div
           onMouseDown={handlePillMouseDown}
           onClick={handlePillClick}
-          style={{ WebkitAppRegion: 'no-drag' } as any}
           title={activeItem ? `Freedom: ${activeItem.title} (${exactTimeStr}) — Single click to expand, double click for app` : 'Freedom — Single click to expand, double click for app'}
-          className={`w-[38px] h-[84px] rounded-full flex flex-col items-center justify-between py-2 px-0.5 cursor-pointer hover:scale-105 transition-all duration-200 group ${
+          className={`w-[140px] h-[40px] rounded-full flex items-center justify-between px-3 py-1 cursor-pointer hover:scale-[1.02] transition-all duration-200 group shadow-lg ${
             isDark
-              ? 'bg-[#090B10]/95 border border-[#2F6FED]/40 shadow-[0_4px_16px_rgba(0,0,0,0.6)] text-white hover:border-[#2F6FED]'
-              : 'bg-white/95 border border-black/10 shadow-[0_4px_16px_rgba(0,0,0,0.12)] text-[#111] hover:border-[#2F6FED]'
+              ? 'bg-[#090B10]/95 border border-[#2F6FED]/40 text-white hover:border-[#2F6FED] shadow-black/60'
+              : 'bg-white/95 border border-black/10 text-[#111] hover:border-[#2F6FED] shadow-black/10'
           }`}
         >
-          {/* Top: Freedom Signature Emblem Centered */}
-          <div className="relative flex items-center justify-center w-6 h-6 shrink-0">
+          {/* Left: Freedom Emblem */}
+          <div className="relative flex items-center justify-center w-5 h-5 shrink-0">
             {activeItem && !isPaused && (
               <span
                 className="absolute inset-0 rounded-full animate-ping opacity-30"
@@ -158,7 +159,7 @@ export default function WidgetPage() {
               />
             )}
             <div
-              className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:rotate-12 duration-300 overflow-hidden"
+              className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:rotate-12 duration-300 overflow-hidden"
               style={{
                 backgroundColor: activeItem ? `${accentColor}25` : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)',
               }}
@@ -166,16 +167,16 @@ export default function WidgetPage() {
               <img
                 src="/freedom.png"
                 alt="Freedom Logo"
-                className="w-4 h-4 object-contain rounded-full shrink-0"
+                className="w-3.5 h-3.5 object-contain rounded-full shrink-0"
               />
             </div>
           </div>
 
-          {/* Middle: Real-Time Exact Time Countdown */}
-          <div className="text-center leading-none">
+          {/* Center: Monospace Countdown */}
+          <div className="flex-1 text-center leading-none px-1 truncate">
             {activeItem ? (
               <span
-                className={`font-mono text-[9px] font-extrabold tracking-tight tabular-nums ${
+                className={`font-mono text-xs font-extrabold tracking-tight tabular-nums ${
                   isOvertime
                     ? 'text-[#E8A33D]'
                     : isDark
@@ -186,14 +187,14 @@ export default function WidgetPage() {
                 {exactTimeStr}
               </span>
             ) : (
-              <span className={`text-[8.5px] font-mono tracking-wider uppercase font-semibold ${isDark ? 'text-white/40' : 'text-black/40'}`}>
+              <span className={`text-[9px] font-mono tracking-wider uppercase font-semibold ${isDark ? 'text-white/40' : 'text-black/40'}`}>
                 IDLE
               </span>
             )}
           </div>
 
-          {/* Bottom: Freedom Focus Rhythm Bars */}
-          <div className="flex items-center gap-[2.5px]">
+          {/* Right: Pulsing Rhythm Bars */}
+          <div className="flex items-center gap-[2px] shrink-0">
             <span
               className={`w-[2px] rounded-full transition-all duration-300 ${
                 activeItem
@@ -204,20 +205,18 @@ export default function WidgetPage() {
               }`}
               style={{
                 backgroundColor: activeItem ? accentColor : undefined,
-                boxShadow: activeItem && !isPaused ? `0 0 4px ${accentColor}` : undefined,
               }}
             />
             <span
               className={`w-[2px] rounded-full transition-all duration-300 ${
                 activeItem
                   ? isPaused
-                    ? 'h-2.5 opacity-40'
-                    : 'h-3.5 animate-pulse delay-75'
+                    ? 'h-2 opacity-40'
+                    : 'h-3 animate-pulse delay-75'
                   : isDark ? 'h-1.5 bg-white/30' : 'h-1.5 bg-black/30'
               }`}
               style={{
                 backgroundColor: activeItem ? accentColor : undefined,
-                boxShadow: activeItem && !isPaused ? `0 0 6px ${accentColor}` : undefined,
               }}
             />
             <span
@@ -230,7 +229,6 @@ export default function WidgetPage() {
               }`}
               style={{
                 backgroundColor: activeItem ? accentColor : undefined,
-                boxShadow: activeItem && !isPaused ? `0 0 4px ${accentColor}` : undefined,
               }}
             />
           </div>
@@ -241,23 +239,22 @@ export default function WidgetPage() {
 
   // EXPANDED: Detailed Control Card
   return (
-    <div
-      className="w-full h-screen p-1 flex flex-col justify-center select-none bg-transparent"
-      style={{ WebkitAppRegion: 'drag' } as any}
-    >
+    <div className="w-full h-screen p-1 flex flex-col justify-center select-none bg-transparent overflow-hidden">
       <div
-        className={`w-full h-full rounded-2xl p-3 flex flex-col justify-between transition-all ${
+        onMouseDown={handlePillMouseDown}
+        onClick={handlePillClick}
+        className={`w-full h-full rounded-2xl p-3 flex flex-col justify-between transition-all overflow-hidden cursor-move ${
           isDark
             ? 'bg-[#121215]/95 backdrop-blur-xl border border-white/10 text-white shadow-2xl'
             : 'bg-white/95 backdrop-blur-xl border border-black/10 text-[#111] shadow-xl'
         }`}
       >
         {/* Top Header Row */}
-        <div className="flex items-center justify-between" style={{ WebkitAppRegion: 'no-drag' } as any}>
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <ProgressRing
               progress={progress}
-              size={28}
+              size={26}
               strokeWidth={3}
               color={isOvertime ? '#E8A33D' : activeItem?.itemType === 'break' ? '#1FAE6B' : '#2F6FED'}
               bgColor={isDark ? '#27272A' : '#E5E7EB'}
@@ -273,6 +270,7 @@ export default function WidgetPage() {
 
           <button
             type="button"
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={toggleExpand}
             title="Collapse to pill"
             className={`p-1 rounded-lg transition-colors cursor-pointer ${
@@ -291,7 +289,7 @@ export default function WidgetPage() {
         </div>
 
         {/* Bottom Control Buttons */}
-        <div className="flex items-center gap-1.5" style={{ WebkitAppRegion: 'no-drag' } as any}>
+        <div className="flex items-center gap-1.5" onMouseDown={(e) => e.stopPropagation()}>
           <button
             type="button"
             onClick={() => extendTask(10)}

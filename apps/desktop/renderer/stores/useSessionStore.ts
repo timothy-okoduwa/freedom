@@ -27,6 +27,8 @@ declare global {
     freedom?: {
       platform: string;
       session: {
+        getUser: () => Promise<User | null>;
+        setUser: (user: User | null) => Promise<boolean>;
         getActive: () => Promise<{
           activeItem: ActiveItemState | null;
           activePlan: DayPlan | null;
