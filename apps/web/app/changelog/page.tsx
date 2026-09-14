@@ -20,13 +20,58 @@ export default function ChangelogPage() {
 
         {/* Timeline Entries */}
         <div className="space-y-10">
-          {/* RELEASE v2.5 */}
+          {/* RELEASE v3.0 */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-xl space-y-6 relative overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
               <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold font-mono text-[#111]">v2.5.0</span>
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.0.0</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-[#1FAE6B] text-white text-[10px] font-mono font-bold uppercase tracking-wide">
                   LATEST RELEASE
+                </span>
+              </div>
+              <span className="text-xs font-mono text-[#888]">September 2026</span>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-[#111] flex items-center gap-2">
+                <span>✨ 38-Step Interactive Product Tour & Clamped Telemetry Overlay</span>
+              </h3>
+              <ul className="space-y-3 text-sm text-[#333] leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>38-Step Interactive Product Tour</strong>: Comprehensive walkthrough covering every page, card, button, sub-tab, and input across Dashboard, Plan Builder, Runtime Engine, Daily Summary, Task History, Statistics, Heatmap, Leaderboards, and Settings.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Sub-Tab Auto-Switching Event Bus</strong>: Stepping through the product tour automatically switches sub-tabs (Global, Friends, Teams, Competitions) so hidden cards render on the DOM before computing target coordinates.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Dynamic Tour Mock Mode</strong>: When a user has empty data on any page/tab, realistic mock preview cards render during the tour so spotlights highlight fully populated cards, disappearing automatically when the tour ends.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Viewport-Clamped Popovers & Smooth Auto-Scrolling</strong>: Target cards auto-scroll smoothly into the center of the viewport on every step. Tooltip cards feature strict safety bounds to prevent off-screen clipping, keeping Next/Prev buttons 100% visible and clickable.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* RELEASE v2.5 */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-lg space-y-6 relative overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-extrabold font-mono text-[#111]">v2.5.0</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-[#2F6FED] text-[10px] font-mono font-bold uppercase tracking-wide">
+                  STABLE
                 </span>
               </div>
               <span className="text-xs font-mono text-[#888]">September 2026</span>
