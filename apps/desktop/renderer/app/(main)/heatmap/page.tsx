@@ -100,7 +100,7 @@ export default function HeatmapPage() {
         </p>
       </div>
 
-      <Card variant="default" className="p-8 space-y-6 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+      <Card variant="default" data-tour="heatmap-grid-card" className="p-8 space-y-6 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
         <div className="flex items-center justify-between border-b border-[#E5E5E5] dark:border-[#27272A] pb-4">
           <div>
             <h3 className="text-sm font-bold text-[#111] dark:text-white">Daily Completion Activity</h3>

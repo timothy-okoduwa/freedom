@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSessionStore } from '../stores/useSessionStore';
 import { authService } from '../lib/firebase';
@@ -16,6 +16,11 @@ import {
   ChevronLeft,
   Sparkles,
   Zap,
+  Plus,
+  Rocket,
+  Clock,
+  Calendar,
+  Users,
 } from 'lucide-react';
 
 export interface TourStep {
@@ -28,45 +33,73 @@ export interface TourStep {
 
 const TOUR_STEPS: TourStep[] = [
   {
-    targetSelector: '[data-tour="nav-dashboard"]',
+    targetSelector: '[data-tour="dashboard-builder-btn"]',
     route: '/dashboard',
-    title: 'Dashboard & Live Focus',
-    description: 'Your central command deck. View active timers, current day streaks, and launch floating overlay widgets.',
-    icon: LayoutDashboard,
-  },
-  {
-    targetSelector: '[data-tour="nav-builder"]',
-    route: '/builder',
-    title: 'Plan Builder',
-    description: 'Order your deep work tasks and break blocks in the morning before starting your day.',
+    title: 'Build Day Plan Action',
+    description: 'Click here anytime from your Dashboard to start structuring your morning deep work queue.',
     icon: CalendarPlus,
   },
   {
-    targetSelector: '[data-tour="nav-runtime"]',
+    targetSelector: '[data-tour="builder-add-btn"]',
+    route: '/builder',
+    title: 'Task & Break Creator',
+    description: 'Add custom focus tasks and auto-advancing recovery breaks to your day timeline.',
+    icon: Plus,
+  },
+  {
+    targetSelector: '[data-tour="builder-start-btn"]',
+    route: '/builder',
+    title: 'Start Execution Engine',
+    description: 'Locks in your structured Day Plan and launches hands-free session execution.',
+    icon: Rocket,
+  },
+  {
+    targetSelector: '[data-tour="runtime-timer-card"]',
     route: '/runtime',
-    title: 'Hands-Free Engine',
-    description: 'Hands-free execution. As focus tasks finish, breaks start automatically with zero manual clicking.',
+    title: 'Live Countdown Engine',
+    description: 'Displays active task progress. As focus tasks finish, recovery breaks begin automatically with zero manual clicks.',
     icon: Timer,
   },
   {
-    targetSelector: '[data-tour="nav-summary"]',
+    targetSelector: '[data-tour="runtime-extend-btn"]',
+    route: '/runtime',
+    title: 'Task Extension & Controls',
+    description: 'Need more time? Instantly extend your active session (+10m / +20m) or pause without breaking drift math.',
+    icon: Clock,
+  },
+  {
+    targetSelector: '[data-tour="summary-score-card"]',
     route: '/summary',
-    title: 'Daily Summary & Audit',
-    description: 'Automated end-of-day wrap-up auditing planned vs actual time, accuracy scores, and completion percentage.',
+    title: 'Daily Summary & Score',
+    description: 'Automated 0-100 Productivity Score calculated from completion rate and planning accuracy.',
     icon: CheckSquare,
   },
   {
-    targetSelector: '[data-tour="nav-stats"]',
+    targetSelector: '[data-tour="stats-week-controls"]',
     route: '/stats',
-    title: 'Statistics & Heatmap',
-    description: 'Track long-term productivity trends, total focus hours, and your GitHub-style activity grid.',
+    title: 'Historical Week Controls',
+    description: 'Navigate past weeks to compare total focus hours and execution accuracy across your history.',
     icon: BarChart3,
   },
   {
-    targetSelector: '[data-tour="nav-leaderboard"]',
+    targetSelector: '[data-tour="heatmap-grid-card"]',
+    route: '/heatmap',
+    title: 'Consistency Heatmap Grid',
+    description: 'GitHub-style activity grid tracking daily focus consistency with edge-safe tooltips.',
+    icon: Calendar,
+  },
+  {
+    targetSelector: '[data-tour="leaderboard-team-card"]',
     route: '/leaderboard',
-    title: 'Leaderboard & Teams',
-    description: 'Compete with friends or private teammates, track country flags, and celebrate output ranks.',
+    title: 'Custom Teams & Invites',
+    description: 'Create or join private execution teams using 6-digit codes or direct email invitations.',
+    icon: Users,
+  },
+  {
+    targetSelector: '[data-tour="leaderboard-table-card"]',
+    route: '/leaderboard',
+    title: 'Global Rankings & Flags',
+    description: 'Compete on global leaderboards featuring country flags (🇳🇬 🇺🇸 🇬🇧) based on timezone telemetry.',
     icon: Trophy,
   },
 ];
@@ -100,9 +133,9 @@ export const SpotlightTourOverlay: React.FC<SpotlightTourOverlayProps> = ({ isOp
       const el = document.querySelector(step.targetSelector);
       if (el) {
         setTargetRect(el.getBoundingClientRect());
-      } else if (attempts < 10) {
+      } else if (attempts < 12) {
         attempts++;
-        setTimeout(findTarget, 100);
+        setTimeout(findTarget, 120);
       }
     };
 
@@ -151,7 +184,7 @@ export const SpotlightTourOverlay: React.FC<SpotlightTourOverlayProps> = ({ isOp
     }
   };
 
-  // Compute Popover Position (Right or Below target element)
+  // Compute Popover Position relative to targeted element
   let popoverStyle: React.CSSProperties = {
     top: '50%',
     left: '50%',
@@ -161,18 +194,18 @@ export const SpotlightTourOverlay: React.FC<SpotlightTourOverlayProps> = ({ isOp
   let caretPositionClass = '';
 
   if (targetRect) {
-    // If target is in left nav rail, position popover to the right of target
-    if (targetRect.left < 300) {
+    // If target element is low on screen, place popover above
+    if (targetRect.bottom > window.innerHeight - 240) {
       popoverStyle = {
-        top: Math.max(20, Math.min(targetRect.top - 20, window.innerHeight - 260)),
-        left: targetRect.right + 16,
+        top: Math.max(16, targetRect.top - 220),
+        left: Math.max(16, Math.min(targetRect.left, window.innerWidth - 380)),
       };
-      caretPositionClass = 'caret-left';
+      caretPositionClass = 'caret-bottom';
     } else {
-      // Position popover below target
+      // Place popover below target
       popoverStyle = {
         top: targetRect.bottom + 16,
-        left: Math.max(16, Math.min(targetRect.left, window.innerWidth - 340)),
+        left: Math.max(16, Math.min(targetRect.left, window.innerWidth - 380)),
       };
       caretPositionClass = 'caret-top';
     }
@@ -181,14 +214,11 @@ export const SpotlightTourOverlay: React.FC<SpotlightTourOverlayProps> = ({ isOp
   const IconComp = step.icon;
 
   return (
-    <div className="fixed inset-0 z-50 pointer-events-auto select-none animate-fadeIn">
-      {/* Semi-transparent Backdrop Overlay */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] transition-opacity duration-300" onClick={handleFinish} />
-
-      {/* Target Element Spotlight Highlight Box */}
+    <div className="fixed inset-0 z-50 pointer-events-none select-none animate-fadeIn">
+      {/* Target Element Glowing Spotlight Highlight Box (NO DARK BACKDROP BLUR) */}
       {targetRect && (
         <div
-          className="fixed rounded-xl ring-4 ring-[#2F6FED] ring-offset-2 ring-offset-black/30 shadow-2xl transition-all duration-300 pointer-events-none z-50 animate-pulse bg-white/5"
+          className="fixed rounded-xl ring-4 ring-[#2F6FED] ring-offset-2 ring-offset-white dark:ring-offset-black shadow-2xl transition-all duration-300 pointer-events-none z-50 animate-pulse"
           style={{
             top: targetRect.top - 4,
             left: targetRect.left - 4,
@@ -200,15 +230,15 @@ export const SpotlightTourOverlay: React.FC<SpotlightTourOverlayProps> = ({ isOp
 
       {/* Floating Dark Caret Tooltip Popover Box */}
       <div
-        className="fixed z-50 w-80 sm:w-96 bg-[#0F172A] text-white p-5 rounded-2xl shadow-2xl border border-white/15 transition-all duration-300 space-y-4 font-sans"
+        className="fixed pointer-events-auto z-50 w-80 sm:w-96 bg-[#0F172A] text-white p-5 rounded-2xl shadow-2xl border border-white/20 transition-all duration-300 space-y-4 font-sans"
         style={popoverStyle}
       >
         {/* Caret Triangle Arrow */}
-        {caretPositionClass === 'caret-left' && (
-          <div className="absolute -left-2 top-6 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-r-8 border-r-[#0F172A]" />
-        )}
         {caretPositionClass === 'caret-top' && (
-          <div className="absolute -top-2 left-6 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-[#0F172A]" />
+          <div className="absolute -top-2 left-8 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-[#0F172A]" />
+        )}
+        {caretPositionClass === 'caret-bottom' && (
+          <div className="absolute -bottom-2 left-8 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-8 border-t-[#0F172A]" />
         )}
 
         {/* Popover Header */}

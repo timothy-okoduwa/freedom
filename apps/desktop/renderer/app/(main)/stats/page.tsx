@@ -260,7 +260,7 @@ export default function StatsPage() {
           </div>
 
           {/* Week Navigation Bar */}
-          <div className="flex items-center justify-between bg-neutral-50 dark:bg-[#202024] p-2 rounded-xl border border-neutral-200/80 dark:border-neutral-800">
+          <div className="flex items-center justify-between bg-neutral-50 dark:bg-[#202024] p-2 rounded-xl border border-neutral-200/80 dark:border-neutral-800" data-tour="stats-week-controls">
             <button
               onClick={() => setWeekOffset((prev) => prev - 1)}
               disabled={isEarliestWeek}

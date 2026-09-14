@@ -105,7 +105,7 @@ export default function SummaryPage() {
       </div>
 
       {/* Composite Score Card */}
-      <Card variant="raised" className="p-8 text-center space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl shadow-sm">
+      <Card variant="raised" data-tour="summary-score-card" className="p-8 text-center space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl shadow-sm">
         <span className="text-xs font-mono uppercase tracking-wider text-[#6B6B6B] dark:text-[#A1A1AA]">
           Productivity Score
         </span>

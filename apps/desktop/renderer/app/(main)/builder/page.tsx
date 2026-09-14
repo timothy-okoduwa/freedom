@@ -203,6 +203,7 @@ export default function BuilderPage() {
             <Button
               variant="primary"
               size="md"
+              data-tour="builder-start-btn"
               disabled={items.length === 0 || isOver24h}
               onClick={handleStartDay}
               className="flex items-center gap-2 bg-[#2F6FED] hover:bg-[#2558BE] text-white shadow-md"
@@ -222,7 +223,7 @@ export default function BuilderPage() {
       )}
 
       {/* Action Buttons: Add Task / Add Break */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" data-tour="builder-add-btn">
         <Button
           variant="secondary"
           size="sm"

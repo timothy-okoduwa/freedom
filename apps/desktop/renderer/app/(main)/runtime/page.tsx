@@ -81,6 +81,7 @@ export default function RuntimePage() {
       {/* Main Execution Card */}
       <Card
         variant="default"
+        data-tour="runtime-timer-card"
         className={`p-8 sm:p-12 text-center transition-all ${
           isOvertime
             ? 'border-[#E8A33D]/40 bg-[#FFFDF9] dark:bg-amber-950/20'
@@ -125,7 +126,7 @@ export default function RuntimePage() {
         </div>
 
         {/* Primary Controls */}
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-6">
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-6" data-tour="runtime-extend-btn">
           <Button
             variant={isPaused ? 'primary' : 'secondary'}
             size="md"

@@ -590,7 +590,7 @@ export default function LeaderboardPage() {
 
       {/* GLOBAL TAB */}
       {activeTab === 'global' && (
-        <Card variant="default" className="p-0 overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+        <Card variant="default" data-tour="leaderboard-table-card" className="p-0 overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
           <div className="p-4 bg-[#FAFAFA] dark:bg-zinc-900 border-b border-[#E5E5E5] dark:border-[#27272A] flex items-center justify-between text-xs font-mono text-zinc-500 dark:text-zinc-400">
             <span>Rank & Member</span>
             <div className="flex items-center gap-12 mr-4">
@@ -800,7 +800,7 @@ export default function LeaderboardPage() {
       {activeTab === 'teams' && (
         <div className="space-y-6">
           {/* Multi-Team Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl" data-tour="leaderboard-team-card">
             {/* Active Teams Selector Pills */}
             <div className="flex items-center gap-2 overflow-x-auto py-1">
               {userTeams.length > 0 ? (

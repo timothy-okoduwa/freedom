@@ -128,6 +128,7 @@ export default function DashboardPage() {
         ) : (
           <Link
             href="/builder"
+            data-tour="dashboard-builder-btn"
             className="px-6 py-2.5 rounded-xl bg-black dark:bg-white text-white dark:text-black text-xs font-semibold shadow-md hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all flex items-center gap-2"
           >
             <CalendarPlus className="w-4 h-4" />
