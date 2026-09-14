@@ -114,7 +114,7 @@ export default function HeatmapPage() {
         </div>
 
         {/* Heatmap Grid Component */}
-        <div className="overflow-x-auto py-2">
+        <div className="overflow-visible py-2">
           {loading ? (
             <div className="py-12 text-center text-xs text-neutral-400 font-mono">
               Loading execution history...

@@ -27,4 +27,8 @@ contextBridge.exposeInMainWorld('freedom', {
     toggleExpand: (expand?: boolean) => ipcRenderer.invoke('widget:toggle-expand', expand),
     moveBy: (deltaX: number, deltaY: number) => ipcRenderer.invoke('widget:move-by', deltaX, deltaY),
   },
+  invite: {
+    sendEmail: (payload: any) => ipcRenderer.invoke('invite:send-email', payload),
+  },
 });
+

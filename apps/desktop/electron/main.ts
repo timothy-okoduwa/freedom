@@ -15,6 +15,8 @@ import {
   handleSystemSuspend,
   handleSystemResume,
 } from './ipc/sessionChannels';
+import { initInviteChannels } from './ipc/inviteChannels';
+
 
 // Set app name and identifier for OS notifications & dock branding
 app.setName('Freedom');
@@ -131,6 +133,8 @@ app.whenReady().then(async () => {
 
   // Initialize IPC channels first
   initSessionChannels();
+  initInviteChannels();
+
 
   // Create windows
   createMainWindow(rendererUrl, isSessionActive);

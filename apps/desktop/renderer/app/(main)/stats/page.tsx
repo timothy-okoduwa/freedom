@@ -78,17 +78,69 @@ export default function StatsPage() {
   const currentStreak = user?.publicStats?.currentStreak ?? 0;
   const longestStreak = user?.publicStats?.longestStreak ?? currentStreak;
 
-  // Real Current Week Breakdown (Monday - Sunday)
-  const weeklyDayBreakdown = useMemo(() => {
-    const today = new Date();
-    const currentDayOfWeek = today.getDay(); // 0 is Sunday, 1 is Monday
-    const mondayOffset = currentDayOfWeek === 0 ? -6 : 1 - currentDayOfWeek;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
+  const [weekOffset, setWeekOffset] = useState<number>(0);
+
+  // Earliest week threshold (account creation week or earliest plan date)
+  const earliestMonday = useMemo(() => {
+    let earliestTime = user?.createdAt ? new Date(user.createdAt).getTime() : Date.now();
+    allPlans.forEach((p) => {
+      if (p.date) {
+        const t = new Date(p.date).getTime();
+        if (!isNaN(t) && t < earliestTime) {
+          earliestTime = t;
+        }
+      }
+    });
+
+    const d = new Date(earliestTime);
+    const dayOfWeek = d.getDay(); // 0 is Sun, 1 is Mon
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(d);
+    monday.setDate(d.getDate() + mondayOffset);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+  }, [user?.createdAt, allPlans]);
+
+  // Check if current target week's monday is <= earliestMonday
+  const isEarliestWeek = useMemo(() => {
+    const target = new Date();
+    target.setDate(target.getDate() + (weekOffset - 1) * 7);
+    const dayOfWeek = target.getDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const prevWeekMonday = new Date(target);
+    prevWeekMonday.setDate(target.getDate() + mondayOffset);
+    prevWeekMonday.setHours(0, 0, 0, 0);
+
+    return prevWeekMonday.getTime() < earliestMonday.getTime();
+  }, [weekOffset, earliestMonday]);
+
+  // Real Weekly Output Breakdown (Supported for current and past weeks)
+  const { weeklyDayBreakdown, weekRangeLabel, totalWeeklyMinutes } = useMemo(() => {
+    const target = new Date();
+    target.setDate(target.getDate() + weekOffset * 7);
+    const dayOfWeek = target.getDay(); // 0 is Sun, 1 is Mon
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    
+    const monday = new Date(target);
+    monday.setDate(target.getDate() + mondayOffset);
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    const formatShort = (d: Date) =>
+      d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    const rangeLabel =
+      weekOffset === 0
+        ? `This Week (${formatShort(monday)} - ${formatShort(sunday)})`
+        : weekOffset === -1
+        ? `Last Week (${formatShort(monday)} - ${formatShort(sunday)})`
+        : `${formatShort(monday)} - ${formatShort(sunday)}, ${monday.getFullYear()}`;
 
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    let totalWeeklyMins = 0;
 
-    return days.map((dayLabel, index) => {
+    const breakdown = days.map((dayLabel, index) => {
       const d = new Date(monday);
       d.setDate(monday.getDate() + index);
       const dateStr = d.toISOString().split('T')[0];
@@ -102,19 +154,27 @@ export default function StatsPage() {
           }
         });
       }
+      totalWeeklyMins += dayMinutes;
 
       const hours = Math.floor(dayMinutes / 60);
       const mins = dayMinutes % 60;
-      const pct = Math.min(100, Math.round((dayMinutes / 240) * 100)); // normalized to 4h goal
+      const pct = Math.min(100, Math.round((dayMinutes / 240) * 100)); // normalized to 4h daily goal
 
       return {
         day: dayLabel,
+        dateStr,
         minutes: dayMinutes,
         display: `${hours}h ${mins}m`,
         pct,
       };
     });
-  }, [allPlans]);
+
+    return {
+      weeklyDayBreakdown: breakdown,
+      weekRangeLabel: rangeLabel,
+      totalWeeklyMinutes: totalWeeklyMins,
+    };
+  }, [allPlans, weekOffset]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
@@ -185,8 +245,53 @@ export default function StatsPage() {
           </div>
         </Card>
 
-        <Card variant="default" className="p-6 space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
-          <h3 className="text-sm font-bold text-[#111] dark:text-white">This Week&apos;s Output</h3>
+        <Card variant="default" className="p-6 space-y-5 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+          {/* Card Title & Total Hours */}
+          <div className="flex items-center justify-between border-b border-[#E5E5E5] dark:border-[#27272A] pb-3">
+            <div>
+              <h3 className="text-sm font-bold text-[#111] dark:text-white">Weekly Output</h3>
+              <p className="text-xs text-[#2F6FED] font-mono font-semibold mt-0.5">{weekRangeLabel}</p>
+            </div>
+            <div className="text-right">
+              <span className="text-xs font-mono font-bold text-[#1FAE6B] dark:text-emerald-400">
+                {(totalWeeklyMinutes / 60).toFixed(1)}h total
+              </span>
+            </div>
+          </div>
+
+          {/* Week Navigation Bar */}
+          <div className="flex items-center justify-between bg-neutral-50 dark:bg-[#202024] p-2 rounded-xl border border-neutral-200/80 dark:border-neutral-800">
+            <button
+              onClick={() => setWeekOffset((prev) => prev - 1)}
+              disabled={isEarliestWeek}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-100 dark:hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs"
+              title={isEarliestWeek ? 'Reached account creation week' : 'Previous Week'}
+            >
+              ← Prev Week
+            </button>
+
+            {weekOffset !== 0 ? (
+              <button
+                onClick={() => setWeekOffset(0)}
+                className="px-3 py-1.5 text-xs font-mono font-bold rounded-lg bg-[#2F6FED] text-white hover:bg-[#2558BE] transition-all shadow-2xs"
+                title="Jump to current week"
+              >
+                Current Week
+              </button>
+            ) : (
+              <span className="text-[11px] font-mono text-zinc-400 font-medium">Viewing Current Week</span>
+            )}
+
+            <button
+              onClick={() => setWeekOffset((prev) => prev + 1)}
+              disabled={weekOffset >= 0}
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-100 dark:hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs"
+              title="Next Week"
+            >
+              Next Week →
+            </button>
+          </div>
+
           <div className="space-y-2 text-xs">
             {weeklyDayBreakdown.map((item) => (
               <div key={item.day} className="flex items-center justify-between">

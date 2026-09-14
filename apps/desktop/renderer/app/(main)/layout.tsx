@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSessionStore } from '../../stores/useSessionStore';
-import { authService, getDicebearAvatar } from '../../lib/firebase';
+import { authService, firestoreService, getDicebearAvatar } from '../../lib/firebase';
+
 import {
   LayoutDashboard,
   CalendarPlus,
@@ -62,8 +63,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       setAuthChecking(false);
       if (!currentUser) {
         router.push('/login');
+      } else {
+        firestoreService.syncUserStats(currentUser.uid).then((updatedStats) => {
+          if (updatedStats) {
+            setUser({ ...currentUser, publicStats: updatedStats });
+          }
+        });
       }
     });
+
 
     return () => unsubscribe();
   }, [loadActiveSession, setUser, router]);

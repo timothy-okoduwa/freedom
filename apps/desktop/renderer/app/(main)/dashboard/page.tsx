@@ -26,6 +26,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user?.uid) {
+      firestoreService.syncUserStats(user.uid);
       firestoreService.getTodayPlan(user.uid).then((plan) => {
         setTodayPlan(plan);
         setLoadingPlan(false);
@@ -34,6 +35,7 @@ export default function DashboardPage() {
       setLoadingPlan(false);
     }
   }, [user?.uid]);
+
 
   const todayStr = new Date().toLocaleDateString('en-US', {
     weekday: 'long',

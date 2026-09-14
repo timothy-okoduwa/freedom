@@ -12,6 +12,7 @@ const widgetWindow_1 = require("./windows/widgetWindow");
 const trayMenu_1 = require("./windows/trayMenu");
 const appIcon_1 = require("./utils/appIcon");
 const sessionChannels_1 = require("./ipc/sessionChannels");
+const inviteChannels_1 = require("./ipc/inviteChannels");
 // Set app name and identifier for OS notifications & dock branding
 electron_1.app.setName('Freedom');
 if (process.platform === 'win32') {
@@ -109,6 +110,7 @@ electron_1.app.whenReady().then(async () => {
     }
     // Initialize IPC channels first
     (0, sessionChannels_1.initSessionChannels)();
+    (0, inviteChannels_1.initInviteChannels)();
     // Create windows
     (0, mainWindow_1.createMainWindow)(rendererUrl, sessionChannels_1.isSessionActive);
     (0, widgetWindow_1.createWidgetWindow)(rendererUrl);

@@ -18,7 +18,10 @@ export interface User {
   theme: Theme;
   leaderboardOptIn: boolean;
   avatarUrl?: string;
+  countryCode?: string;
+  countryFlag?: string;
   authProvider: AuthProvider;
+
   subscriptionTier: SubscriptionTier;
   publicStats: UserPublicStats;
   createdAt: string;
@@ -119,6 +122,37 @@ export interface TeamInvitation {
   createdAt: string;
 }
 
+export type CrownType = 'diamond' | 'gold' | 'silver' | 'bronze';
+
+export interface FriendRequest {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderEmail?: string;
+  senderAvatarUrl?: string;
+  recipientEmail: string;
+  recipientId?: string;
+  status: FriendshipStatus;
+  createdAt: string;
+}
+
+export interface Competition {
+  id: string;
+  name: string;
+  description?: string;
+  scope: 'global' | 'friends' | 'team';
+  teamId?: string;
+  metric: 'streak' | 'productive_hours';
+  durationUnit: 'hours' | 'days';
+  durationValue: number;
+  startDate: string;
+  endDate: string;
+  createdBy: string;
+  createdByName: string;
+  createdAt: string;
+  participantUids: string[];
+}
+
 export interface ActiveItemState {
   dayPlanId: string;
   itemId: string;
@@ -130,3 +164,4 @@ export interface ActiveItemState {
   pausedAt: string | null;
   accumulatedPauseMs: number;
 }
+

@@ -27,4 +27,7 @@ electron_1.contextBridge.exposeInMainWorld('freedom', {
         toggleExpand: (expand) => electron_1.ipcRenderer.invoke('widget:toggle-expand', expand),
         moveBy: (deltaX, deltaY) => electron_1.ipcRenderer.invoke('widget:move-by', deltaX, deltaY),
     },
+    invite: {
+        sendEmail: (payload) => electron_1.ipcRenderer.invoke('invite:send-email', payload),
+    },
 });

@@ -1,4 +1,15 @@
-import type { User, DayPlan, AuthProvider, Team, TeamMembership, TeamInvitation } from '@freedom/firestore-schema';
+import type {
+  User,
+  DayPlan,
+  AuthProvider,
+  Team,
+  TeamMembership,
+  TeamInvitation,
+  FriendRequest,
+  Friendship,
+  Competition,
+  UserPublicStats,
+} from '@freedom/firestore-schema';
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import {
   getAuth,
@@ -19,6 +30,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  deleteDoc,
   collection,
   query,
   where,
@@ -27,14 +39,42 @@ import {
   type Firestore,
 } from 'firebase/firestore';
 
+
+export function cleanUndefined<T extends Record<string, any>>(obj: T): T {
+  const cleaned: any = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] !== undefined) {
+      cleaned[key] = obj[key];
+    }
+  });
+  return cleaned as T;
+}
+
 export function getLocalDateString(d: Date = new Date()): string {
+
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
+export function getTimezoneCountryFlag(tz?: string): string {
+  const userTz = tz || (typeof window !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'Africa/Lagos');
+  if (userTz.includes('Lagos') || userTz.includes('Africa/')) return '🇳🇬';
+  if (userTz.includes('America/New_York') || userTz.includes('America/Chicago') || userTz.includes('America/Los_Angeles') || userTz.includes('America/Denver') || userTz.includes('US/')) return '🇺🇸';
+  if (userTz.includes('Europe/London') || userTz.includes('GB')) return '🇬🇧';
+  if (userTz.includes('America/Toronto') || userTz.includes('America/Vancouver') || userTz.includes('Canada/')) return '🇨🇦';
+  if (userTz.includes('Europe/Berlin') || userTz.includes('Europe/Frankfurt') || userTz.includes('Europe/Paris')) return '🇩🇪';
+  if (userTz.includes('Asia/Tokyo') || userTz.includes('Japan')) return '🇯🇵';
+  if (userTz.includes('Australia/') || userTz.includes('Pacific/Auckland')) return '🇦🇺';
+  if (userTz.includes('Asia/Kolkata') || userTz.includes('Asia/Calcutta')) return '🇮🇳';
+  if (userTz.includes('Asia/Shanghai') || userTz.includes('Asia/Hong_Kong')) return '🇨🇳';
+  if (userTz.includes('America/Sao_Paulo')) return '🇧🇷';
+  return '🇳🇬';
+}
+
 export function getDicebearAvatar(seed: string): string {
+
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed || 'freedom')}`;
 }
 
@@ -162,12 +202,15 @@ export const authService = {
       const db = getFirebaseDb();
       const userRef = doc(db, 'users', fbUser.uid);
       const snap = await getDoc(userRef);
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const countryFlag = getTimezoneCountryFlag(timezone);
 
       if (snap.exists()) {
         const existing = snap.data() as User;
-        if (!existing.avatarUrl) {
-          existing.avatarUrl = avatarUrl;
-          await setDoc(userRef, { avatarUrl }, { merge: true });
+        if (!existing.avatarUrl || !existing.countryFlag) {
+          existing.avatarUrl = existing.avatarUrl || avatarUrl;
+          existing.countryFlag = existing.countryFlag || countryFlag;
+          await setDoc(userRef, { avatarUrl: existing.avatarUrl, countryFlag: existing.countryFlag }, { merge: true });
         }
         this.setCachedUser(existing);
         return existing;
@@ -178,11 +221,12 @@ export const authService = {
         email: fbUser.email || '',
         displayName,
         username,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone,
         dailyGoalMinutes: 240,
         theme: 'light',
         leaderboardOptIn: true,
         avatarUrl,
+        countryFlag,
         authProvider: provider,
         subscriptionTier: 'free',
         publicStats: {
@@ -193,6 +237,7 @@ export const authService = {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
+
 
       await setDoc(userRef, newUser);
       this.setCachedUser(newUser);
@@ -502,6 +547,78 @@ export const firestoreService = {
     }
   },
 
+  async removeTeamMember(teamId: string, userId: string): Promise<boolean> {
+    try {
+      const db = getFirebaseDb();
+      // Delete any membership document matching teamId and userId
+      const q = query(
+        collection(db, 'teamMemberships'),
+        where('teamId', '==', teamId),
+        where('userId', '==', userId)
+      );
+      const snap = await getDocs(q);
+      for (const d of snap.docs) {
+        await deleteDoc(doc(db, 'teamMemberships', d.id));
+      }
+
+      // Also attempt hardcoded document ID deletion as fallback
+      await deleteDoc(doc(db, 'teamMemberships', `${userId}_${teamId}`)).catch(() => {});
+      await deleteDoc(doc(db, 'teamMemberships', `${teamId}_${userId}`)).catch(() => {});
+
+      return true;
+    } catch (err) {
+      console.warn('removeTeamMember failed:', err);
+      return false;
+    }
+  },
+
+  async deleteTeam(teamId: string, ownerId: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const db = getFirebaseDb();
+      const teamRef = doc(db, 'teams', teamId);
+      const teamSnap = await getDoc(teamRef);
+
+      if (!teamSnap.exists()) {
+        return { success: false, message: 'Team not found.' };
+      }
+
+      const teamData = teamSnap.data() as Team;
+      if (teamData.ownerId !== ownerId) {
+        return { success: false, message: 'Only the team owner can delete this team.' };
+      }
+
+      // 1. Delete team document
+      await deleteDoc(teamRef);
+
+      // 2. Delete all memberships associated with teamId
+      const memQuery = query(collection(db, 'teamMemberships'), where('teamId', '==', teamId));
+      const memSnap = await getDocs(memQuery);
+      for (const d of memSnap.docs) {
+        await deleteDoc(doc(db, 'teamMemberships', d.id)).catch(() => {});
+      }
+
+      // 3. Delete all invitations associated with teamId or inviteCode
+      const invQuery = query(collection(db, 'invitations'), where('teamId', '==', teamId));
+      const invSnap = await getDocs(invQuery);
+      for (const d of invSnap.docs) {
+        await deleteDoc(doc(db, 'invitations', d.id)).catch(() => {});
+      }
+
+      if (teamData.inviteCode) {
+        const codeInvQuery = query(collection(db, 'invitations'), where('inviteCode', '==', teamData.inviteCode));
+        const codeInvSnap = await getDocs(codeInvQuery);
+        for (const d of codeInvSnap.docs) {
+          await deleteDoc(doc(db, 'invitations', d.id)).catch(() => {});
+        }
+      }
+
+      return { success: true, message: `Team "${teamData.name}" has been deleted.` };
+    } catch (err: any) {
+      console.warn('deleteTeam failed:', err);
+      return { success: false, message: err.message || 'Failed to delete team.' };
+    }
+  },
+
   async saveTeamInvitation(invitation: TeamInvitation): Promise<void> {
     try {
       const db = getFirebaseDb();
@@ -510,4 +627,345 @@ export const firestoreService = {
       console.warn('saveTeamInvitation failed:', err);
     }
   },
+
+  async getPendingTeamInvitations(recipientEmail: string): Promise<TeamInvitation[]> {
+    const cleanEmail = recipientEmail.trim().toLowerCase();
+    if (!cleanEmail) return [];
+    try {
+      const db = getFirebaseDb();
+      const q = query(
+        collection(db, 'invitations'),
+        where('recipientEmail', '==', cleanEmail),
+        where('status', '==', 'pending')
+      );
+      const snap = await getDocs(q);
+      const allInvs = snap.docs.map((d) => d.data() as TeamInvitation);
+
+      const validInvs: TeamInvitation[] = [];
+      for (const inv of allInvs) {
+        if (!inv.inviteCode) continue;
+        const tQuery = query(collection(db, 'teams'), where('inviteCode', '==', inv.inviteCode.trim().toUpperCase()));
+        const tSnap = await getDocs(tQuery);
+        if (tSnap.empty) {
+          // Stale orphaned invitation -> clean up automatically from Firestore
+          await deleteDoc(doc(db, 'invitations', inv.id)).catch(() => {});
+        } else {
+          validInvs.push(inv);
+        }
+      }
+      return validInvs;
+    } catch (err) {
+      console.warn('getPendingTeamInvitations failed:', err);
+      return [];
+    }
+  },
+
+  async acceptTeamInvitation(invitation: TeamInvitation, userId: string): Promise<{ success: boolean; message: string; team?: Team }> {
+    try {
+      const db = getFirebaseDb();
+      const joinRes = await this.joinTeamByCode(invitation.inviteCode, userId);
+      if (joinRes.success) {
+        await setDoc(doc(db, 'invitations', invitation.id), { status: 'accepted' }, { merge: true });
+      } else {
+        // Clean up invalid or orphaned invitation
+        await deleteDoc(doc(db, 'invitations', invitation.id)).catch(() => {});
+        return {
+          success: false,
+          message: `This team invitation is no longer valid because the team was deleted or no longer exists.`,
+        };
+      }
+      return joinRes;
+    } catch (err: any) {
+      return { success: false, message: err.message || 'Failed to accept team invitation.' };
+    }
+  },
+
+  async syncUserStats(userId: string): Promise<UserPublicStats | null> {
+    if (typeof window === 'undefined' || !userId) return null;
+
+    try {
+      const db = getFirebaseDb();
+      const q = query(collection(db, 'dayPlans'), where('userId', '==', userId));
+      const snap = await getDocs(q);
+      const plans = snap.docs.map((d) => d.data() as DayPlan);
+
+      let totalProductiveMinutes = 0;
+      const activeDatesSet = new Set<string>();
+
+      plans.forEach((p) => {
+        let planProductiveMins = 0;
+        if (p.items) {
+          p.items.forEach((item) => {
+            if (item.type === 'task' && item.state === 'completed') {
+              const itemMins = item.actualMinutes || item.plannedDurationMinutes || 0;
+              planProductiveMins += itemMins;
+            }
+          });
+        }
+        totalProductiveMinutes += planProductiveMins;
+        if (planProductiveMins > 0) {
+          activeDatesSet.add(p.date);
+        }
+      });
+
+      // Compute streak
+      const activeDates = Array.from(activeDatesSet).sort((a, b) => (a < b ? 1 : -1));
+      let currentStreak = 0;
+      let longestStreak = 0;
+
+      if (activeDates.length > 0) {
+        const todayStr = getLocalDateString();
+        const yesterdayDate = new Date();
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterdayStr = getLocalDateString(yesterdayDate);
+
+        let anchorDate: Date | null = null;
+        if (activeDatesSet.has(todayStr)) {
+          anchorDate = new Date();
+        } else if (activeDatesSet.has(yesterdayStr)) {
+          anchorDate = yesterdayDate;
+        }
+
+        if (anchorDate) {
+          let curr = new Date(anchorDate);
+          while (activeDatesSet.has(getLocalDateString(curr))) {
+            currentStreak++;
+            curr.setDate(curr.getDate() - 1);
+          }
+        }
+
+        let tempStreak = 0;
+        const sortedAsc = Array.from(activeDatesSet).sort();
+        for (let i = 0; i < sortedAsc.length; i++) {
+          if (i === 0) {
+            tempStreak = 1;
+          } else {
+            const prev = new Date(sortedAsc[i - 1]);
+            const curr = new Date(sortedAsc[i]);
+            const diffDays = Math.round((curr.getTime() - prev.getTime()) / 86400000);
+            if (diffDays === 1) {
+              tempStreak++;
+            } else {
+              tempStreak = 1;
+            }
+          }
+          if (tempStreak > longestStreak) longestStreak = tempStreak;
+        }
+      }
+
+      if (currentStreak > longestStreak) longestStreak = currentStreak;
+
+      const publicStats: UserPublicStats = {
+        totalProductiveMinutes,
+        currentStreak,
+        longestStreak,
+      };
+
+      const userRef = doc(db, 'users', userId);
+      await setDoc(userRef, { publicStats, updatedAt: new Date().toISOString() }, { merge: true });
+
+      const cached = authService.getCachedUser();
+      if (cached && cached.uid === userId) {
+        cached.publicStats = publicStats;
+        authService.setCachedUser(cached);
+      }
+
+      return publicStats;
+    } catch (err) {
+      console.warn('syncUserStats failed:', err);
+      return null;
+    }
+  },
+
+  async sendFriendInvite(sender: User, recipientEmail: string): Promise<{ success: boolean; message: string; isExistingUser: boolean }> {
+    const cleanEmail = recipientEmail.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      return { success: false, message: 'Valid recipient email required.', isExistingUser: false };
+    }
+
+    if (sender.email?.toLowerCase() === cleanEmail) {
+      return { success: false, message: 'You cannot send a friend request to yourself.', isExistingUser: true };
+    }
+
+    try {
+      const db = getFirebaseDb();
+      const q = query(collection(db, 'users'), where('email', '==', cleanEmail));
+      const snap = await getDocs(q);
+
+      let isExistingUser = false;
+      let recipientId: string | undefined = undefined;
+
+      if (!snap.empty) {
+        isExistingUser = true;
+        recipientId = snap.docs[0].data().uid;
+      }
+
+      const reqId = `freq_${sender.uid}_${recipientId || Date.now()}`;
+      const friendReq: Record<string, any> = {
+        id: reqId,
+        senderId: sender.uid,
+        senderName: sender.displayName || 'Freedom Teammate',
+        senderEmail: sender.email || '',
+        senderAvatarUrl: sender.avatarUrl || '',
+        recipientEmail: cleanEmail,
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      };
+
+      if (recipientId) {
+        friendReq.recipientId = recipientId;
+      }
+
+      await setDoc(doc(db, 'friendRequests', reqId), friendReq as FriendRequest);
+
+
+      return {
+        success: true,
+        message: isExistingUser
+          ? `Friend invitation sent to registered Freedom user!`
+          : `Friend invite created for ${cleanEmail}!`,
+        isExistingUser,
+      };
+    } catch (err: any) {
+      return { success: false, message: err.message || 'Failed to process friend invite.', isExistingUser: false };
+    }
+  },
+
+  async getPendingFriendRequests(userEmailOrUid: string): Promise<FriendRequest[]> {
+    try {
+      const db = getFirebaseDb();
+      const q1 = query(
+        collection(db, 'friendRequests'),
+        where('recipientEmail', '==', userEmailOrUid.toLowerCase()),
+        where('status', '==', 'pending')
+      );
+      const snap1 = await getDocs(q1);
+
+      const q2 = query(
+        collection(db, 'friendRequests'),
+        where('recipientId', '==', userEmailOrUid),
+        where('status', '==', 'pending')
+      );
+      const snap2 = await getDocs(q2);
+
+      const requestsMap = new Map<string, FriendRequest>();
+      snap1.docs.forEach((d) => requestsMap.set(d.id, d.data() as FriendRequest));
+      snap2.docs.forEach((d) => requestsMap.set(d.id, d.data() as FriendRequest));
+
+      return Array.from(requestsMap.values());
+    } catch (err) {
+      console.warn('getPendingFriendRequests failed:', err);
+      return [];
+    }
+  },
+
+  async acceptFriendRequest(requestId: string, currentUserId: string): Promise<boolean> {
+    try {
+      const db = getFirebaseDb();
+      const reqRef = doc(db, 'friendRequests', requestId);
+      const reqSnap = await getDoc(reqRef);
+
+      if (!reqSnap.exists()) return false;
+      const reqData = reqSnap.data() as FriendRequest;
+
+      await setDoc(reqRef, { status: 'accepted' }, { merge: true });
+
+      const friendshipId = [reqData.senderId, currentUserId].sort().join('_');
+      const friendship: Friendship = {
+        id: friendshipId,
+        userAId: reqData.senderId,
+        userBId: currentUserId,
+        status: 'accepted',
+        requestedBy: reqData.senderId,
+        createdAt: new Date().toISOString(),
+        respondedAt: new Date().toISOString(),
+      };
+
+      await setDoc(doc(db, 'friendships', friendshipId), friendship);
+      return true;
+    } catch (err) {
+      console.warn('acceptFriendRequest failed:', err);
+      return false;
+    }
+  },
+
+  async declineFriendRequest(requestId: string): Promise<boolean> {
+    try {
+      const db = getFirebaseDb();
+      await setDoc(doc(db, 'friendRequests', requestId), { status: 'declined' }, { merge: true });
+      return true;
+    } catch (err) {
+      console.warn('declineFriendRequest failed:', err);
+      return false;
+    }
+  },
+
+  async getFriendsLeaderboard(userId: string): Promise<User[]> {
+    try {
+      const db = getFirebaseDb();
+      const q1 = query(collection(db, 'friendships'), where('userAId', '==', userId), where('status', '==', 'accepted'));
+      const q2 = query(collection(db, 'friendships'), where('userBId', '==', userId), where('status', '==', 'accepted'));
+
+      const [snap1, snap2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+
+      const friendUids = new Set<string>();
+      friendUids.add(userId);
+
+      snap1.docs.forEach((d) => {
+        const f = d.data() as Friendship;
+        friendUids.add(f.userBId);
+      });
+      snap2.docs.forEach((d) => {
+        const f = d.data() as Friendship;
+        friendUids.add(f.userAId);
+      });
+
+      const users: User[] = [];
+      for (const fUid of Array.from(friendUids)) {
+        const uSnap = await getDoc(doc(db, 'users', fUid));
+        if (uSnap.exists()) {
+          users.push(uSnap.data() as User);
+        }
+      }
+
+      users.sort(
+        (a, b) =>
+          (b.publicStats?.totalProductiveMinutes || 0) -
+          (a.publicStats?.totalProductiveMinutes || 0)
+      );
+
+      return users;
+    } catch (err) {
+      console.warn('getFriendsLeaderboard failed:', err);
+      return [];
+    }
+  },
+
+  async createCompetition(comp: Omit<Competition, 'id' | 'createdAt'>): Promise<Competition> {
+    const db = getFirebaseDb();
+    const compId = `comp_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const fullComp: Competition = cleanUndefined({
+      ...comp,
+      id: compId,
+      createdAt: new Date().toISOString(),
+    });
+    await setDoc(doc(db, 'competitions', compId), fullComp);
+    return fullComp;
+  },
+
+
+  async getCompetitions(userId: string): Promise<Competition[]> {
+    try {
+      const db = getFirebaseDb();
+      const q = query(collection(db, 'competitions'), limit(20));
+      const snap = await getDocs(q);
+      const comps = snap.docs.map((d) => d.data() as Competition);
+      return comps.filter((c) => c.createdBy === userId || c.participantUids.includes(userId));
+    } catch (err) {
+      console.warn('getCompetitions failed:', err);
+      return [];
+    }
+  },
 };
+
+

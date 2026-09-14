@@ -50,9 +50,13 @@ declare global {
         toggleExpand: (expand?: boolean) => Promise<void>;
         moveBy: (deltaX: number, deltaY: number) => Promise<void>;
       };
+      invite?: {
+        sendEmail: (payload: any) => Promise<{ success: boolean; message: string }>;
+      };
     };
   }
 }
+
 
 export const useSessionStore = create<SessionStore>((set, get) => ({
   user: null,
@@ -143,13 +147,21 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       soundManager.playSound();
       const success = await window.freedom.session.finishTask();
       const plan = get().activePlan;
+      const currentUser = get().user;
       if (plan) {
-        firestoreService.saveDayPlan(plan);
+        await firestoreService.saveDayPlan(plan);
+        if (currentUser?.uid) {
+          const stats = await firestoreService.syncUserStats(currentUser.uid);
+          if (stats) {
+            set({ user: { ...currentUser, publicStats: stats } });
+          }
+        }
       }
       return success;
     }
     return false;
   },
+
 
   skipTask: async () => {
     if (typeof window !== 'undefined' && window.freedom?.session) {
