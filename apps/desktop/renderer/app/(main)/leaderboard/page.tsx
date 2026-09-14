@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { User, Team, TeamInvitation, FriendRequest, Competition } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
+import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService, getDicebearAvatar, getTimezoneCountryFlag } from '../../../lib/firebase';
 import { Card, Tabs, Button, Modal } from '@freedom/ui';
 import {
@@ -54,7 +55,20 @@ function getCrownBadge(rank: number, totalParticipants: number) {
 
 export default function LeaderboardPage() {
   const { user } = useSessionStore();
+  const { isOpen: isTourActive } = useTourStore();
   const [activeTab, setActiveTab] = useState<'global' | 'friends' | 'teams' | 'competitions'>('global');
+
+  // Auto-switch subTab when tour step updates
+  useEffect(() => {
+    const handleTourStep = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.subTab) {
+        setActiveTab(customEvent.detail.subTab as any);
+      }
+    };
+    window.addEventListener('freedom_tour_step', handleTourStep);
+    return () => window.removeEventListener('freedom_tour_step', handleTourStep);
+  }, []);
 
   // Invite modal state
   const [isInviteOpen, setIsInviteOpen] = useState(false);
@@ -560,7 +574,76 @@ export default function LeaderboardPage() {
     }
   };
 
-  const isTeamOwner = user?.uid && selectedTeam?.ownerId === user.uid;
+  const isTeamOwner = Boolean(user?.uid && selectedTeam?.ownerId === user.uid);
+
+  // Tour mock data fallbacks when user data is empty
+  const tourMockFriends: User[] = [
+    {
+      uid: 'mock-f1',
+      displayName: 'Aisha Bello',
+      username: 'aisha_bello',
+      timezone: 'Africa/Lagos',
+      dailyGoalMinutes: 300,
+      theme: 'dark',
+      leaderboardOptIn: true,
+      avatarUrl: getDicebearAvatar('aisha_bello'),
+      countryFlag: '🇳🇬',
+      authProvider: 'google',
+      subscriptionTier: 'free',
+      publicStats: { totalProductiveMinutes: 19200, currentStreak: 14, longestStreak: 14 },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      uid: 'mock-f2',
+      displayName: 'David Miller',
+      username: 'dave_builds',
+      timezone: 'America/Los_Angeles',
+      dailyGoalMinutes: 240,
+      theme: 'light',
+      leaderboardOptIn: true,
+      avatarUrl: getDicebearAvatar('dave_builds'),
+      countryFlag: '🇺🇸',
+      authProvider: 'google',
+      subscriptionTier: 'free',
+      publicStats: { totalProductiveMinutes: 15400, currentStreak: 9, longestStreak: 12 },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
+
+  const tourMockTeam: Team = {
+    id: 'mock-team-1',
+    name: 'Freedom Core Engineering',
+    description: 'Building high-performance focus software & telemetry systems.',
+    inviteCode: 'FREEDOM-CORE99',
+    ownerId: 'mock-f1',
+    createdAt: new Date().toISOString(),
+  };
+
+  const tourMockCompetitions: Competition[] = [
+    {
+      id: 'mock-comp-1',
+      name: '48H Deep Work Sprint',
+      description: 'Maximum focus output sprint for Diamond & Gold Crowns.',
+      scope: 'friends',
+      metric: 'productive_hours',
+      durationUnit: 'hours',
+      durationValue: 48,
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 86400000 * 2).toISOString(),
+      createdBy: 'mock-f1',
+      createdByName: 'Aisha Bello',
+      participantUids: ['mock-f1', 'mock-f2', user?.uid || 'u-1'],
+      createdAt: new Date().toISOString(),
+    },
+  ];
+
+  const displayFriends = friends.length > 0 ? friends : (isTourActive ? tourMockFriends : []);
+  const displayTeams = userTeams.length > 0 ? userTeams : (isTourActive ? [tourMockTeam] : []);
+  const displaySelectedTeam = selectedTeam || (isTourActive ? tourMockTeam : null);
+  const displayTeamMembers = teamMembers.length > 0 ? teamMembers : (isTourActive ? tourMockFriends : []);
+  const displayCompetitions = competitions.length > 0 ? competitions : (isTourActive ? tourMockCompetitions : []);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
@@ -590,7 +673,7 @@ export default function LeaderboardPage() {
 
       {/* GLOBAL TAB */}
       {activeTab === 'global' && (
-        <Card variant="default" data-tour="leaderboard-table-card" className="p-0 overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+        <Card variant="default" data-tour="leaderboard-global-card" className="p-0 overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
           <div className="p-4 bg-[#FAFAFA] dark:bg-zinc-900 border-b border-[#E5E5E5] dark:border-[#27272A] flex items-center justify-between text-xs font-mono text-zinc-500 dark:text-zinc-400">
             <span>Rank & Member</span>
             <div className="flex items-center gap-12 mr-4">
@@ -739,13 +822,13 @@ export default function LeaderboardPage() {
             </div>
             {loadingFriends ? (
               <div className="p-8 text-center text-xs text-zinc-400">Loading friends...</div>
-            ) : friends.length > 0 ? (
+            ) : displayFriends.length > 0 ? (
               <div className="divide-y divide-black/5 dark:divide-white/10">
-                {friends.map((u, idx) => {
+                {displayFriends.map((u, idx) => {
                   const rank = idx + 1;
                   const isCurrentUser = user?.uid === u.uid;
                   const hours = Math.floor((u.publicStats?.totalProductiveMinutes || 0) / 60);
-                  const crown = getCrownBadge(rank, friends.length);
+                  const crown = getCrownBadge(rank, displayFriends.length);
                   const countryFlag = u.countryFlag || getTimezoneCountryFlag(u.timezone);
 
                   return (
@@ -798,19 +881,19 @@ export default function LeaderboardPage() {
 
       {/* TEAMS TAB */}
       {activeTab === 'teams' && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-tour="leaderboard-team-card">
           {/* Multi-Team Toolbar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl" data-tour="leaderboard-team-card">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
             {/* Active Teams Selector Pills */}
             <div className="flex items-center gap-2 overflow-x-auto py-1">
-              {userTeams.length > 0 ? (
-                userTeams.map((team) => (
+              {displayTeams.length > 0 ? (
+                displayTeams.map((team) => (
                   <button
                     key={team.id}
                     type="button"
                     onClick={() => handleSelectTeam(team)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                      selectedTeam?.id === team.id
+                      displaySelectedTeam?.id === team.id
                         ? 'bg-[#2F6FED] text-white shadow-xs'
                         : 'bg-neutral-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-neutral-200'
                     }`}
@@ -895,7 +978,7 @@ export default function LeaderboardPage() {
           )}
 
           {/* Active Selected Team Card */}
-          {selectedTeam ? (
+          {displaySelectedTeam ? (
             <Card variant="default" className="p-6 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/5 dark:border-white/10 pb-4">
                 <div className="flex items-center gap-3">
@@ -903,8 +986,8 @@ export default function LeaderboardPage() {
                     <Users className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">{selectedTeam.name}</h3>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{selectedTeam.description}</p>
+                    <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">{displaySelectedTeam.name}</h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{displaySelectedTeam.description}</p>
                   </div>
                 </div>
 
@@ -913,10 +996,10 @@ export default function LeaderboardPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-2 bg-neutral-50 dark:bg-zinc-800 p-2 rounded-xl border border-neutral-200 dark:border-zinc-700">
                       <span className="text-[11px] font-mono text-zinc-500">Invite Code (Admin):</span>
-                      <span className="font-mono font-bold text-xs text-zinc-900 dark:text-zinc-100">{selectedTeam.inviteCode}</span>
+                      <span className="font-mono font-bold text-xs text-zinc-900 dark:text-zinc-100">{displaySelectedTeam.inviteCode}</span>
                       <button
                         type="button"
-                        onClick={() => copyInviteCode(selectedTeam.inviteCode)}
+                        onClick={() => copyInviteCode(displaySelectedTeam.inviteCode)}
                         className="p-1 text-[#2F6FED] hover:text-[#2558BE] cursor-pointer"
                         title="Copy Invite Code"
                       >
@@ -947,10 +1030,10 @@ export default function LeaderboardPage() {
               <div className="space-y-2">
                 <h4 className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-500">Team Roster & Focus Leaderboard</h4>
                 <div className="divide-y divide-black/5 dark:divide-white/10 rounded-xl border border-black/5 dark:border-white/10 overflow-hidden">
-                  {(teamMembers.length > 0 ? teamMembers : [user].filter(Boolean) as User[]).map((u, idx) => {
+                  {displayTeamMembers.map((u, idx) => {
                     const rank = idx + 1;
-                    const crown = getCrownBadge(rank, teamMembers.length || 1);
-                    const isMemberOwner = u.uid === selectedTeam.ownerId;
+                    const crown = getCrownBadge(rank, displayTeamMembers.length || 1);
+                    const isMemberOwner = u.uid === displaySelectedTeam.ownerId;
                     const countryFlag = u.countryFlag || getTimezoneCountryFlag(u.timezone);
 
                     return (
@@ -1013,7 +1096,7 @@ export default function LeaderboardPage() {
 
       {/* COMPETITIONS TAB */}
       {activeTab === 'competitions' && (
-        <div className="space-y-6">
+        <div className="space-y-6" data-tour="leaderboard-comp-card">
           <div className="flex items-center justify-between p-4 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
             <div>
               <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
@@ -1033,9 +1116,9 @@ export default function LeaderboardPage() {
             </Button>
           </div>
 
-          {competitions.length > 0 ? (
+          {displayCompetitions.length > 0 ? (
             <div className="space-y-4">
-              {competitions.map((comp) => {
+              {displayCompetitions.map((comp) => {
                 const isExpired = new Date(comp.endDate).getTime() < Date.now();
                 return (
                   <Card key={comp.id} variant="default" className="p-6 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl space-y-4">

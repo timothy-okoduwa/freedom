@@ -26,26 +26,38 @@ import {
   Settings,
   Flame,
   Target,
+  Swords,
+  Sun,
+  Volume2,
+  Download,
+  Search,
 } from 'lucide-react';
 
 export interface TourStep {
   targetSelector: string;
   route: string;
+  subTab?: string;
   title: string;
   description: string;
   icon: React.ElementType;
 }
 
 export const TOUR_STEPS: TourStep[] = [
-  // 1. Dashboard - Nav Rail
+  // ---------------- DASHBOARD (Steps 1-6) ----------------
   {
     targetSelector: '[data-tour="nav-rail"]',
     route: '/dashboard',
     title: 'Sidebar Navigation Rail',
-    description: 'Switch seamlessly between your Dashboard, Plan Builder, Active Runtime, Daily Summary, History, Statistics, Heatmap, Leaderboards, and Settings.',
+    description: 'Switch seamlessly between Dashboard, Plan Builder, Runtime Engine, Summary, History, Stats, Heatmap, Leaderboards, and Settings.',
     icon: LayoutDashboard,
   },
-  // 2. Dashboard - Overview Cards
+  {
+    targetSelector: '[data-tour="dashboard-header"]',
+    route: '/dashboard',
+    title: 'Dashboard Welcome & Greeting',
+    description: 'Displays today\'s date and personalized greeting based on your local timezone.',
+    icon: LayoutDashboard,
+  },
   {
     targetSelector: '[data-tour="dashboard-overview-cards"]',
     route: '/dashboard',
@@ -53,15 +65,6 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Instant glance at your Current Streak, Planning Accuracy percentage, and Total Productive Time tracked against your daily goal.',
     icon: Flame,
   },
-  // 3. Dashboard - Build Day Plan CTA
-  {
-    targetSelector: '[data-tour="dashboard-builder-btn"]',
-    route: '/dashboard',
-    title: 'Build Day Plan Action',
-    description: 'Click here anytime from your Dashboard to structure your daily focus queue with mathematical precision.',
-    icon: CalendarPlus,
-  },
-  // 4. Dashboard - Replay Tour Action
   {
     targetSelector: '[data-tour="dashboard-replay-tour-btn"]',
     route: '/dashboard',
@@ -69,15 +72,36 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Need clarity on any feature later? Click this button on your Dashboard to re-trigger this interactive tour anytime.',
     icon: Sparkles,
   },
-  // 5. Plan Builder - Input
   {
-    targetSelector: '[data-tour="builder-add-input"]',
+    targetSelector: '[data-tour="dashboard-builder-btn"]',
+    route: '/dashboard',
+    title: 'Build Day Plan Action',
+    description: 'Click here anytime from your Dashboard to structure your daily focus queue with mathematical precision.',
+    icon: CalendarPlus,
+  },
+  {
+    targetSelector: '[data-tour="dashboard-queue-card"]',
+    route: '/dashboard',
+    title: 'Today\'s Execution Queue',
+    description: 'Displays all scheduled focus tasks and recovery breaks waiting in your execution pipeline for today.',
+    icon: CalendarPlus,
+  },
+
+  // ---------------- PLAN BUILDER (Steps 7-10) ----------------
+  {
+    targetSelector: '[data-tour="builder-header"]',
+    route: '/builder',
+    title: 'Plan Builder & 24H Cap',
+    description: 'Freedom enforces a 24-hour total daily time cap to ensure your workday timeline remains realistic and balanced.',
+    icon: CalendarPlus,
+  },
+  {
+    targetSelector: '[data-tour="builder-add-btn"]',
     route: '/builder',
     title: 'Task & Break Creator',
-    description: 'Enter task titles, set planned durations (15m, 30m, 45m, 60m), and specify focus vs recovery break types.',
+    description: 'Enter task titles, set planned durations (15m, 25m, 45m, 60m), and specify focus vs recovery break types.',
     icon: Plus,
   },
-  // 6. Plan Builder - Item List
   {
     targetSelector: '[data-tour="builder-item-list"]',
     route: '/builder',
@@ -85,7 +109,6 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Review your ordered timeline of focus sessions and recovery breaks. Drag or reorder items before starting execution.',
     icon: CalendarPlus,
   },
-  // 7. Plan Builder - Start Button
   {
     targetSelector: '[data-tour="builder-start-btn"]',
     route: '/builder',
@@ -93,7 +116,15 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Locks in your structured Day Plan and launches hands-free session execution in the Runtime Engine.',
     icon: Rocket,
   },
-  // 8. Runtime Engine - Active Timer Widget
+
+  // ---------------- RUNTIME ENGINE (Steps 11-15) ----------------
+  {
+    targetSelector: '[data-tour="runtime-header"]',
+    route: '/runtime',
+    title: 'Live Execution Status Banner',
+    description: 'Monitors real-time session telemetry: RUNNING ON TRACK, PAUSED, or OVERTIME EXTENSION.',
+    icon: Timer,
+  },
   {
     targetSelector: '[data-tour="runtime-timer-card"]',
     route: '/runtime',
@@ -101,7 +132,6 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Displays real-time countdown timer, circular progress ring, and active session status. As focus tasks finish, breaks begin automatically with zero manual clicks.',
     icon: Timer,
   },
-  // 9. Runtime Engine - Pause & Skip Controls
   {
     targetSelector: '[data-tour="runtime-action-controls"]',
     route: '/runtime',
@@ -109,15 +139,13 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Pause execution without breaking drift telemetry, resume when ready, or skip to the next scheduled task.',
     icon: Zap,
   },
-  // 10. Runtime Engine - Extension Controls
   {
     targetSelector: '[data-tour="runtime-extend-btn"]',
     route: '/runtime',
     title: 'Task Extension Controls',
-    description: 'In the flow? Instantly extend your active session (+5m, +10m, +20m) with one click.',
+    description: 'In the flow? Instantly extend your active session (+10m, +20m) with one click.',
     icon: Clock,
   },
-  // 11. Runtime Engine - Up Next Queue
   {
     targetSelector: '[data-tour="runtime-queue-card"]',
     route: '/runtime',
@@ -125,15 +153,22 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Preview upcoming focus tasks and recovery breaks waiting in your execution queue for today.',
     icon: CalendarPlus,
   },
-  // 12. Daily Summary - Score Card
+
+  // ---------------- DAILY SUMMARY (Steps 16-19) ----------------
+  {
+    targetSelector: '[data-tour="summary-header"]',
+    route: '/summary',
+    title: 'Daily Execution Summary',
+    description: 'Provides a mathematical post-workday audit of your completion rate, planning accuracy, and streak qualification.',
+    icon: CheckSquare,
+  },
   {
     targetSelector: '[data-tour="summary-score-card"]',
     route: '/summary',
     title: 'Daily Productivity Score',
-    description: 'Automated 0-100 score calculated mathematically from your completion rate, time accuracy, and focus consistency.',
+    description: 'Automated 0-100 score calculated mathematically from your completion rate, time accuracy, and focus discipline.',
     icon: CheckSquare,
   },
-  // 13. Daily Summary - Variance Breakdown
   {
     targetSelector: '[data-tour="summary-variance-card"]',
     route: '/summary',
@@ -141,23 +176,29 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Compares your planned duration vs actual execution time for each task to sharpen your future estimations.',
     icon: Target,
   },
-  // 14. Daily Summary - Streak Audit
   {
     targetSelector: '[data-tour="summary-streak-card"]',
     route: '/summary',
-    title: 'Streak & Goal Audit',
-    description: 'Audit whether today earned a streak progression badge (≥75% completion threshold).',
+    title: 'Item Execution Log & Streak Audit',
+    description: 'Audit item-by-item completion logs and verify if today qualified for streak progression (≥75% completion threshold).',
     icon: Flame,
   },
-  // 15. Task History - Log List
+
+  // ---------------- TASK HISTORY (Steps 20-22) ----------------
+  {
+    targetSelector: '[data-tour="history-search-card"]',
+    route: '/history',
+    title: 'Archive Logs Search Bar',
+    description: 'Search past execution logs by task title or date to review historical performance.',
+    icon: Search,
+  },
   {
     targetSelector: '[data-tour="history-list-card"]',
     route: '/history',
-    title: 'Historical Logs & Search',
-    description: 'Browse all past execution days, search by task name, and filter by completion status.',
+    title: 'Historical Day Plans List',
+    description: 'Browse all past execution days archived chronologically in your account.',
     icon: History,
   },
-  // 16. Task History - Log Detail View
   {
     targetSelector: '[data-tour="history-detail-card"]',
     route: '/history',
@@ -165,15 +206,29 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Inspect detailed task-by-task logs, exact timestamps, and duration metrics from previous days.',
     icon: CheckSquare,
   },
-  // 17. Statistics - Focus Hours Chart
+
+  // ---------------- STATISTICS (Steps 23-26) ----------------
+  {
+    targetSelector: '[data-tour="stats-overview-cards"]',
+    route: '/stats',
+    title: 'Historical Stat Overview',
+    description: 'Displays Total Productive Hours, Overall Planning Accuracy, and Longest Unbroken Streak.',
+    icon: BarChart3,
+  },
+  {
+    targetSelector: '[data-tour="stats-reliability-card"]',
+    route: '/stats',
+    title: 'Execution Reliability Ratios',
+    description: 'Monitors the ratio of completed tasks vs skipped or overrun tasks.',
+    icon: Target,
+  },
   {
     targetSelector: '[data-tour="stats-chart-card"]',
     route: '/stats',
-    title: 'Focus Hours Bar Chart',
+    title: 'Weekly Output Bar Chart',
     description: 'Visual breakdown comparing focus hours across Monday to Sunday for your active week.',
     icon: BarChart3,
   },
-  // 18. Statistics - Week Navigation Controls
   {
     targetSelector: '[data-tour="stats-week-controls"]',
     route: '/stats',
@@ -181,7 +236,8 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Navigate back to inspect previous weeks and analyze long-term focus trends.',
     icon: Calendar,
   },
-  // 19. Heatmap - Activity Grid
+
+  // ---------------- HEATMAP (Steps 27-28) ----------------
   {
     targetSelector: '[data-tour="heatmap-grid-card"]',
     route: '/heatmap',
@@ -189,7 +245,6 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'GitHub-style grid tracking daily focus activity with hover tooltips showing exact completion metrics.',
     icon: Calendar,
   },
-  // 20. Heatmap - Streak & Days Stats
   {
     targetSelector: '[data-tour="heatmap-stats-card"]',
     route: '/heatmap',
@@ -197,39 +252,63 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Monitors total active focus days, 100% perfect execution days, and current unbroken streak count.',
     icon: Flame,
   },
-  // 21. Leaderboard - Custom Teams
+
+  // ---------------- LEADERBOARD (Steps 29-32) ----------------
   {
-    targetSelector: '[data-tour="leaderboard-team-card"]',
+    targetSelector: '[data-tour="leaderboard-global-card"]',
     route: '/leaderboard',
-    title: 'Custom Teams & Invites',
-    description: 'Create or join private execution teams using 6-digit invite codes to hold your team accountable.',
-    icon: Users,
-  },
-  // 22. Leaderboard - Friends & Invites
-  {
-    targetSelector: '[data-tour="leaderboard-friends-card"]',
-    route: '/leaderboard',
-    title: 'Friends List & Direct Invites',
-    description: 'Invite colleagues via email or add friends to track real-time focus rankings together.',
-    icon: Users,
-  },
-  // 23. Leaderboard - Global Rankings & Flags
-  {
-    targetSelector: '[data-tour="leaderboard-table-card"]',
-    route: '/leaderboard',
-    title: 'Global Rankings & Country Flags',
+    subTab: 'global',
+    title: 'Global Rankings & Flags',
     description: 'Compete on global leaderboards featuring regional country flags (🇳🇬 🇺🇸 🇬🇧) based on timezone telemetry.',
     icon: Trophy,
   },
-  // 24. Settings - Profile & Avatar
+  {
+    targetSelector: '[data-tour="leaderboard-friends-card"]',
+    route: '/leaderboard',
+    subTab: 'friends',
+    title: 'Friends Leaderboard & Invites',
+    description: 'Invite colleagues via email or add friends to track real-time focus rankings together.',
+    icon: Users,
+  },
+  {
+    targetSelector: '[data-tour="leaderboard-team-card"]',
+    route: '/leaderboard',
+    subTab: 'teams',
+    title: 'Custom Teams & 6-Digit Codes',
+    description: 'Create or join private execution teams using 6-digit invite codes to hold your team accountable.',
+    icon: Users,
+  },
+  {
+    targetSelector: '[data-tour="leaderboard-comp-card"]',
+    route: '/leaderboard',
+    subTab: 'competitions',
+    title: 'Lock-in Competitions & Crowns',
+    description: 'Compete in time-boxed focus sprints for Diamond 💎, Gold 👑, Silver 🥈, and Bronze 🥉 crowns.',
+    icon: Swords,
+  },
+
+  // ---------------- SETTINGS (Steps 33-38) ----------------
+  {
+    targetSelector: '[data-tour="settings-theme-card"]',
+    route: '/settings',
+    title: 'Light & Dark Theme Switcher',
+    description: 'Toggle between Light, Dark, or System mode to suit your workspace ambiance.',
+    icon: Sun,
+  },
+  {
+    targetSelector: '[data-tour="settings-sound-card"]',
+    route: '/settings',
+    title: 'Completion Sound Chimes',
+    description: 'Customize audio feedback chimes played when focus tasks auto-complete.',
+    icon: Volume2,
+  },
   {
     targetSelector: '[data-tour="settings-profile-card"]',
     route: '/settings',
-    title: 'Profile & Custom Avatar',
+    title: 'Profile & DiceBear Avatar',
     description: 'Update your display name, username handle, and generate custom DiceBear avatars.',
     icon: Settings,
   },
-  // 25. Settings - Daily Goal & Notifications
   {
     targetSelector: '[data-tour="settings-goal-card"]',
     route: '/settings',
@@ -237,21 +316,19 @@ export const TOUR_STEPS: TourStep[] = [
     description: 'Set your daily productive time target (e.g. 4h 00m) and toggle desktop system notifications.',
     icon: Target,
   },
-  // 26. Settings - Sound Effects
   {
-    targetSelector: '[data-tour="settings-sound-card"]',
+    targetSelector: '[data-tour="settings-tour-card"]',
     route: '/settings',
-    title: 'Completion Sound Chimes',
-    description: 'Customize audio feedback chimes played when focus tasks auto-complete.',
-    icon: Zap,
+    title: 'Interactive Tour Replay',
+    description: 'Replay this step-by-step walkthrough anytime from Settings.',
+    icon: Sparkles,
   },
-  // 27. Settings - Theme Switcher
   {
-    targetSelector: '[data-tour="settings-theme-card"]',
+    targetSelector: '[data-tour="settings-export-card"]',
     route: '/settings',
-    title: 'Light & Dark Theme Switcher',
-    description: 'Toggle between Light, Dark, or System mode to suit your workspace ambiance.',
-    icon: Settings,
+    title: 'Data Export & Session Reset',
+    description: 'Export your complete execution history to JSON or manage your local session.',
+    icon: Download,
   },
 ];
 
@@ -265,9 +342,12 @@ export const SpotlightTourOverlay: React.FC = () => {
 
   const step = TOUR_STEPS[currentStepIndex];
 
-  // Recalculate target element rect on route change, step change, or window resize
+  // Broadcast step change & navigate route / subTab
   useEffect(() => {
     if (!isOpen || !step) return;
+
+    // Dispatch step change event so pages (e.g. Leaderboard) can auto-switch active sub-tab
+    window.dispatchEvent(new CustomEvent('freedom_tour_step', { detail: step }));
 
     // Navigate to step route if needed
     if (pathname !== step.route) {
@@ -279,7 +359,7 @@ export const SpotlightTourOverlay: React.FC = () => {
       const el = document.querySelector(step.targetSelector);
       if (el) {
         setTargetRect(el.getBoundingClientRect());
-      } else if (attempts < 15) {
+      } else if (attempts < 20) {
         attempts++;
         setTimeout(findTarget, 120);
       }
