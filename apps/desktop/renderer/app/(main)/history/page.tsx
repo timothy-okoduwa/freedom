@@ -108,7 +108,7 @@ export default function HistoryPage() {
         </div>
 
         {/* Search Bar */}
-        <div className="relative w-64">
+        <div className="relative w-64" data-tour="history-search-card">
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
           <input
             type="text"

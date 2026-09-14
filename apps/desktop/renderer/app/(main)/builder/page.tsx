@@ -166,7 +166,7 @@ export default function BuilderPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4" data-tour="builder-header">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">Day Plan Builder</h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">

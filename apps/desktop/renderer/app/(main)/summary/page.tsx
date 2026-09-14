@@ -113,7 +113,7 @@ export default function SummaryPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
       {/* Header */}
-      <div>
+      <div data-tour="summary-header">
         <span className="text-xs font-mono uppercase tracking-wider text-[#2F6FED]">Review</span>
         <h1 className="text-3xl font-extrabold tracking-tight text-[#111] dark:text-white mt-1">
           Daily Execution Summary

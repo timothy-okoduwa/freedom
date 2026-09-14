@@ -342,11 +342,11 @@ export const SpotlightTourOverlay: React.FC = () => {
 
   const step = TOUR_STEPS[currentStepIndex];
 
-  // Broadcast step change & navigate route / subTab
+  // Broadcast step change, navigate route, auto-scroll target into view, and track position in real-time
   useEffect(() => {
     if (!isOpen || !step) return;
 
-    // Dispatch step change event so pages (e.g. Leaderboard) can auto-switch active sub-tab
+    // Dispatch step change event for page sub-tabs (e.g. Leaderboard)
     window.dispatchEvent(new CustomEvent('freedom_tour_step', { detail: step }));
 
     // Navigate to step route if needed
@@ -354,28 +354,41 @@ export const SpotlightTourOverlay: React.FC = () => {
       router.push(step.route);
     }
 
+    let isMounted = true;
     let attempts = 0;
-    const findTarget = () => {
+
+    const findAndScrollTarget = () => {
+      if (!isMounted) return;
       const el = document.querySelector(step.targetSelector);
       if (el) {
-        setTargetRect(el.getBoundingClientRect());
-      } else if (attempts < 20) {
+        // Auto-scroll element into center of view so user never has to search for it
+        el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        const rect = el.getBoundingClientRect();
+        setTargetRect(rect);
+      } else if (attempts < 25) {
         attempts++;
-        setTimeout(findTarget, 120);
+        setTimeout(findAndScrollTarget, 100);
       }
     };
 
-    const timer = setTimeout(findTarget, 150);
+    const timer = setTimeout(findAndScrollTarget, 120);
 
-    const handleResize = () => {
+    const handleUpdate = () => {
+      if (!isMounted) return;
       const el = document.querySelector(step.targetSelector);
-      if (el) setTargetRect(el.getBoundingClientRect());
+      if (el) {
+        setTargetRect(el.getBoundingClientRect());
+      }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleUpdate);
+    window.addEventListener('scroll', handleUpdate, true);
+
     return () => {
+      isMounted = false;
       clearTimeout(timer);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', handleUpdate);
+      window.removeEventListener('scroll', handleUpdate, true);
     };
   }, [isOpen, currentStepIndex, step, pathname, router]);
 
@@ -404,7 +417,7 @@ export const SpotlightTourOverlay: React.FC = () => {
     }
   };
 
-  // Compute Popover Position relative to targeted element
+  // Compute Popover Position relative to targeted element with strict viewport clamping
   let popoverStyle: React.CSSProperties = {
     top: '50%',
     left: '50%',
@@ -414,21 +427,45 @@ export const SpotlightTourOverlay: React.FC = () => {
   let caretPositionClass = '';
 
   if (targetRect) {
-    // If target element is low on screen, place popover above
-    if (targetRect.bottom > window.innerHeight - 240) {
-      popoverStyle = {
-        top: Math.max(16, targetRect.top - 230),
-        left: Math.max(16, Math.min(targetRect.left, window.innerWidth - 390)),
-      };
+    const popoverHeight = 250;
+    const popoverWidth = 380;
+    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+    const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
+
+    const spaceBelow = viewportHeight - targetRect.bottom;
+    const spaceAbove = targetRect.top;
+
+    let calculatedTop = 0;
+
+    if (spaceBelow >= popoverHeight + 16) {
+      calculatedTop = targetRect.bottom + 12;
+      caretPositionClass = 'caret-top';
+    } else if (spaceAbove >= popoverHeight + 16) {
+      calculatedTop = targetRect.top - popoverHeight - 12;
       caretPositionClass = 'caret-bottom';
     } else {
-      // Place popover below target
-      popoverStyle = {
-        top: targetRect.bottom + 16,
-        left: Math.max(16, Math.min(targetRect.left, window.innerWidth - 390)),
-      };
-      caretPositionClass = 'caret-top';
+      if (spaceAbove > spaceBelow) {
+        calculatedTop = Math.max(16, targetRect.top - popoverHeight - 8);
+        caretPositionClass = 'caret-bottom';
+      } else {
+        calculatedTop = Math.min(viewportHeight - popoverHeight - 16, targetRect.bottom + 8);
+        caretPositionClass = 'caret-top';
+      }
     }
+
+    // Strict safety bounds: popover card can NEVER bleed off the bottom or top of viewport
+    const finalTop = Math.max(16, Math.min(viewportHeight - popoverHeight - 16, calculatedTop));
+
+    let calculatedLeft = targetRect.left;
+    if (targetRect.width > popoverWidth) {
+      calculatedLeft = targetRect.left + (targetRect.width - popoverWidth) / 2;
+    }
+    const finalLeft = Math.max(16, Math.min(viewportWidth - popoverWidth - 16, calculatedLeft));
+
+    popoverStyle = {
+      top: `${finalTop}px`,
+      left: `${finalLeft}px`,
+    };
   }
 
   const IconComp = step.icon;

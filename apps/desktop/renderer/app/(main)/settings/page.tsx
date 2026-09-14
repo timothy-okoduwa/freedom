@@ -364,7 +364,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* Product Tour & Help */}
-      <Card variant="default" className="p-6 space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+      <Card variant="default" data-tour="settings-tour-card" className="p-6 space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-[#111] dark:text-white">Interactive Product Tour</h3>
@@ -404,7 +404,7 @@ export default function SettingsPage() {
       </Card>
 
       {/* Compliance & Data Export */}
-      <Card variant="default" className="p-6 space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
+      <Card variant="default" data-tour="settings-export-card" className="p-6 space-y-3 bg-white dark:bg-[#18181B] border border-[#E5E5E5] dark:border-[#27272A] rounded-2xl">
         <h3 className="text-sm font-bold text-[#111] dark:text-white">Data Privacy & Export</h3>
         <p className="text-xs text-[#6B6B6B] dark:text-[#A1A1AA]">
           Export your complete productivity history or manage your local session storage.
