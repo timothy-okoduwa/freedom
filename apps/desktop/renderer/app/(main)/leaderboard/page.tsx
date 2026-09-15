@@ -5,7 +5,7 @@ import type { User, Team, TeamInvitation, FriendRequest, Competition } from '@fr
 import { useSessionStore } from '../../../stores/useSessionStore';
 import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService, getDicebearAvatar, getTimezoneCountryFlag } from '../../../lib/firebase';
-import { Card, Tabs, Button, Modal } from '@freedom/ui';
+import { Card, Tabs, Button, Modal, CountryFlag } from '@freedom/ui';
 import {
   Trophy,
   Flame,
@@ -716,7 +716,7 @@ export default function LeaderboardPage() {
                       />
                       <div className="truncate">
                         <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5 truncate">
-                          <span className="text-base leading-none">{countryFlag}</span>
+                          <CountryFlag flag={countryFlag} />
                           <span>{u.displayName || 'Freedom User'}</span>
                           {isCurrentUser && (
                             <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-semibold bg-[#2F6FED] text-white">
@@ -848,7 +848,7 @@ export default function LeaderboardPage() {
                         <img src={u.avatarUrl || getDicebearAvatar(u.username || u.uid)} alt="" className="w-10 h-10 rounded-full border object-cover shrink-0" />
                         <div className="truncate">
                           <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5 truncate">
-                            <span className="text-base leading-none">{countryFlag}</span>
+                            <CountryFlag flag={countryFlag} />
                             <span>{u.displayName}</span>
                             {isCurrentUser && <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[#2F6FED] text-white">YOU</span>}
                             {crown && (
@@ -1048,7 +1048,7 @@ export default function LeaderboardPage() {
                           <img src={u.avatarUrl || getDicebearAvatar(u.username || u.uid)} alt="" className="w-8 h-8 rounded-full border border-black/10" />
                           <div>
                             <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                              <span className="text-base leading-none">{countryFlag}</span>
+                              <CountryFlag flag={countryFlag} />
                               <span>{u.displayName}</span>
                               {isMemberOwner && (
                                 <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-semibold bg-amber-500 text-white">
@@ -1172,7 +1172,7 @@ export default function LeaderboardPage() {
                                   {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img src={u.avatarUrl || getDicebearAvatar(u.username || u.uid)} alt="" className="w-7 h-7 rounded-full" />
                                   <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                                    <span className="text-base leading-none">{countryFlag}</span>
+                                    <CountryFlag flag={countryFlag} />
                                     <span>{u.displayName}</span>
                                     {crown && (
                                       <span className={`px-1.5 py-0.5 rounded-full border text-[9px] flex items-center gap-1 ${crown.color}`}>

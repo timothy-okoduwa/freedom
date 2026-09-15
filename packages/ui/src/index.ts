@@ -10,3 +10,4 @@ export * from './StatTile';
 export * from './HeatmapGrid';
 export * from './Accordion';
 export * from './FreedomLogo';
+export * from './CountryFlag';
