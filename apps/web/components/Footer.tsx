@@ -103,7 +103,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <a
-                  href="mailto:support@freedom.so"
+                  href="mailto:support@usefreedom.top"
                   className="hover:text-black transition-colors"
                 >
                   support email

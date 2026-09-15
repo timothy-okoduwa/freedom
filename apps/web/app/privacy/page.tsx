@@ -149,8 +149,8 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-bold text-[#111111]">11. Contact</h2>
             <p>
               For any questions regarding privacy or data rights, email our team at{' '}
-              <a href="mailto:privacy@freedom.so" className="text-[#2F6FED] underline font-semibold">
-                privacy@freedom.so
+              <a href="mailto:privacy@usefreedom.top" className="text-[#2F6FED] underline font-semibold">
+                privacy@usefreedom.top
               </a>.
             </p>
           </section>

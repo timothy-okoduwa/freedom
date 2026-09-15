@@ -10,7 +10,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://freedom.app'),
+  metadataBase: new URL('https://usefreedom.top'),
   title: {
     default: 'Freedom — Your Day Runs Itself | Automatic Execution Engine',
     template: '%s | Freedom',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://freedom.app',
+    url: 'https://usefreedom.top',
     siteName: 'Freedom',
     title: 'Freedom — Your Day Runs Itself | Automatic Execution Engine',
     description:
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   alternates: {
-    canonical: 'https://freedom.app',
+    canonical: 'https://usefreedom.top',
   },
 };
 
@@ -101,13 +101,13 @@ export default function RootLayout({
     },
     description:
       'Freedom is an automatic execution engine for Mac & Windows. Plan once, start your day, and let Freedom run your queue with a calm floating presence.',
-    image: 'https://freedom.app/freedom.png',
+    image: 'https://usefreedom.top/freedom.png',
     downloadUrl:
       'https://github.com/timothy-okoduwa/freedom/releases/download/v1.0.0/Freedom-1.0.0-arm64.dmg',
     author: {
       '@type': 'Organization',
       name: 'Freedom Technologies Inc.',
-      url: 'https://freedom.app',
+      url: 'https://usefreedom.top',
     },
   };
 

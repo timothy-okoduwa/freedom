@@ -103,8 +103,8 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-[#111111]">8. Contact information</h2>
             <p>
               For legal inquiries regarding these terms, please contact{' '}
-              <a href="mailto:legal@freedom.so" className="text-[#2F6FED] underline font-semibold">
-                legal@freedom.so
+              <a href="mailto:legal@usefreedom.top" className="text-[#2F6FED] underline font-semibold">
+                legal@usefreedom.top
               </a>.
             </p>
           </section>

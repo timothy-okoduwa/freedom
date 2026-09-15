@@ -87,7 +87,7 @@ export function initInviteChannels() {
 
       const isTeam = payload.inviteType === 'team';
       const isExisting = payload.isExistingUser ?? false;
-      const downloadLink = payload.downloadUrl || 'https://freedom-mac.vercel.app/';
+      const downloadLink = payload.downloadUrl || 'https://usefreedom.top/';
 
       const title = isTeam
         ? `${payload.senderName} invited you to join team "${payload.teamName || 'Execution Team'}"`

@@ -9,12 +9,12 @@ export const metadata: Metadata = {
   description:
     'Simple, transparent pricing for Freedom. Free local core engine forever. Upgrade to Pro for cloud syncing, AI automations, and team leaderboards.',
   alternates: {
-    canonical: 'https://freedom.app/pricing',
+    canonical: 'https://usefreedom.top/pricing',
   },
   openGraph: {
     title: 'Pricing — Freedom',
     description: 'Simple, transparent pricing for Freedom automatic execution engine.',
-    url: 'https://freedom.app/pricing',
+    url: 'https://usefreedom.top/pricing',
     images: ['/freedom.png'],
   },
   twitter: {

@@ -375,7 +375,7 @@ export default function LeaderboardPage() {
           teamName: selectedTeam?.name || 'Freedom Execution Team',
           inviteCode: activeCode,
           isExistingUser,
-          downloadUrl: 'https://freedom-mac.vercel.app/',
+          downloadUrl: 'https://usefreedom.top/',
         });
       } else {
         const res = await fetch('/api/invite', {
@@ -470,7 +470,7 @@ export default function LeaderboardPage() {
               inviteType: 'team',
               teamName: team.name,
               inviteCode: team.inviteCode,
-              downloadUrl: 'https://freedom-mac.vercel.app/',
+              downloadUrl: 'https://usefreedom.top/',
             });
           }
         }

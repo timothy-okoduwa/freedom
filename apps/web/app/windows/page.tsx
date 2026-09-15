@@ -45,7 +45,7 @@ export default function WindowsWaitlistPage() {
 
   const copyReferralLink = () => {
     if (typeof window !== 'undefined') {
-      const baseUrl = window.location.origin || 'https://freedom-mac.vercel.app';
+      const baseUrl = window.location.origin || 'https://usefreedom.top';
       navigator.clipboard.writeText(`${baseUrl}/windows?ref=${encodeURIComponent(userEmail || '')}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);

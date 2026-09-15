@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description:
     'Download Freedom for Mac and Windows. Automatic execution engine for high-agency builders. Plan once, start your day, and let Freedom run your task queue.',
   alternates: {
-    canonical: 'https://freedom.app/download',
+    canonical: 'https://usefreedom.top/download',
   },
   openGraph: {
     title: 'Download Freedom for macOS & Windows',
     description:
       'Download Freedom for Mac and Windows. Automatic execution engine for high-agency builders.',
-    url: 'https://freedom.app/download',
+    url: 'https://usefreedom.top/download',
     images: ['/freedom.png'],
   },
   twitter: {
