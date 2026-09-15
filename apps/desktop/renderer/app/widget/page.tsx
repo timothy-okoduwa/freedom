@@ -144,10 +144,10 @@ export default function WidgetPage() {
           onMouseDown={handlePillMouseDown}
           onClick={handlePillClick}
           title={activeItem ? `Freedom: ${activeItem.title} (${exactTimeStr}) — Single click to expand, double click for app` : 'Freedom — Single click to expand, double click for app'}
-          className={`w-[140px] h-[40px] rounded-full flex items-center justify-between px-3 py-1 cursor-pointer hover:scale-[1.02] transition-all duration-200 group ${
+          className={`w-[140px] h-[40px] rounded-full flex items-center justify-between px-3 py-1 cursor-pointer hover:scale-[1.02] transition-all duration-200 group border ${
             isDark
-              ? 'bg-[#090B10]/95 border border-[#2F6FED]/40 text-white hover:border-[#2F6FED]'
-              : 'bg-white/95 border border-black/10 text-[#111] hover:border-[#2F6FED]'
+              ? 'bg-[#090B10]/95 border-white/15 text-white hover:border-[#2F6FED]/60'
+              : 'bg-white/95 border-neutral-200/80 text-[#111] hover:border-[#2F6FED]/50'
           }`}
         >
           {/* Left: Freedom Emblem */}
