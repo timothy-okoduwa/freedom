@@ -39,11 +39,11 @@ export function DownloadClient() {
   };
 
   return (
-    <main className="min-h-screen bg-[#F7F6F0] text-[#111111] pt-16 sm:pt-24 pb-16 flex flex-col justify-between selection:bg-[#2F6FED] selection:text-white font-sans">
+    <main className="min-h-screen bg-[#FAFAFA] text-[#111111] pt-16 sm:pt-24 pb-16 flex flex-col justify-between selection:bg-[#2F6FED] selection:text-white font-sans">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-8 sm:space-y-10 w-full pt-4">
-        {/* Top Status Pill (Granola Style Olive Green Badge) */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EBF3DE] border border-[#C5DC97] text-xs font-mono font-bold text-[#4E621C] shadow-2xs">
-          <span className="w-4 h-4 rounded-full bg-[#546A29] text-white flex items-center justify-center text-[10px]">
+        {/* Top Status Pill (Freedom Blue Badge) */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EAF1FE] border border-[#2F6FED]/30 text-xs font-mono font-bold text-[#2F6FED] shadow-2xs">
+          <span className="w-4 h-4 rounded-full bg-[#2F6FED] text-white flex items-center justify-center text-[10px]">
             ✓
           </span>
           <span className="tracking-wide text-[11px] uppercase">DOWNLOAD STARTED</span>
@@ -51,16 +51,16 @@ export function DownloadClient() {
 
         {/* Headline & Subtitle */}
         <div className="space-y-3 px-2">
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#111111] leading-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#0F172A] leading-tight">
             Thanks for downloading! <br />
-            <span className="italic font-normal font-serif text-[#333333]">Just a few steps left</span>
+            <span className="italic font-normal font-serif text-[#334155]">Just a few steps left</span>
           </h1>
-          <p className="text-xs sm:text-base text-[#555555] max-w-lg mx-auto font-sans leading-relaxed">
+          <p className="text-xs sm:text-base text-[#64748B] max-w-lg mx-auto font-sans leading-relaxed">
             Your download will begin automatically. If it didn&apos;t start,{' '}
             <a
               href={DOWNLOAD_URL}
               download="Freedom.dmg"
-              className="text-[#546A29] font-semibold underline underline-offset-4 hover:text-[#3B4D1B] transition-colors"
+              className="text-[#2F6FED] font-bold underline underline-offset-4 hover:text-[#1E56C9] transition-colors"
             >
               download Freedom manually
             </a>
@@ -68,18 +68,18 @@ export function DownloadClient() {
           </p>
         </div>
 
-        {/* 3 Step Mac Installation Cards Grid (Granola Layout with step-1, step-2, step-3 images) */}
+        {/* 3 Step Mac Installation Cards Grid (Freedom Blue Theme with Full Cover Images) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 pt-2 max-w-4xl mx-auto text-left w-full">
           {/* STEP 1: Open Freedom.dmg */}
           <div className="flex flex-col items-center space-y-3.5 max-w-xs sm:max-w-none w-full mx-auto">
-            <div className="w-8 h-8 rounded-full bg-[#546A29] text-white font-serif italic font-extrabold text-sm flex items-center justify-center shadow-md z-10">
+            <div className="w-8 h-8 rounded-full bg-[#2F6FED] text-white font-mono font-extrabold text-sm flex items-center justify-center shadow-md z-10">
               1
             </div>
-            <div className="w-full h-52 sm:h-56 rounded-2xl bg-[#7CA028] p-2 border border-black/10 shadow-md flex items-center justify-center overflow-hidden">
+            <div className="w-full h-52 sm:h-56 rounded-2xl bg-white border border-black/10 shadow-md flex items-center justify-center overflow-hidden">
               <img
                 src="/step-1.png"
                 alt="Step 1: Open Freedom.dmg from Downloads folder"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
             <p className="text-xs text-center text-[#475569] font-medium leading-snug max-w-[220px]">
@@ -90,14 +90,14 @@ export function DownloadClient() {
 
           {/* STEP 2: Drag Freedom to Applications */}
           <div className="flex flex-col items-center space-y-3.5 max-w-xs sm:max-w-none w-full mx-auto">
-            <div className="w-8 h-8 rounded-full bg-[#546A29] text-white font-serif italic font-extrabold text-sm flex items-center justify-center shadow-md z-10">
+            <div className="w-8 h-8 rounded-full bg-[#2F6FED] text-white font-mono font-extrabold text-sm flex items-center justify-center shadow-md z-10">
               2
             </div>
-            <div className="w-full h-52 sm:h-56 rounded-2xl bg-[#F6F5ED] p-2 border border-black/10 shadow-md flex items-center justify-center overflow-hidden">
+            <div className="w-full h-52 sm:h-56 rounded-2xl bg-white border border-black/10 shadow-md flex items-center justify-center overflow-hidden">
               <img
                 src="/step-2.png"
                 alt="Step 2: Drag Freedom icon into Applications folder"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
             <p className="text-xs text-center text-[#475569] font-medium leading-snug max-w-[220px]">
@@ -108,14 +108,14 @@ export function DownloadClient() {
 
           {/* STEP 3: Open Freedom App */}
           <div className="flex flex-col items-center space-y-3.5 max-w-xs sm:max-w-none w-full mx-auto">
-            <div className="w-8 h-8 rounded-full bg-[#546A29] text-white font-serif italic font-extrabold text-sm flex items-center justify-center shadow-md z-10">
+            <div className="w-8 h-8 rounded-full bg-[#2F6FED] text-white font-mono font-extrabold text-sm flex items-center justify-center shadow-md z-10">
               3
             </div>
-            <div className="w-full h-52 sm:h-56 rounded-2xl bg-white p-2 border border-black/10 shadow-md flex items-center justify-center overflow-hidden">
+            <div className="w-full h-52 sm:h-56 rounded-2xl bg-white border border-black/10 shadow-md flex items-center justify-center overflow-hidden">
               <img
                 src="/step-3.png"
                 alt="Step 3: Open Freedom app from Applications folder"
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
             <p className="text-xs text-center text-[#475569] font-medium leading-snug max-w-[220px]">
