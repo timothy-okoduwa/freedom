@@ -144,10 +144,10 @@ export default function WidgetPage() {
           onMouseDown={handlePillMouseDown}
           onClick={handlePillClick}
           title={activeItem ? `Freedom: ${activeItem.title} (${exactTimeStr}) — Single click to expand, double click for app` : 'Freedom — Single click to expand, double click for app'}
-          className={`w-[140px] h-[40px] rounded-full flex items-center justify-between px-3 py-1 cursor-pointer hover:scale-[1.02] transition-all duration-200 group shadow-lg ${
+          className={`w-[140px] h-[40px] rounded-full flex items-center justify-between px-3 py-1 cursor-pointer hover:scale-[1.02] transition-all duration-200 group ${
             isDark
-              ? 'bg-[#090B10]/95 border border-[#2F6FED]/40 text-white hover:border-[#2F6FED] shadow-black/60'
-              : 'bg-white/95 border border-black/10 text-[#111] hover:border-[#2F6FED] shadow-black/10'
+              ? 'bg-[#090B10]/95 border border-[#2F6FED]/40 text-white hover:border-[#2F6FED]'
+              : 'bg-white/95 border border-black/10 text-[#111] hover:border-[#2F6FED]'
           }`}
         >
           {/* Left: Freedom Emblem */}
@@ -245,8 +245,8 @@ export default function WidgetPage() {
         onClick={handlePillClick}
         className={`w-full h-full rounded-2xl p-3 flex flex-col justify-between transition-all overflow-hidden cursor-move ${
           isDark
-            ? 'bg-[#121215]/95 backdrop-blur-xl border border-white/10 text-white shadow-2xl'
-            : 'bg-white/95 backdrop-blur-xl border border-black/10 text-[#111] shadow-xl'
+            ? 'bg-[#121215]/95 backdrop-blur-xl border border-white/10 text-white'
+            : 'bg-white/95 backdrop-blur-xl border border-black/10 text-[#111]'
         }`}
       >
         {/* Top Header Row */}
