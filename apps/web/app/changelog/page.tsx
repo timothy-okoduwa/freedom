@@ -1,9 +1,31 @@
+import type { Metadata } from 'next';
 import React from 'react';
 import { Footer } from '../../components/Footer';
 
+export const metadata: Metadata = {
+  title: 'Changelog & Release Notes — Freedom',
+  description:
+    'Every release, feature upgrade, and aesthetic refinement shipped for Freedom automatic execution engine.',
+  alternates: {
+    canonical: 'https://freedom.app/changelog',
+  },
+  openGraph: {
+    title: 'Changelog — Freedom',
+    description: 'Every release, feature upgrade, and aesthetic refinement shipped for Freedom.',
+    url: 'https://freedom.app/changelog',
+    images: ['/freedom.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Changelog — Freedom',
+    description: 'See the latest release updates and execution trail for Freedom.',
+    images: ['/freedom.png'],
+  },
+};
+
 export default function ChangelogPage() {
   return (
-    <main className="min-h-screen bg-[#FBFBFA] text-[#111111] pt-24 pb-16 selection:bg-[#2F6FED] selection:text-white">
+    <main className="min-h-screen bg-[#FBFBFA] text-[#111111] pt-24 pb-16 selection:bg-[#2F6FED] selection:text-white font-sans">
       <div className="max-w-4xl mx-auto px-4 space-y-12">
         {/* Header */}
         <div className="space-y-2">
@@ -163,109 +185,6 @@ export default function ChangelogPage() {
                     <strong>Desktop Email Delivery</strong>: Electron IPC nodemailer transport delivering HTML email invitations linking to <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">https://freedom-mac.vercel.app/</code>.
                   </div>
                 </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* RELEASE v2.2 */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-lg space-y-6 relative overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold font-mono text-[#111]">v2.2.0</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-[#2F6FED] text-[10px] font-mono font-bold uppercase tracking-wide">
-                  STABLE
-                </span>
-              </div>
-              <span className="text-xs font-mono text-[#888]">September 2026</span>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-[#111] flex items-center gap-2">
-                <span>⚡ The HeyClicky Spark & Seamless Flow</span>
-              </h3>
-              <ul className="space-y-3 text-sm text-[#333] leading-relaxed">
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Continuous iPod Touch Audio Engine</strong>: Audio playback of{' '}
-                    <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">
-                      Ninajirachi — iPod Touch
-                    </code>{' '}
-                    now stays playing uninterrupted across client-side page transitions.
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Pill Drag & Double-Click App Focus</strong>: Drag the floating capsule anywhere on screen.
-                    Single click toggles expansion/collapse; double click instantly brings the main Freedom app to front.
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Interactive Canvas & Granola Download Flow</strong>: Added small bounded draggable stickers,
-                    curved 3D rainbow folder wave trails, handwritten cursive signature, and a 3-step Mac installation guide.
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Unified Official Logo Asset</strong>: High-resolution official Freedom logo icon deployed
-                    across web header, floating pill, desktop app, and DMG installer bundle.
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* RELEASE v2.1 */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-lg space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-bold font-mono text-[#111]">v2.1.0</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-[#2F6FED] text-[10px] font-mono font-bold uppercase">
-                  LEADERBOARD & INVITES
-                </span>
-              </div>
-              <span className="text-xs font-mono text-[#888]">September 2026</span>
-            </div>
-
-            <div className="space-y-4">
-              <ul className="space-y-2.5 text-sm text-[#444] leading-relaxed">
-                <li className="flex items-start gap-2">
-                  <span className="text-[#1FAE6B] font-bold">✓</span>
-                  <span>Instant email invite generation with fallback team codes copied directly to clipboard.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#1FAE6B] font-bold">✓</span>
-                  <span>Competitive Global, Friends, and Teams leaderboards with privacy opt-in controls.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#1FAE6B] font-bold">✓</span>
-                  <span>Automatic theme switching and smart morning/afternoon/evening greetings.</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* RELEASE v2.0 */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-md space-y-6 opacity-90">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-bold font-mono text-[#111]">v2.0.0</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-neutral-100 text-[#666] text-[10px] font-mono font-bold uppercase">
-                  FLOATING PRESENCE ENGINE
-                </span>
-              </div>
-              <span className="text-xs font-mono text-[#888]">August 2026</span>
-            </div>
-
-            <div className="space-y-4">
-              <ul className="space-y-2 text-sm text-[#555] leading-relaxed">
-                <li>• Granola-style floating pill countdown widget with non-focus-stealing design.</li>
-                <li>• Fixed timestamp math runtime engine (resilient against sleep modes, reloads, and offline state).</li>
-                <li>• Planned vs. Actual Productivity Score calculation algorithm (0 to 100).</li>
               </ul>
             </div>
           </div>

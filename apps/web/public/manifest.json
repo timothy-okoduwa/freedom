@@ -1,0 +1,21 @@
+{
+  "name": "Freedom — Your Day Runs Itself",
+  "short_name": "Freedom",
+  "description": "Freedom is an automatic execution engine for Mac & Windows. Plan once, start your day, and let Freedom run the queue with a calm floating presence.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2F6FED",
+  "icons": [
+    {
+      "src": "/freedom.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ]
+}
