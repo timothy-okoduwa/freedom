@@ -42,13 +42,64 @@ export default function ChangelogPage() {
 
         {/* Timeline Entries */}
         <div className="space-y-10">
-          {/* RELEASE v3.1 */}
+          {/* RELEASE v3.2 */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-xl space-y-6 relative overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
               <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold font-mono text-[#111]">v3.1.0</span>
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.2.0</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-[#1FAE6B] text-white text-[10px] font-mono font-bold uppercase tracking-wide">
                   LATEST RELEASE
+                </span>
+              </div>
+              <span className="text-xs font-mono text-[#888]">September 2026</span>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-[#111] flex items-center gap-2">
+                <span>🎨 HIG App Icon, Windows Flag Fix, Redesigned Download Page & Full SEO Suite</span>
+              </h3>
+              <ul className="space-y-3 text-sm text-[#333] leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>HIG-Compliant macOS & Windows App Icon</strong>: Re-crafted desktop application icons adhering strictly to Apple Human Interface Guidelines (1024x1024 canvas with 824x824 squircle artwork and 100px padding margin). Ensures native system Dock sizing (no oversized icons) and full support for macOS Sequoia/Sonoma clear, dark, and tinted modes. Generated multi-resolution <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">.ico</code> (256x256) for Windows setup builds.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Windows Leaderboard Country Flags</strong>: Fixed country flag rendering on Windows OS by embedding standard SVG flag components across Leaderboard global, friends, and team rosters with automatic country code fallback.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Redesigned Download Page & Installation Cards</strong>: Upgraded <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/download</code> with Granola-inspired installation cards using edge-to-edge <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">step-1</code>, <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">step-2</code>, and <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">step-3</code> step illustrations styled with Freedom Blue branding.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Complete Web SEO & Metadata Suite</strong>: Implemented comprehensive OpenGraph tags, Twitter Card previews, JSON-LD structured data (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">SoftwareApplication</code> & <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Organization</code>), dynamic XML sitemap (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/sitemap.xml</code>), web crawler directives (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/robots.txt</code>), and PWA manifest (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/manifest.json</code>).
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Rebuilt App Installers & Application Bundle</strong>: Re-packaged and updated local <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/Applications/Freedom.app</code>, macOS DMG installer (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom-1.0.0-arm64.dmg</code>), and Windows installer (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom Setup 1.0.0.exe</code>).
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* RELEASE v3.1 */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-lg space-y-6 relative overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.1.0</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-[#2F6FED] text-[10px] font-mono font-bold uppercase tracking-wide">
+                  STABLE
                 </span>
               </div>
               <span className="text-xs font-mono text-[#888]">September 2026</span>
@@ -132,57 +183,6 @@ export default function ChangelogPage() {
                   <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
                   <div>
                     <strong>Viewport-Clamped Popovers & Smooth Auto-Scrolling</strong>: Target cards auto-scroll smoothly into the center of the viewport on every step. Tooltip cards feature strict safety bounds to prevent off-screen clipping, keeping Next/Prev buttons 100% visible and clickable.
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* RELEASE v2.5 */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-lg space-y-6 relative overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold font-mono text-[#111]">v2.5.0</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-[#2F6FED] text-[10px] font-mono font-bold uppercase tracking-wide">
-                  STABLE
-                </span>
-              </div>
-              <span className="text-xs font-mono text-[#888]">September 2026</span>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-[#111] flex items-center gap-2">
-                <span>🛡️ Team Admin Deletion, Edge-Safe Heatmap & Stats History</span>
-              </h3>
-              <ul className="space-y-3 text-sm text-[#333] leading-relaxed">
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Team Owner Administration & Cascading Cleanup</strong>: Team owners can delete teams directly (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Delete Team</code>) with cascading Firestore removal of team documents, memberships, and pending invitations. Owners can also remove individual members from team rosters.
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Strict Team Privacy & Pending Invite Cards</strong>: Friends are strictly isolated from private teams until invited or joined via code. Added a <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Pending Team Invitations</code> banner in the Leaderboard page with direct Accept & Join actions and automatic stale invite cleanup.
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Edge-Safe Heatmap & Month Headers</strong>: GitHub-style month headers and day labels. Smart directional tooltip positioning prevents cut-off or forced horizontal scrolling on top rows or edge columns. Grid anchors to the current week so today is always visible.
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Statistics Week-by-Week Navigation</strong>: Browse past weeks' execution output with <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">← Prev Week</code>, <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Current Week</code>, and <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Next Week →</code> buttons, bounded by account creation week.
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
-                  <div>
-                    <strong>Desktop Email Delivery</strong>: Electron IPC nodemailer transport delivering HTML email invitations linking to <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">https://freedom-mac.vercel.app/</code>.
                   </div>
                 </li>
               </ul>
