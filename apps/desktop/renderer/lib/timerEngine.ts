@@ -26,6 +26,27 @@ export function formatRemainingTime(ms: number): { formatted: string; isOvertime
   };
 }
 
+export function formatTaskDuration(
+  plannedMinutes: number,
+  extensionMinutes: number = 0,
+  longFormat: boolean = false
+): string {
+  const formatMins = (minutes: number) => {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
+    if (hrs > 0) return `${hrs}h`;
+    return longFormat ? `${mins} ${mins === 1 ? 'min' : 'mins'}` : `${mins}m`;
+  };
+
+  const baseStr = formatMins(plannedMinutes);
+  if (extensionMinutes > 0) {
+    const extStr = formatMins(extensionMinutes);
+    return `${baseStr} (+${extStr})`;
+  }
+  return baseStr;
+}
+
 /**
  * Composite Productivity Score Formula (§15.2 of specification).
  */

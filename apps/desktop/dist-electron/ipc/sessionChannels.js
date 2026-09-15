@@ -58,6 +58,8 @@ function startTicker() {
     if (tickTimer)
         clearInterval(tickTimer);
     tickTimer = setInterval(() => {
+        if (checkDayRollover())
+            return;
         if (!activeItem)
             return;
         broadcastSessionUpdate();
@@ -123,26 +125,43 @@ function advanceNextItem() {
         scheduleIdleWidgetHide();
     }
 }
+function getLocalDateString(d = new Date()) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+function checkDayRollover() {
+    const todayStr = getLocalDateString();
+    if (activePlan && activePlan.date !== todayStr) {
+        // Auto-clear yesterday's plan on date rollover
+        activeItem = null;
+        activePlan = null;
+        sessionStore_1.sessionStore.clearSession();
+        scheduleIdleWidgetHide();
+        broadcastSessionUpdate();
+        return true;
+    }
+    return false;
+}
 function initSessionChannels() {
     // Restore persisted session from disk on startup
     const persistedItem = sessionStore_1.sessionStore.getActiveItem();
     const persistedPlan = sessionStore_1.sessionStore.getCurrentDayPlan();
-    const todayStr = new Date().toISOString().split('T')[0];
-    if (persistedItem && persistedPlan) {
-        // If the plan is from a previous day and no active task is executing, reset for the new day
-        if (persistedPlan.date !== todayStr && !activeItem) {
-            activeItem = null;
-            activePlan = null;
-            sessionStore_1.sessionStore.clearSession();
-            scheduleIdleWidgetHide();
-        }
-        else {
-            activeItem = persistedItem;
-            activePlan = persistedPlan;
-            cancelIdleWidgetHide();
-            startTicker();
-            (0, widgetWindow_1.showWidget)();
-        }
+    const todayStr = getLocalDateString();
+    if (persistedPlan && persistedPlan.date !== todayStr) {
+        // If plan is from a previous day, clear session on launch
+        activeItem = null;
+        activePlan = null;
+        sessionStore_1.sessionStore.clearSession();
+        scheduleIdleWidgetHide();
+    }
+    else if (persistedItem && persistedPlan) {
+        activeItem = persistedItem;
+        activePlan = persistedPlan;
+        cancelIdleWidgetHide();
+        startTicker();
+        (0, widgetWindow_1.showWidget)();
     }
     else {
         scheduleIdleWidgetHide();
@@ -154,11 +173,14 @@ function initSessionChannels() {
         sessionStore_1.sessionStore.setUser(user);
         return true;
     });
-    electron_1.ipcMain.handle('session:get-active', () => ({
-        activeItem,
-        activePlan,
-        remainingMs: activeItem ? calculateRemainingMs(activeItem) : 0,
-    }));
+    electron_1.ipcMain.handle('session:get-active', () => {
+        checkDayRollover();
+        return {
+            activeItem,
+            activePlan,
+            remainingMs: activeItem ? calculateRemainingMs(activeItem) : 0,
+        };
+    });
     electron_1.ipcMain.handle('session:start-day', (_event, plan) => {
         activePlan = plan;
         activePlan.state = 'running';
@@ -198,6 +220,24 @@ function initSessionChannels() {
             return false;
         activePlan.items = updatedItems;
         sessionStore_1.sessionStore.setCurrentDayPlan(activePlan);
+        broadcastSessionUpdate();
+        return true;
+    });
+    electron_1.ipcMain.handle('session:update-task-title', (_event, payload) => {
+        const cleanTitle = payload?.title?.trim();
+        if (!cleanTitle || !payload?.itemId)
+            return false;
+        if (activeItem && activeItem.itemId === payload.itemId) {
+            activeItem.title = cleanTitle;
+            sessionStore_1.sessionStore.setActiveItem(activeItem);
+        }
+        if (activePlan) {
+            const item = activePlan.items.find((i) => i.id === payload.itemId);
+            if (item) {
+                item.title = cleanTitle;
+            }
+            sessionStore_1.sessionStore.setCurrentDayPlan(activePlan);
+        }
         broadcastSessionUpdate();
         return true;
     });

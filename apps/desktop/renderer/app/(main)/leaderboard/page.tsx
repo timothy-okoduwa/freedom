@@ -639,10 +639,14 @@ export default function LeaderboardPage() {
     },
   ];
 
-  const displayFriends = friends.length > 0 ? friends : (isTourActive ? tourMockFriends : []);
+  const displayFriends = [...(friends.length > 0 ? friends : (isTourActive ? tourMockFriends : []))].sort(
+    (a, b) => (b.publicStats?.totalProductiveMinutes || 0) - (a.publicStats?.totalProductiveMinutes || 0)
+  );
   const displayTeams = userTeams.length > 0 ? userTeams : (isTourActive ? [tourMockTeam] : []);
   const displaySelectedTeam = selectedTeam || (isTourActive ? tourMockTeam : null);
-  const displayTeamMembers = teamMembers.length > 0 ? teamMembers : (isTourActive ? tourMockFriends : []);
+  const displayTeamMembers = [...(teamMembers.length > 0 ? teamMembers : (isTourActive ? tourMockFriends : []))].sort(
+    (a, b) => (b.publicStats?.totalProductiveMinutes || 0) - (a.publicStats?.totalProductiveMinutes || 0)
+  );
   const displayCompetitions = competitions.length > 0 ? competitions : (isTourActive ? tourMockCompetitions : []);
 
   return (
@@ -1150,6 +1154,12 @@ export default function LeaderboardPage() {
                       <div className="divide-y divide-black/5 dark:divide-white/10 rounded-xl border border-black/5 dark:border-white/10 overflow-hidden">
                         {users
                           .filter((u) => comp.participantUids.includes(u.uid))
+                          .sort((a, b) => {
+                            if (comp.metric === 'streak') {
+                              return (b.publicStats?.currentStreak || 0) - (a.publicStats?.currentStreak || 0);
+                            }
+                            return (b.publicStats?.totalProductiveMinutes || 0) - (a.publicStats?.totalProductiveMinutes || 0);
+                          })
                           .map((u, idx) => {
                             const rank = idx + 1;
                             const crown = getCrownBadge(rank, comp.participantUids.length);

@@ -128,8 +128,8 @@ export const TOUR_STEPS: TourStep[] = [
   {
     targetSelector: '[data-tour="runtime-timer-card"]',
     route: '/runtime',
-    title: 'Live Countdown Engine',
-    description: 'Displays real-time countdown timer, circular progress ring, and active session status. As focus tasks finish, breaks begin automatically with zero manual clicks.',
+    title: 'Live Countdown Engine & Mid-Task Editing',
+    description: 'Displays real-time countdown timer, circular progress ring, and active session status. Click the pencil icon next to the task name anytime to edit your task title mid-task!',
     icon: Timer,
   },
   {
@@ -143,7 +143,7 @@ export const TOUR_STEPS: TourStep[] = [
     targetSelector: '[data-tour="runtime-extend-btn"]',
     route: '/runtime',
     title: 'Task Extension Controls',
-    description: 'In the flow? Instantly extend your active session (+10m, +20m) with one click.',
+    description: 'In the flow? Instantly extend your active session (+10m, +20m, or + Custom Time in Hours & Minutes) with one click.',
     icon: Clock,
   },
   {

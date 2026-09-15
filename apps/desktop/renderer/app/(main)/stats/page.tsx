@@ -260,32 +260,36 @@ export default function StatsPage() {
           </div>
 
           {/* Week Navigation Bar */}
-          <div className="flex items-center justify-between bg-neutral-50 dark:bg-[#202024] p-2 rounded-xl border border-neutral-200/80 dark:border-neutral-800" data-tour="stats-week-controls">
+          <div className="flex items-center justify-between gap-2 bg-neutral-50 dark:bg-[#202024] p-1.5 rounded-xl border border-neutral-200/80 dark:border-neutral-800" data-tour="stats-week-controls">
             <button
               onClick={() => setWeekOffset((prev) => prev - 1)}
               disabled={isEarliestWeek}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-100 dark:hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs"
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-100 dark:hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs whitespace-nowrap shrink-0"
               title={isEarliestWeek ? 'Reached account creation week' : 'Previous Week'}
             >
               ← Prev Week
             </button>
 
-            {weekOffset !== 0 ? (
-              <button
-                onClick={() => setWeekOffset(0)}
-                className="px-3 py-1.5 text-xs font-mono font-bold rounded-lg bg-[#2F6FED] text-white hover:bg-[#2558BE] transition-all shadow-2xs"
-                title="Jump to current week"
-              >
-                Current Week
-              </button>
-            ) : (
-              <span className="text-[11px] font-mono text-zinc-400 font-medium">Viewing Current Week</span>
-            )}
+            <div className="flex-1 text-center min-w-0 px-1">
+              {weekOffset !== 0 ? (
+                <button
+                  onClick={() => setWeekOffset(0)}
+                  className="px-3 py-1 text-xs font-mono font-bold rounded-lg bg-[#2F6FED] text-white hover:bg-[#2558BE] transition-all shadow-2xs whitespace-nowrap"
+                  title="Jump to current week"
+                >
+                  Current Week
+                </button>
+              ) : (
+                <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 font-medium whitespace-nowrap block truncate">
+                  Viewing Current Week
+                </span>
+              )}
+            </div>
 
             <button
               onClick={() => setWeekOffset((prev) => prev + 1)}
               disabled={weekOffset >= 0}
-              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-100 dark:hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs"
+              className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-100 dark:hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-2xs whitespace-nowrap shrink-0"
               title="Next Week"
             >
               Next Week →

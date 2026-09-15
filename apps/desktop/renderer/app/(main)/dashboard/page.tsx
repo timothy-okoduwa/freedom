@@ -6,6 +6,7 @@ import type { DayPlan } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
 import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService, getLocalDateString } from '../../../lib/firebase';
+import { formatTaskDuration } from '../../../lib/timerEngine';
 import { Card } from '@freedom/ui';
 import {
   Flame,
@@ -46,7 +47,8 @@ export default function DashboardPage() {
 
   const todayLocalDate = getLocalDateString();
   const isTodayActivePlan = activePlan?.date === todayLocalDate;
-  const currentPlan = isTodayActivePlan ? activePlan : todayPlan;
+  const isTodayFetchedPlan = todayPlan?.date === todayLocalDate;
+  const currentPlan = isTodayActivePlan ? activePlan : (isTodayFetchedPlan ? todayPlan : null);
 
   const isPlanCompleted =
     currentPlan &&
@@ -316,7 +318,7 @@ export default function DashboardPage() {
 
                   <div className="flex items-center gap-3 shrink-0">
                     <span className="text-xs font-mono text-[#777] dark:text-[#A1A1AA]">
-                      {item.plannedDurationMinutes}m
+                      {formatTaskDuration(item.plannedDurationMinutes, item.extensionMinutes)}
                     </span>
                     {isDone && <CheckCircle2 className="w-4 h-4 text-[#1FAE6B]" />}
                   </div>

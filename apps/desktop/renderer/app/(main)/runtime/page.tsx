@@ -4,14 +4,16 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useSessionStore } from '../../../stores/useSessionStore';
 import { useTourStore } from '../../../stores/useTourStore';
-import { formatRemainingTime } from '../../../lib/timerEngine';
+import { formatRemainingTime, formatTaskDuration } from '../../../lib/timerEngine';
 import { ProgressRing, Button, Card, Modal } from '@freedom/ui';
+import { Pencil, Check, X, Clock, Plus } from 'lucide-react';
 
 export default function RuntimePage() {
   const {
     activeItem,
     activePlan,
     remainingMs,
+    updateTaskTitle,
     extendTask,
     finishTask,
     skipTask,
@@ -21,6 +23,11 @@ export default function RuntimePage() {
 
   const { isOpen: isTourActive } = useTourStore();
   const [isSkipConfirmOpen, setIsSkipConfirmOpen] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleInput, setTitleInput] = useState('');
+  const [isCustomExtendOpen, setIsCustomExtendOpen] = useState(false);
+  const [extendHours, setExtendHours] = useState(0);
+  const [extendMinutes, setExtendMinutes] = useState(15);
 
   // If no active session AND tour is active, supply mock active item & plan for the walkthrough demo
   const mockActiveItem = {
@@ -125,9 +132,70 @@ export default function RuntimePage() {
         <span className="text-xs uppercase font-mono tracking-widest text-[#2F6FED]">
           {isBreak ? '☕ Recovery Break' : '💻 Active Task'}
         </span>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mt-1 mb-8 max-w-lg mx-auto">
-          {currentItem.title}
-        </h1>
+
+        {/* Editable Active Task Title */}
+        <div className="mt-1 mb-8 max-w-lg mx-auto">
+          {isEditingTitle ? (
+            <div className="flex items-center justify-center gap-2">
+              <input
+                type="text"
+                value={titleInput}
+                onChange={(e) => setTitleInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (titleInput.trim() && currentItem) {
+                      updateTaskTitle(currentItem.itemId, titleInput.trim());
+                      setIsEditingTitle(false);
+                    }
+                  } else if (e.key === 'Escape') {
+                    setIsEditingTitle(false);
+                  }
+                }}
+                className="w-full text-xl sm:text-2xl font-bold px-3 py-1.5 rounded-xl border border-[#2F6FED] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-center focus:outline-none shadow-xs"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (titleInput.trim() && currentItem) {
+                    updateTaskTitle(currentItem.itemId, titleInput.trim());
+                  }
+                  setIsEditingTitle(false);
+                }}
+                className="p-2 rounded-xl bg-[#2F6FED] hover:bg-[#2558BE] text-white cursor-pointer shrink-0"
+                title="Save Title"
+              >
+                <Check className="w-5 h-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditingTitle(false)}
+                className="p-2 rounded-xl bg-neutral-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-neutral-300 dark:hover:bg-zinc-700 cursor-pointer shrink-0"
+                title="Cancel"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          ) : (
+            <div className="group flex items-center justify-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                {currentItem.title}
+              </h1>
+              <button
+                type="button"
+                onClick={() => {
+                  setTitleInput(currentItem.title);
+                  setIsEditingTitle(true);
+                }}
+                className="p-1.5 rounded-lg text-zinc-400 opacity-60 group-hover:opacity-100 hover:text-[#2F6FED] hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all cursor-pointer"
+                title="Edit task name"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Central Progress Ring */}
         <div className="flex justify-center my-6">
@@ -177,6 +245,19 @@ export default function RuntimePage() {
             <Button variant="secondary" size="md" onClick={() => extendTask(20)}>
               +20 min
             </Button>
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => {
+                setExtendHours(0);
+                setExtendMinutes(15);
+                setIsCustomExtendOpen(true);
+              }}
+              className="flex items-center gap-1.5"
+            >
+              <Clock className="w-3.5 h-3.5 text-[#2F6FED]" />
+              <span>+ Custom</span>
+            </Button>
           </div>
 
           <Button variant="primary" size="md" onClick={() => finishTask()}>
@@ -206,7 +287,7 @@ export default function RuntimePage() {
             </div>
           </div>
           <span className="font-mono text-xs text-[#2F6FED] font-medium">
-            {nextItem.plannedDurationMinutes}m
+            {formatTaskDuration(nextItem.plannedDurationMinutes, nextItem.extensionMinutes)}
           </span>
         </Card>
       ) : (
@@ -214,6 +295,74 @@ export default function RuntimePage() {
           🏁 This is the final item in today's Day Plan!
         </Card>
       )}
+
+      {/* Custom Extension Modal */}
+      <Modal
+        isOpen={isCustomExtendOpen}
+        onClose={() => setIsCustomExtendOpen(false)}
+        title="Add Custom Time to Active Task"
+        description="Specify duration to extend the current session."
+      >
+        <div className="space-y-4 pt-2">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Hours</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  max="24"
+                  value={extendHours}
+                  onChange={(e) => setExtendHours(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-mono font-bold focus:outline-none focus:border-[#2F6FED]"
+                />
+                <span className="text-xs font-mono text-zinc-500">hrs</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Minutes</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  max="59"
+                  value={extendMinutes}
+                  onChange={(e) => setExtendMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                  className="w-full px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-mono font-bold focus:outline-none focus:border-[#2F6FED]"
+                />
+                <span className="text-xs font-mono text-zinc-500">mins</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40 text-xs text-[#2F6FED] font-mono flex items-center justify-between">
+            <span>Total Time Added:</span>
+            <span className="font-bold">
+              {extendHours > 0 ? `${extendHours}h ${extendMinutes}m` : `${extendMinutes}m`} ({(extendHours * 60) + extendMinutes} minutes)
+            </span>
+          </div>
+
+          <div className="pt-4 flex justify-end gap-2 border-t border-zinc-100 dark:border-zinc-800">
+            <Button variant="ghost" size="sm" onClick={() => setIsCustomExtendOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                const totalMins = (extendHours * 60) + extendMinutes;
+                if (totalMins > 0) {
+                  extendTask(totalMins);
+                }
+                setIsCustomExtendOpen(false);
+              }}
+            >
+              Add Extension
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Skip Confirmation Modal */}
       <Modal

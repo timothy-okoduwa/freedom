@@ -6,38 +6,19 @@
    - Environments: .env.local
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 4.3s
+ ✓ Compiled successfully in 3.5s
    Linting and checking validity of types ...
-   Collecting page data ...
-   Generating static pages (0/16) ...
-   Generating static pages (4/16) 
-   Generating static pages (8/16) 
-   Generating static pages (12/16) 
- ✓ Generating static pages (16/16)
-   Finalizing page optimization ...
-   Collecting build traces ...
+Failed to compile.
 
-Route (app)                                 Size  First Load JS
-┌ ○ /                                      125 B         103 kB
-├ ○ /_not-found                            995 B         103 kB
-├ ƒ /api/invite                            125 B         103 kB
-├ ○ /builder                             6.01 kB         290 kB
-├ ○ /dashboard                           4.57 kB         292 kB
-├ ○ /heatmap                             1.02 kB         115 kB
-├ ○ /leaderboard                         5.97 kB         290 kB
-├ ○ /login                               4.33 kB         288 kB
-├ ○ /onboarding                          1.83 kB         116 kB
-├ ○ /runtime                             2.71 kB         120 kB
-├ ○ /settings                            5.22 kB         289 kB
-├ ○ /stats                                1.1 kB         115 kB
-├ ○ /summary                             2.68 kB         117 kB
-└ ○ /widget                              3.27 kB         117 kB
-+ First Load JS shared by all             102 kB
-  ├ chunks/742-e9676333f2d3158d.js       46.3 kB
-  ├ chunks/f82f06d7-a1b1eed4d30a2c09.js  54.2 kB
-  └ other shared chunks (total)          1.92 kB
+./app/(main)/builder/page.tsx:238:16
+Type error: Cannot find name 'CheckCircle2'.
 
-
-○  (Static)   prerendered as static content
-ƒ  (Dynamic)  server-rendered on demand
-
+[0m [90m 236 |[39m             [33m>[39m
+ [90m 237 |[39m               [33m<[39m[33mspan[39m[33m>[39m[33mDay[39m [33mCompleted[39m ✓[33m<[39m[33m/[39m[33mspan[39m[33m>[39m
+[31m[1m>[22m[39m[90m 238 |[39m               [33m<[39m[33mCheckCircle2[39m className[33m=[39m[32m"w-4 h-4 text-emerald-500"[39m [33m/[39m[33m>[39m
+ [90m     |[39m                [31m[1m^[22m[39m
+ [90m 239 |[39m             [33m<[39m[33m/[39m[33mButton[39m[33m>[39m
+ [90m 240 |[39m           ) [33m:[39m (
+ [90m 241 |[39m             [33m<[39m[33mButton[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

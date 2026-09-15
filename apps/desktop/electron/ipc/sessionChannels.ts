@@ -55,6 +55,7 @@ function broadcastSessionUpdate() {
 function startTicker() {
   if (tickTimer) clearInterval(tickTimer);
   tickTimer = setInterval(() => {
+    if (checkDayRollover()) return;
     if (!activeItem) return;
 
     broadcastSessionUpdate();
@@ -129,26 +130,45 @@ function advanceNextItem() {
   }
 }
 
+function getLocalDateString(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function checkDayRollover(): boolean {
+  const todayStr = getLocalDateString();
+  if (activePlan && activePlan.date !== todayStr) {
+    // Auto-clear yesterday's plan on date rollover
+    activeItem = null;
+    activePlan = null;
+    sessionStore.clearSession();
+    scheduleIdleWidgetHide();
+    broadcastSessionUpdate();
+    return true;
+  }
+  return false;
+}
+
 export function initSessionChannels() {
   // Restore persisted session from disk on startup
   const persistedItem = sessionStore.getActiveItem();
   const persistedPlan = sessionStore.getCurrentDayPlan();
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateString();
 
-  if (persistedItem && persistedPlan) {
-    // If the plan is from a previous day and no active task is executing, reset for the new day
-    if (persistedPlan.date !== todayStr && !activeItem) {
-      activeItem = null;
-      activePlan = null;
-      sessionStore.clearSession();
-      scheduleIdleWidgetHide();
-    } else {
-      activeItem = persistedItem;
-      activePlan = persistedPlan;
-      cancelIdleWidgetHide();
-      startTicker();
-      showWidget();
-    }
+  if (persistedPlan && persistedPlan.date !== todayStr) {
+    // If plan is from a previous day, clear session on launch
+    activeItem = null;
+    activePlan = null;
+    sessionStore.clearSession();
+    scheduleIdleWidgetHide();
+  } else if (persistedItem && persistedPlan) {
+    activeItem = persistedItem;
+    activePlan = persistedPlan;
+    cancelIdleWidgetHide();
+    startTicker();
+    showWidget();
   } else {
     scheduleIdleWidgetHide();
   }
@@ -162,11 +182,14 @@ export function initSessionChannels() {
     return true;
   });
 
-  ipcMain.handle('session:get-active', () => ({
-    activeItem,
-    activePlan,
-    remainingMs: activeItem ? calculateRemainingMs(activeItem) : 0,
-  }));
+  ipcMain.handle('session:get-active', () => {
+    checkDayRollover();
+    return {
+      activeItem,
+      activePlan,
+      remainingMs: activeItem ? calculateRemainingMs(activeItem) : 0,
+    };
+  });
 
   ipcMain.handle('session:start-day', (_event, plan: DayPlan) => {
     activePlan = plan;
@@ -210,6 +233,27 @@ export function initSessionChannels() {
     if (!activePlan) return false;
     activePlan.items = updatedItems;
     sessionStore.setCurrentDayPlan(activePlan);
+    broadcastSessionUpdate();
+    return true;
+  });
+
+  ipcMain.handle('session:update-task-title', (_event, payload: { itemId: string; title: string }) => {
+    const cleanTitle = payload?.title?.trim();
+    if (!cleanTitle || !payload?.itemId) return false;
+
+    if (activeItem && activeItem.itemId === payload.itemId) {
+      activeItem.title = cleanTitle;
+      sessionStore.setActiveItem(activeItem);
+    }
+
+    if (activePlan) {
+      const item = activePlan.items.find((i) => i.id === payload.itemId);
+      if (item) {
+        item.title = cleanTitle;
+      }
+      sessionStore.setCurrentDayPlan(activePlan);
+    }
+
     broadcastSessionUpdate();
     return true;
   });

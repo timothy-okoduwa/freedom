@@ -105,7 +105,8 @@ export const ProductTourModal: React.FC<ProductTourModalProps> = ({ isOpen, onCl
       iconColor: 'text-[#4F46E5]',
       bullets: [
         'When a focus task ends, your break starts automatically without manual clicking.',
-        'Need extra time? Use quick +5m / +10m extensions directly from the runtime page.',
+        'Edit your task name mid-task anytime by clicking the pencil icon next to the active task title.',
+        'Need extra time? Add quick extensions (+10m, +20m, or + Custom Time in Hours & Minutes) directly from the runtime page.',
         'Sleep-proof & crash-proof: resuming the app restores exact remaining seconds instantly.',
       ],
       preview: (

@@ -6,6 +6,7 @@ import type { DayPlan, DayPlanItem } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
 import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService, getLocalDateString } from '../../../lib/firebase';
+import { formatTaskDuration } from '../../../lib/timerEngine';
 import { Card, Button, Modal } from '@freedom/ui';
 import {
   GripVertical,
@@ -17,18 +18,23 @@ import {
   AlertTriangle,
   Clock,
   CheckCircle2,
-  Lock,
+  Pencil,
+  Check,
+  X,
 } from 'lucide-react';
 
 export default function BuilderPage() {
   const router = useRouter();
-  const { user, activePlan, activeItem, startDay, updatePlanItems } = useSessionStore();
+  const { user, activePlan, activeItem, startDay, updatePlanItems, updateTaskTitle } = useSessionStore();
 
   const [items, setItems] = useState<DayPlanItem[]>([]);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [isAddBreakOpen, setIsAddBreakOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
-  const [newDuration, setNewDuration] = useState(25);
+  const [newHours, setNewHours] = useState(0);
+  const [newMinutes, setNewMinutes] = useState(25);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState('');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,20 +44,36 @@ export default function BuilderPage() {
 
   // Load initial plan ONCE on mount to prevent live session ticks from overwriting/duplicating local items
   useEffect(() => {
-    if (isInitialLoadedRef.current) return;
+    const todayLocalDate = getLocalDateString();
 
-    if (activePlan && activePlan.items && activePlan.items.length > 0) {
+    if (activePlan && activePlan.date === todayLocalDate && activePlan.items && activePlan.items.length > 0) {
       setItems(activePlan.items);
       isInitialLoadedRef.current = true;
     } else if (user?.uid) {
       firestoreService.getTodayPlan(user.uid).then((existingPlan) => {
-        if (existingPlan && existingPlan.items && existingPlan.items.length > 0) {
+        if (existingPlan && existingPlan.date === todayLocalDate && existingPlan.items && existingPlan.items.length > 0) {
           setItems(existingPlan.items);
+        } else {
+          setItems([]);
         }
         isInitialLoadedRef.current = true;
       });
+    } else if (activePlan && activePlan.date !== todayLocalDate) {
+      setItems([]);
     }
   }, [user?.uid, activePlan]);
+
+  // Periodic midnight rollover check to automatically clear builder for a fresh day
+  useEffect(() => {
+    const checkRollover = () => {
+      const todayStr = getLocalDateString();
+      if (activePlan && activePlan.date !== todayStr) {
+        setItems([]);
+      }
+    };
+    const interval = setInterval(checkRollover, 30000);
+    return () => clearInterval(interval);
+  }, [activePlan]);
 
   const { isOpen: isTourActive } = useTourStore();
 
@@ -115,9 +137,30 @@ export default function BuilderPage() {
     syncItems(filtered);
   };
 
+  const formatMinutesDisplay = (minutes: number) => {
+    const hrs = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
+    if (hrs > 0) return `${hrs}h`;
+    return `${mins}m`;
+  };
+
+  const handleSaveItemTitle = async (itemId: string, newTitle: string) => {
+    const trimmed = newTitle.trim();
+    if (!trimmed) return;
+    const updated = items.map((i) => (i.id === itemId ? { ...i, title: trimmed } : i));
+    await syncItems(updated);
+    if (activeItem && activeItem.itemId === itemId) {
+      await updateTaskTitle(itemId, trimmed);
+    }
+    setEditingItemId(null);
+  };
+
   const handleAddItem = async (type: 'task' | 'break') => {
     const trimmedTitle = newTitle.trim();
     if (!trimmedTitle || isSubmitting) return;
+
+    const calculatedMinutes = Math.max(1, (newHours * 60) + newMinutes);
 
     setIsSubmitting(true);
     try {
@@ -126,7 +169,7 @@ export default function BuilderPage() {
         type,
         title: trimmedTitle,
         order: items.length + 1,
-        plannedDurationMinutes: Math.max(1, newDuration),
+        plannedDurationMinutes: calculatedMinutes,
         actualMinutes: 0,
         extensionMinutes: 0,
         state: 'pending',
@@ -134,7 +177,8 @@ export default function BuilderPage() {
       const updated = [...items, newItem];
       await syncItems(updated);
       setNewTitle('');
-      setNewDuration(type === 'break' ? 10 : 25);
+      setNewHours(0);
+      setNewMinutes(type === 'break' ? 10 : 25);
       setIsAddTaskOpen(false);
       setIsAddBreakOpen(false);
     } finally {
@@ -240,7 +284,8 @@ export default function BuilderPage() {
           variant="secondary"
           size="sm"
           onClick={() => {
-            setNewDuration(25);
+            setNewHours(0);
+            setNewMinutes(25);
             setIsAddTaskOpen(true);
           }}
           className="flex items-center gap-1.5"
@@ -252,7 +297,8 @@ export default function BuilderPage() {
           variant="secondary"
           size="sm"
           onClick={() => {
-            setNewDuration(10);
+            setNewHours(0);
+            setNewMinutes(10);
             setIsAddBreakOpen(true);
           }}
           className="flex items-center gap-1.5"
@@ -275,7 +321,8 @@ export default function BuilderPage() {
               size="sm"
               variant="secondary"
               onClick={() => {
-                setNewDuration(25);
+                setNewHours(0);
+                setNewMinutes(25);
                 setIsAddTaskOpen(true);
               }}
             >
@@ -389,27 +436,74 @@ export default function BuilderPage() {
                   )}
 
                   <div className="truncate flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-semibold truncate ${
-                        ranBefore ? 'line-through text-zinc-500 dark:text-zinc-400' : 'text-zinc-900 dark:text-zinc-100'
-                      }`}>
-                        {item.title}
-                      </span>
-                      {ranBefore ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-500/20">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Completed
+                    {editingItemId === item.id ? (
+                      <div className="flex items-center gap-1.5 my-0.5">
+                        <input
+                          type="text"
+                          value={editingTitle}
+                          onChange={(e) => setEditingTitle(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleSaveItemTitle(item.id, editingTitle);
+                            } else if (e.key === 'Escape') {
+                              setEditingItemId(null);
+                            }
+                          }}
+                          className="w-full text-xs font-semibold px-2 py-1 rounded-lg border border-[#2F6FED] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                          autoFocus
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleSaveItemTitle(item.id, editingTitle)}
+                          className="p-1 rounded-lg bg-[#2F6FED] text-white hover:bg-[#2558BE] cursor-pointer"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingItemId(null)}
+                          className="p-1 rounded-lg bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 group/title">
+                        <span className={`text-xs font-semibold truncate ${
+                          ranBefore ? 'line-through text-zinc-500 dark:text-zinc-400' : 'text-zinc-900 dark:text-zinc-100'
+                        }`}>
+                          {item.title}
                         </span>
-                      ) : runningNow ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-400/30">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#2F6FED] animate-pulse" />
-                          Running Now
-                        </span>
-                      ) : null}
-                    </div>
+                        {!ranBefore && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingItemId(item.id);
+                              setEditingTitle(item.title);
+                            }}
+                            className="p-0.5 text-zinc-400 opacity-0 group-hover/title:opacity-100 hover:text-[#2F6FED] transition-opacity cursor-pointer"
+                            title="Edit task name"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        )}
+                        {ranBefore ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-500/20">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Completed
+                          </span>
+                        ) : runningNow ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-400/30">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#2F6FED] animate-pulse" />
+                            Running Now
+                          </span>
+                        ) : null}
+                      </div>
+                    )}
                     <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono flex items-center gap-1 mt-0.5">
-                      <Clock className="w-3 h-3 text-neutral-400" />
-                      <span>{item.plannedDurationMinutes} minutes</span>
+                      <Clock className="w-3.5 h-3.5 text-neutral-400" />
+                      <span>{formatTaskDuration(item.plannedDurationMinutes, item.extensionMinutes)}</span>
                     </div>
                   </div>
                 </div>
@@ -468,39 +562,68 @@ export default function BuilderPage() {
 
           <div>
             <label className="block text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-1.5">
-              Duration Preset
+              Duration Presets
             </label>
             <div className="flex flex-wrap items-center gap-2">
-              {[15, 25, 45, 60, 90, 120].map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setNewDuration(d)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
-                    newDuration === d
-                      ? 'bg-[#2F6FED] text-white shadow-xs'
-                      : 'bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                  }`}
-                >
-                  {d}m
-                </button>
-              ))}
+              {[
+                { label: '15m', h: 0, m: 15 },
+                { label: '25m', h: 0, m: 25 },
+                { label: '45m', h: 0, m: 45 },
+                { label: '1h', h: 1, m: 0 },
+                { label: '1h 30m', h: 1, m: 30 },
+                { label: '2h', h: 2, m: 0 },
+              ].map((p) => {
+                const isSelected = newHours === p.h && newMinutes === p.m;
+                return (
+                  <button
+                    key={p.label}
+                    type="button"
+                    onClick={() => {
+                      setNewHours(p.h);
+                      setNewMinutes(p.m);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#2F6FED] text-white shadow-xs'
+                        : 'bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Custom Duration Input */}
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-              <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">Custom Duration:</span>
-              <div className="relative">
-                <input
-                  type="number"
-                  min="1"
-                  max="720"
-                  value={newDuration}
-                  onChange={(e) => setNewDuration(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-24 px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#2F6FED]"
-                />
+            {/* Custom Hours & Minutes Input */}
+            <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
+              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block">Custom Duration (Hours & Minutes):</span>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    max="24"
+                    value={newHours}
+                    onChange={(e) => setNewHours(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#2F6FED]"
+                  />
+                  <span className="text-xs text-zinc-500 font-mono">hrs</span>
+                </div>
+                <div className="flex-1 flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    max="59"
+                    value={newMinutes}
+                    onChange={(e) => setNewMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                    className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#2F6FED]"
+                  />
+                  <span className="text-xs text-zinc-500 font-mono">mins</span>
+                </div>
               </div>
-              <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">minutes</span>
+              <div className="text-[11px] font-mono text-zinc-400 text-right">
+                Total: {(newHours * 60) + newMinutes} minutes ({formatMinutesDisplay((newHours * 60) + newMinutes)})
+              </div>
             </div>
           </div>
 
@@ -543,37 +666,67 @@ export default function BuilderPage() {
 
           <div>
             <label className="block text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-1.5">
-              Duration Preset
+              Duration Presets
             </label>
             <div className="flex flex-wrap items-center gap-2">
-              {[5, 10, 15, 20, 30].map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setNewDuration(d)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
-                    newDuration === d
-                      ? 'bg-[#1FAE6B] text-white shadow-xs'
-                      : 'bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                  }`}
-                >
-                  {d}m
-                </button>
-              ))}
+              {[
+                { label: '5m', h: 0, m: 5 },
+                { label: '10m', h: 0, m: 10 },
+                { label: '15m', h: 0, m: 15 },
+                { label: '20m', h: 0, m: 20 },
+                { label: '30m', h: 0, m: 30 },
+              ].map((p) => {
+                const isSelected = newHours === p.h && newMinutes === p.m;
+                return (
+                  <button
+                    key={p.label}
+                    type="button"
+                    onClick={() => {
+                      setNewHours(p.h);
+                      setNewMinutes(p.m);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#1FAE6B] text-white shadow-xs'
+                        : 'bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Custom Break Duration Input */}
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-              <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">Custom Duration:</span>
-              <input
-                type="number"
-                min="1"
-                max="120"
-                value={newDuration}
-                onChange={(e) => setNewDuration(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-24 px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#1FAE6B]"
-              />
-              <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">minutes</span>
+            {/* Custom Break Hours & Minutes Input */}
+            <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
+              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 block">Custom Duration (Hours & Minutes):</span>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    max="24"
+                    value={newHours}
+                    onChange={(e) => setNewHours(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#1FAE6B]"
+                  />
+                  <span className="text-xs text-zinc-500 font-mono">hrs</span>
+                </div>
+                <div className="flex-1 flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min="0"
+                    max="59"
+                    value={newMinutes}
+                    onChange={(e) => setNewMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                    className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-[#1FAE6B]"
+                  />
+                  <span className="text-xs text-zinc-500 font-mono">mins</span>
+                </div>
+              </div>
+              <div className="text-[11px] font-mono text-zinc-400 text-right">
+                Total: {(newHours * 60) + newMinutes} minutes ({formatMinutesDisplay((newHours * 60) + newMinutes)})
+              </div>
             </div>
           </div>
 

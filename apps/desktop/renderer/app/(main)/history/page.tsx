@@ -5,6 +5,7 @@ import type { DayPlan } from '@freedom/firestore-schema';
 import { useSessionStore } from '../../../stores/useSessionStore';
 import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService } from '../../../lib/firebase';
+import { formatTaskDuration } from '../../../lib/timerEngine';
 import { Card } from '@freedom/ui';
 import {
   History,
@@ -252,7 +253,7 @@ export default function HistoryPage() {
                           <div className="flex items-center gap-3 shrink-0">
                             <span className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
                               <Clock className="w-3 h-3 text-zinc-400" />
-                              {item.plannedDurationMinutes}m
+                              {formatTaskDuration(item.plannedDurationMinutes, item.extensionMinutes)}
                             </span>
                             {isCompleted ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-500/20">

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSessionStore } from '../../../stores/useSessionStore';
 import { useTourStore } from '../../../stores/useTourStore';
 import { firestoreService } from '../../../lib/firebase';
-import { calculateProductivityScore } from '../../../lib/timerEngine';
+import { calculateProductivityScore, formatTaskDuration } from '../../../lib/timerEngine';
 import type { DayPlan } from '@freedom/firestore-schema';
 import { Card, StatTile } from '@freedom/ui';
 import { CalendarPlus, ArrowRight, CheckCircle2, Flame, Clock, Target } from 'lucide-react';
@@ -186,7 +186,7 @@ export default function SummaryPage() {
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <span className="text-neutral-500">
-                    {item.actualMinutes ? `${item.actualMinutes}m` : `${item.plannedDurationMinutes}m`}
+                    {formatTaskDuration(item.plannedDurationMinutes, item.extensionMinutes)}
                   </span>
                   {isCompleted ? (
                     <CheckCircle2 className="w-4 h-4 text-[#1FAE6B]" />

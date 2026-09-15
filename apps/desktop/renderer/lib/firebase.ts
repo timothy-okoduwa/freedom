@@ -542,6 +542,11 @@ export const firestoreService = {
           members.push(uSnap.data() as User);
         }
       }
+      members.sort(
+        (a, b) =>
+          (b.publicStats?.totalProductiveMinutes || 0) -
+          (a.publicStats?.totalProductiveMinutes || 0)
+      );
       return members;
     } catch (err) {
       console.warn('getTeamMembers failed:', err);
