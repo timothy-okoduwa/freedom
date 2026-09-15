@@ -11,6 +11,7 @@
     "build:electron": "tsc -p tsconfig.electron.json",
     "build": "next build renderer && tsc -p tsconfig.electron.json",
     "pack:dmg": "next build renderer && tsc -p tsconfig.electron.json && CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --mac dmg",
+    "pack:win": "next build renderer && tsc -p tsconfig.electron.json && CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder --win nsis --x64",
     "test": "vitest run",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.electron.json --noEmit"
   },
@@ -39,6 +40,24 @@
       ],
       "icon": "public/freedom.png",
       "identity": "-"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Freedom"
     },
     "dmg": {
       "title": "Freedom Setup",
