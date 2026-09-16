@@ -81,7 +81,7 @@ export default function WindowsWaitlistPage() {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M0 3.449L9.75 2.1v9.451H0m10.95-9.613L24 0v11.4H10.95M0 12.6h9.75v9.451L0 20.699M10.95 12.6H24V24l-13.05-1.848" />
           </svg>
-          <span>WINDOWS 11 / 10 NATIVE APP · IN ACTIVE DEVELOPMENT</span>
+          <span>WINDOWS 11 / 10 NATIVE RELEASE · v1.0.0</span>
         </div>
 
         {/* Heading */}
@@ -91,75 +91,27 @@ export default function WindowsWaitlistPage() {
 
         {/* Subtitle */}
         <p className="text-lg sm:text-xl text-[#555555] max-w-2xl mx-auto leading-relaxed">
-          The automatic execution engine built for high-agency builders is coming natively to Windows.
+          The automatic execution engine built for high-agency builders is available natively on Windows.
           Floating taskbar widgets, native WSL2 workspace integration, and distraction shields.
         </p>
 
-        {/* Waitlist Form Card */}
-        <div className="max-w-md mx-auto pt-2">
-          {!isSubmitted ? (
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="flex flex-col sm:flex-row items-center gap-2.5 p-2 rounded-2xl bg-white border border-[#E5E5E5] shadow-lg">
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter your work or personal email..."
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 text-sm text-[#111] placeholder-[#888] bg-transparent outline-none font-medium"
-                />
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto shrink-0 px-6 py-3 rounded-xl bg-[#2F6FED] hover:bg-[#255CBD] text-white text-sm font-semibold shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                >
-                  <span>{isSubmitting ? 'Joining...' : 'Join Waitlist'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
+        {/* Direct Download Card */}
+        <div className="max-w-md mx-auto pt-4 space-y-3">
+          <a
+            href="https://github.com/timothy-okoduwa/freedom/releases/download/v1.0.0/Freedom.Setup.1.0.0.exe"
+            download="Freedom.Setup.1.0.0.exe"
+            className="w-full py-4 px-8 rounded-2xl bg-[#2F6FED] hover:bg-[#255CBD] text-white text-base font-semibold shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M0 3.449L9.75 2.1v9.451H0m10.95-9.613L24 0v11.4H10.95M0 12.6h9.75v9.451L0 20.699M10.95 12.6H24V24l-13.05-1.848" />
+            </svg>
+            <span>Download Freedom for Windows (.exe)</span>
+          </a>
 
-              <div className="flex items-center justify-between px-2 text-xs font-mono text-[#777]">
-                <span className="flex items-center gap-1">
-                  <Lock className="w-3.5 h-3.5 text-[#2F6FED]" /> Encrypted & Private
-                </span>
-                <span className="font-semibold text-[#111]">14,892+ on waitlist</span>
-              </div>
-            </form>
-          ) : (
-            <div className="p-6 rounded-2xl bg-[#F0FDF4] border border-[#1FAE6B]/30 text-center space-y-4 shadow-md animate-in fade-in zoom-in-95 duration-200">
-              <div className="w-12 h-12 rounded-full bg-[#1FAE6B]/15 text-[#1FAE6B] flex items-center justify-center mx-auto shadow-xs">
-                <CheckCircle2 className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="text-lg font-extrabold text-[#111]">You are on the priority list!</h3>
-                <p className="text-xs text-[#555] mt-1 font-mono">
-                  Registered Email: <strong className="text-[#111]">{userEmail}</strong>
-                </p>
-                <div className="mt-2 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1FAE6B] text-white text-xs font-mono font-bold shadow-sm">
-                  PRIORITY POSITION #{userRank || 14892}
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-[#1FAE6B]/20 flex flex-col sm:flex-row gap-2">
-                <button
-                  type="button"
-                  onClick={copyReferralLink}
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-white border border-[#1FAE6B]/40 text-[#111] text-xs font-semibold hover:bg-neutral-50 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  {copied ? <Check className="w-3.5 h-3.5 text-[#1FAE6B]" /> : <Copy className="w-3.5 h-3.5 text-[#2F6FED]" />}
-                  <span>{copied ? 'Link Copied!' : 'Copy Referral Link'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setIsSubmitted(false)}
-                  className="py-2.5 px-3 rounded-xl bg-transparent border border-black/10 text-[#666] text-xs font-medium hover:text-black transition-colors cursor-pointer"
-                >
-                  Change Email
-                </button>
-              </div>
-            </div>
-          )}
+          <div className="flex items-center justify-center gap-2 text-xs font-mono text-[#777]">
+            <span className="w-2 h-2 rounded-full bg-[#1FAE6B]" />
+            <span>100% Free · Direct Installer (v1.0.0)</span>
+          </div>
         </div>
       </section>
 

@@ -426,7 +426,7 @@ export const Hero: React.FC = () => {
 
           <div className="flex flex-col items-center">
             <a
-              href="/windows"
+              href="/download"
               className="relative overflow-hidden group flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-white text-black text-base font-semibold border border-[#E5E5E5] shadow-xs hover:bg-[#F9F9F9] transition-all active:scale-98"
             >
               <div
@@ -438,10 +438,10 @@ export const Hero: React.FC = () => {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M0 3.449L9.75 2.1v9.451H0m10.95-9.613L24 0v11.4H10.95M0 12.6h9.75v9.451L0 20.699M10.95 12.6H24V24l-13.05-1.848" />
               </svg>
-              <span>windows waitlist</span>
+              <span>download for windows</span>
             </a>
             <span className="text-[11px] text-[#888888] mt-1.5 font-medium">
-              coming q4 2026
+              100% free · windows 10 / 11
             </span>
           </div>
         </div>

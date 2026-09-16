@@ -42,13 +42,64 @@ export default function ChangelogPage() {
 
         {/* Timeline Entries */}
         <div className="space-y-10">
-          {/* RELEASE v3.4 */}
+          {/* RELEASE v3.5 */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-xl space-y-6 relative overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
               <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold font-mono text-[#111]">v3.4.0</span>
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.5.0</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-[#1FAE6B] text-white text-[10px] font-mono font-bold uppercase tracking-wide">
                   LATEST RELEASE
+                </span>
+              </div>
+              <span className="text-xs font-mono text-[#888]">September 2026</span>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-[#111] flex items-center gap-2">
+                <span>🪟 Windows Setup Installer (.exe), OS Auto-Detection & Dynamic Navbar</span>
+              </h3>
+              <ul className="space-y-3 text-sm text-[#333] leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Native Windows Setup Installer</strong>: Shipped official Windows release build (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom.Setup.1.0.0.exe</code>) hosted on GitHub releases.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Client-Side OS Auto-Detection & Download Routing</strong>: Built <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">useUserOS</code> hook. Automatically detects whether the user is on macOS or Windows and triggers the matching native installer download on <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/download</code>.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Dynamic OS Navbar Icon</strong>: The top navigation bar CTA button dynamically displays the native Apple icon for macOS users and the native Windows icon for Windows users.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>OS-Tailored Installation Steps & Terminal Fix Suppression</strong>: Customized installation steps on <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/download</code> according to user OS. Completely suppresses macOS quarantine (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">xattr</code>) instructions when accessed from Windows.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Clean Manual Download Trigger</strong>: Replaced static download links with programmatic triggers so status bar URL previews do not appear on hover.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* RELEASE v3.4 */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-lg space-y-6 relative overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.4.0</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-[#2F6FED] text-[10px] font-mono font-bold uppercase tracking-wide">
+                  STABLE
                 </span>
               </div>
               <span className="text-xs font-mono text-[#888]">September 2026</span>

@@ -21,8 +21,8 @@ export const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/windows" className="hover:text-black transition-colors">
-                  windows waitlist
+                <Link href="/download" className="hover:text-black transition-colors">
+                  download for windows
                 </Link>
               </li>
               <li>
