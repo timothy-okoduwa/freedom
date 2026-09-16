@@ -82,62 +82,40 @@ export function DownloadClient() {
 
         {/* Dynamic Installation Steps based on OS */}
         {os === 'windows' ? (
-          /* WINDOWS INSTALLATION STEPS GRID */
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 pt-2 max-w-4xl mx-auto text-left w-full">
+          /* WINDOWS INSTALLATION STEPS GRID (2 Steps) */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-2 max-w-3xl mx-auto text-left w-full">
             {/* STEP 1: Open Freedom.Setup.1.0.0.exe */}
             <div className="flex flex-col items-center space-y-3.5 max-w-xs sm:max-w-none w-full mx-auto">
               <div className="w-8 h-8 rounded-full bg-[#2F6FED] text-white font-mono font-extrabold text-sm flex items-center justify-center shadow-md z-10">
                 1
               </div>
-              <div className="w-full h-52 sm:h-56 rounded-2xl bg-white border border-black/10 shadow-md flex flex-col items-center justify-center p-6 text-center space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-[#EAF1FE] text-[#2F6FED] flex items-center justify-center">
-                  <Download className="w-7 h-7" />
-                </div>
-                <div className="text-xs font-mono font-bold text-[#0F172A] break-all">
-                  Freedom.Setup.1.0.0.exe
-                </div>
+              <div className="w-full h-52 sm:h-56 rounded-2xl bg-white border border-black/10 shadow-md flex items-center justify-center overflow-hidden">
+                <img
+                  src="/win-step-1.png"
+                  alt="Step 1: Open Freedom.Setup.1.0.0.exe from Downloads folder"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <p className="text-xs text-center text-[#475569] font-medium leading-snug max-w-[220px]">
+              <p className="text-xs text-center text-[#475569] font-medium leading-snug max-w-[240px]">
                 Open <span className="font-bold text-[#0F172A] font-mono">Freedom.Setup.1.0.0.exe</span> from your{' '}
                 <span className="font-bold text-[#0F172A]">Downloads</span> folder
               </p>
             </div>
 
-            {/* STEP 2: Run Windows Installer Wizard */}
+            {/* STEP 2: Follow Setup Wizard */}
             <div className="flex flex-col items-center space-y-3.5 max-w-xs sm:max-w-none w-full mx-auto">
               <div className="w-8 h-8 rounded-full bg-[#2F6FED] text-white font-mono font-extrabold text-sm flex items-center justify-center shadow-md z-10">
                 2
               </div>
-              <div className="w-full h-52 sm:h-56 rounded-2xl bg-white border border-black/10 shadow-md flex flex-col items-center justify-center p-6 text-center space-y-3">
-                <div className="w-14 h-14 rounded-2xl bg-[#EAF1FE] text-[#2F6FED] flex items-center justify-center">
-                  <Monitor className="w-7 h-7" />
-                </div>
-                <div className="text-xs font-sans font-bold text-[#0F172A]">
-                  Windows Setup Wizard
-                </div>
-              </div>
-              <p className="text-xs text-center text-[#475569] font-medium leading-snug max-w-[220px]">
-                Follow the <span className="font-bold text-[#0F172A]">setup wizard</span> instructions to complete installation
-              </p>
-            </div>
-
-            {/* STEP 3: Launch Freedom App */}
-            <div className="flex flex-col items-center space-y-3.5 max-w-xs sm:max-w-none w-full mx-auto">
-              <div className="w-8 h-8 rounded-full bg-[#2F6FED] text-white font-mono font-extrabold text-sm flex items-center justify-center shadow-md z-10">
-                3
-              </div>
-              <div className="w-full h-52 sm:h-56 rounded-2xl bg-white border border-black/10 shadow-md flex flex-col items-center justify-center p-6 text-center space-y-3">
+              <div className="w-full h-52 sm:h-56 rounded-2xl bg-white border border-black/10 shadow-md flex items-center justify-center overflow-hidden">
                 <img
-                  src="/freedom.png"
-                  alt="Freedom Desktop App Icon"
-                  className="w-14 h-14 object-contain rounded-xl shadow-sm"
+                  src="/win-step-2.png"
+                  alt="Step 2: Follow setup wizard instructions to complete installation"
+                  className="w-full h-full object-cover"
                 />
-                <div className="text-xs font-sans font-bold text-[#0F172A]">
-                  Launch Freedom
-                </div>
               </div>
-              <p className="text-xs text-center text-[#475569] font-medium leading-snug max-w-[220px]">
-                Launch <span className="font-bold text-[#0F172A]">Freedom</span> from your Desktop shortcut or Start menu
+              <p className="text-xs text-center text-[#475569] font-medium leading-snug max-w-[240px]">
+                Follow the <span className="font-bold text-[#0F172A]">setup wizard</span> instructions to complete installation
               </p>
             </div>
           </div>
