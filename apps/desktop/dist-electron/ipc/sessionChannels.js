@@ -13,6 +13,7 @@ const sessionStore_1 = require("../persistence/sessionStore");
 const mainWindow_1 = require("../windows/mainWindow");
 const widgetWindow_1 = require("../windows/widgetWindow");
 const appIcon_1 = require("../utils/appIcon");
+const trayMenu_1 = require("../windows/trayMenu");
 let activePlan = null;
 let activeItem = null;
 let tickTimer = null;
@@ -53,6 +54,7 @@ function broadcastSessionUpdate() {
     if (widget && !widget.isDestroyed()) {
         widget.webContents.send('session:tick', payload);
     }
+    (0, trayMenu_1.updateTrayMenu)();
 }
 function startTicker() {
     if (tickTimer)
@@ -305,6 +307,8 @@ function initSessionChannels() {
         activeItem.accumulatedPauseMs += pauseDuration;
         activeItem.pausedAt = null;
         sessionStore_1.sessionStore.setActiveItem(activeItem);
+        cancelIdleWidgetHide();
+        (0, widgetWindow_1.showWidget)();
         broadcastSessionUpdate();
         return true;
     });
@@ -356,6 +360,8 @@ function toggleSessionPause() {
         const pauseDuration = Date.now() - new Date(activeItem.pausedAt).getTime();
         activeItem.accumulatedPauseMs += pauseDuration;
         activeItem.pausedAt = null;
+        cancelIdleWidgetHide();
+        (0, widgetWindow_1.showWidget)();
     }
     else {
         activeItem.pausedAt = new Date().toISOString();

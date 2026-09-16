@@ -3,12 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.updateTrayMenu = updateTrayMenu;
 exports.createTrayMenu = createTrayMenu;
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const mainWindow_1 = require("./mainWindow");
 const widgetWindow_1 = require("./widgetWindow");
+const sessionChannels_1 = require("../ipc/sessionChannels");
 let tray = null;
 function getTrayIcon() {
     const possiblePaths = [
@@ -38,57 +40,67 @@ function getTrayIcon() {
     }
     return electron_1.nativeImage.createEmpty();
 }
-function createTrayMenu(onTogglePause, isPaused, currentTaskTitle) {
+function updateTrayMenu() {
+    if (!tray)
+        return;
+    const task = (0, sessionChannels_1.getCurrentTaskTitle)();
+    const paused = (0, sessionChannels_1.isSessionPaused)();
+    let headerLabel = 'Freedom: Ready';
+    if (task) {
+        headerLabel = paused ? `Freedom: Paused — ${task}` : `Freedom: Executing — ${task}`;
+    }
+    const contextMenu = electron_1.Menu.buildFromTemplate([
+        {
+            label: headerLabel,
+            enabled: false,
+        },
+        { type: 'separator' },
+        {
+            label: paused ? '▶ Resume Execution' : '⏸ Pause Execution',
+            enabled: !!task,
+            click: () => {
+                (0, sessionChannels_1.toggleSessionPause)();
+            },
+        },
+        {
+            label: 'Toggle Floating Widget',
+            click: () => {
+                const w = (0, widgetWindow_1.getWidgetWindow)();
+                if (w?.isVisible()) {
+                    (0, widgetWindow_1.hideWidget)();
+                }
+                else {
+                    (0, widgetWindow_1.showWidget)();
+                }
+            },
+        },
+        {
+            label: 'Open Freedom',
+            click: () => {
+                const main = (0, mainWindow_1.getMainWindow)();
+                if (main && !main.isDestroyed()) {
+                    if (main.isMinimized())
+                        main.restore();
+                    main.show();
+                    main.focus();
+                }
+            },
+        },
+        { type: 'separator' },
+        {
+            label: 'Quit Freedom',
+            click: () => {
+                electron_1.app.isQuitting = true;
+                electron_1.app.quit();
+            },
+        },
+    ]);
+    tray.setContextMenu(contextMenu);
+}
+function createTrayMenu() {
     const icon = getTrayIcon();
     tray = new electron_1.Tray(icon);
     tray.setToolTip('Freedom — Automatic Execution Engine');
-    const updateMenu = () => {
-        const task = currentTaskTitle();
-        const paused = isPaused();
-        const contextMenu = electron_1.Menu.buildFromTemplate([
-            {
-                label: task ? `Active: ${task}` : 'Freedom: Ready',
-                enabled: false,
-            },
-            { type: 'separator' },
-            {
-                label: paused ? '▶ Resume Execution' : '⏸ Pause Execution',
-                enabled: !!task,
-                click: onTogglePause,
-            },
-            {
-                label: 'Toggle Floating Widget',
-                click: () => {
-                    const w = (0, widgetWindow_1.getWidgetWindow)();
-                    if (w?.isVisible()) {
-                        (0, widgetWindow_1.hideWidget)();
-                    }
-                    else {
-                        (0, widgetWindow_1.showWidget)();
-                    }
-                },
-            },
-            {
-                label: 'Open Freedom',
-                click: () => {
-                    const main = (0, mainWindow_1.getMainWindow)();
-                    if (main) {
-                        main.show();
-                        main.focus();
-                    }
-                },
-            },
-            { type: 'separator' },
-            {
-                label: 'Quit Freedom',
-                click: () => {
-                    electron_1.app.isQuitting = true;
-                    electron_1.app.quit();
-                },
-            },
-        ]);
-        tray?.setContextMenu(contextMenu);
-    };
-    updateMenu();
+    updateTrayMenu();
     return tray;
 }

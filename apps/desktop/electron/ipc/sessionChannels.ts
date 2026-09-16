@@ -4,6 +4,7 @@ import { sessionStore } from '../persistence/sessionStore';
 import { getMainWindow } from '../windows/mainWindow';
 import { getWidgetWindow, showWidget, hideWidget, toggleWidgetExpanded } from '../windows/widgetWindow';
 import { getAppIconPath } from '../utils/appIcon';
+import { updateTrayMenu } from '../windows/trayMenu';
 
 let activePlan: DayPlan | null = null;
 let activeItem: ActiveItemState | null = null;
@@ -50,6 +51,8 @@ function broadcastSessionUpdate() {
   if (widget && !widget.isDestroyed()) {
     widget.webContents.send('session:tick', payload);
   }
+
+  updateTrayMenu();
 }
 
 function startTicker() {
@@ -328,6 +331,8 @@ export function initSessionChannels() {
     activeItem.accumulatedPauseMs += pauseDuration;
     activeItem.pausedAt = null;
     sessionStore.setActiveItem(activeItem);
+    cancelIdleWidgetHide();
+    showWidget();
     broadcastSessionUpdate();
     return true;
   });
@@ -385,6 +390,8 @@ export function toggleSessionPause() {
     const pauseDuration = Date.now() - new Date(activeItem.pausedAt).getTime();
     activeItem.accumulatedPauseMs += pauseDuration;
     activeItem.pausedAt = null;
+    cancelIdleWidgetHide();
+    showWidget();
   } else {
     activeItem.pausedAt = new Date().toISOString();
   }

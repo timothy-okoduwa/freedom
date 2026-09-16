@@ -51,6 +51,12 @@ function createWidgetWindow(rendererUrl) {
         widgetWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
     }
     widgetWindow.loadURL(`${rendererUrl}/widget`);
+    widgetWindow.once('ready-to-show', () => {
+        const activeItem = sessionStore_1.sessionStore.getActiveItem();
+        if (activeItem) {
+            showWidget();
+        }
+    });
     widgetWindow.on('moved', () => {
         if (widgetWindow) {
             const [x, y] = widgetWindow.getPosition();

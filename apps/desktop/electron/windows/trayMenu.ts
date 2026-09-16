@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { getMainWindow } from './mainWindow';
 import { showWidget, hideWidget, getWidgetWindow } from './widgetWindow';
+import { isSessionPaused, getCurrentTaskTitle, toggleSessionPause } from '../ipc/sessionChannels';
 
 let tray: Tray | null = null;
 
@@ -37,65 +38,72 @@ function getTrayIcon(): Electron.NativeImage {
   return nativeImage.createEmpty();
 }
 
-export function createTrayMenu(
-  onTogglePause: () => void,
-  isPaused: () => boolean,
-  currentTaskTitle: () => string | null
-): Tray {
+export function updateTrayMenu() {
+  if (!tray) return;
+
+  const task = getCurrentTaskTitle();
+  const paused = isSessionPaused();
+
+  let headerLabel = 'Freedom: Ready';
+  if (task) {
+    headerLabel = paused ? `Freedom: Paused — ${task}` : `Freedom: Executing — ${task}`;
+  }
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: headerLabel,
+      enabled: false,
+    },
+    { type: 'separator' },
+    {
+      label: paused ? '▶ Resume Execution' : '⏸ Pause Execution',
+      enabled: !!task,
+      click: () => {
+        toggleSessionPause();
+      },
+    },
+    {
+      label: 'Toggle Floating Widget',
+      click: () => {
+        const w = getWidgetWindow();
+        if (w?.isVisible()) {
+          hideWidget();
+        } else {
+          showWidget();
+        }
+      },
+    },
+    {
+      label: 'Open Freedom',
+      click: () => {
+        const main = getMainWindow();
+        if (main && !main.isDestroyed()) {
+          if (main.isMinimized()) main.restore();
+          main.show();
+          main.focus();
+        }
+      },
+    },
+    { type: 'separator' },
+    {
+      label: 'Quit Freedom',
+      click: () => {
+        app.isQuitting = true;
+        app.quit();
+      },
+    },
+  ]);
+
+  tray.setContextMenu(contextMenu);
+}
+
+export function createTrayMenu(): Tray {
   const icon = getTrayIcon();
 
   tray = new Tray(icon);
   tray.setToolTip('Freedom — Automatic Execution Engine');
 
-  const updateMenu = () => {
-    const task = currentTaskTitle();
-    const paused = isPaused();
-
-    const contextMenu = Menu.buildFromTemplate([
-      {
-        label: task ? `Active: ${task}` : 'Freedom: Ready',
-        enabled: false,
-      },
-      { type: 'separator' },
-      {
-        label: paused ? '▶ Resume Execution' : '⏸ Pause Execution',
-        enabled: !!task,
-        click: onTogglePause,
-      },
-      {
-        label: 'Toggle Floating Widget',
-        click: () => {
-          const w = getWidgetWindow();
-          if (w?.isVisible()) {
-            hideWidget();
-          } else {
-            showWidget();
-          }
-        },
-      },
-      {
-        label: 'Open Freedom',
-        click: () => {
-          const main = getMainWindow();
-          if (main) {
-            main.show();
-            main.focus();
-          }
-        },
-      },
-      { type: 'separator' },
-      {
-        label: 'Quit Freedom',
-        click: () => {
-          app.isQuitting = true;
-          app.quit();
-        },
-      },
-    ]);
-
-    tray?.setContextMenu(contextMenu);
-  };
-
-  updateMenu();
+  updateTrayMenu();
   return tray;
 }
+

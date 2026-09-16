@@ -47,6 +47,13 @@ export function createWidgetWindow(rendererUrl: string): BrowserWindow {
 
   widgetWindow.loadURL(`${rendererUrl}/widget`);
 
+  widgetWindow.once('ready-to-show', () => {
+    const activeItem = sessionStore.getActiveItem();
+    if (activeItem) {
+      showWidget();
+    }
+  });
+
   widgetWindow.on('moved', () => {
     if (widgetWindow) {
       const [x, y] = widgetWindow.getPosition();

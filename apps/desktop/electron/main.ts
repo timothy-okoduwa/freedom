@@ -141,7 +141,7 @@ app.whenReady().then(async () => {
   createWidgetWindow(rendererUrl);
 
   // Create system Tray
-  createTrayMenu(toggleSessionPause, isSessionPaused, getCurrentTaskTitle);
+  createTrayMenu();
 
   // System suspend / sleep hooks (§9.2)
   powerMonitor.on('suspend', () => {

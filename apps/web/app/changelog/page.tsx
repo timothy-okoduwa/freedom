@@ -42,13 +42,52 @@ export default function ChangelogPage() {
 
         {/* Timeline Entries */}
         <div className="space-y-10">
-          {/* RELEASE v3.6 */}
+          {/* RELEASE v3.6.1 */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-xl space-y-6 relative overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
               <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold font-mono text-[#111]">v3.6.0</span>
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.6.1</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-[#1FAE6B] text-white text-[10px] font-mono font-bold uppercase tracking-wide">
                   LATEST RELEASE
+                </span>
+              </div>
+              <span className="text-xs font-mono text-[#888]">September 2026</span>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-[#111] flex items-center gap-2">
+                <span>🪟 Floating Pill Widget Persistence Fix & Dynamic Menu Bar Tray Controls</span>
+              </h3>
+              <ul className="space-y-3 text-sm text-[#333] leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Floating Pill Widget Cold-Boot & Resume Persistence</strong>: Fixed floating widget persistence lifecycle when pausing tasks, quitting Freedom, reopening the application, and resuming execution. Resuming execution explicitly triggers widget visibility and clears idle hide timers.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Interactive Tray Context Menu & Live State Sync</strong>: Upgraded macOS/Windows status bar menu bar tray with dynamic context menu rebuilding. Displays real-time task status (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom: Executing — [Task]</code> or <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom: Paused — [Task]</code>) and active Pause/Resume controls directly from the menu bar.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Rebuilt Desktop App & Release Packages</strong>: Updated local <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/Applications/Freedom.app</code> bundle, macOS DMG installer (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom-1.0.0-arm64.dmg</code>), and Windows installer (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom Setup 1.0.0.exe</code>).
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* RELEASE v3.6.0 */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-lg space-y-6 relative overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.6.0</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-[#2F6FED] text-[10px] font-mono font-bold uppercase tracking-wide">
+                  STABLE
                 </span>
               </div>
               <span className="text-xs font-mono text-[#888]">September 2026</span>

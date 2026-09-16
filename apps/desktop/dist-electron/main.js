@@ -115,7 +115,7 @@ electron_1.app.whenReady().then(async () => {
     (0, mainWindow_1.createMainWindow)(rendererUrl, sessionChannels_1.isSessionActive);
     (0, widgetWindow_1.createWidgetWindow)(rendererUrl);
     // Create system Tray
-    (0, trayMenu_1.createTrayMenu)(sessionChannels_1.toggleSessionPause, sessionChannels_1.isSessionPaused, sessionChannels_1.getCurrentTaskTitle);
+    (0, trayMenu_1.createTrayMenu)();
     // System suspend / sleep hooks (§9.2)
     electron_1.powerMonitor.on('suspend', () => {
         (0, sessionChannels_1.handleSystemSuspend)();
