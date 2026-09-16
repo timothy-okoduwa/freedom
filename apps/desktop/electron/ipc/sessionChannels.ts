@@ -76,8 +76,9 @@ function advanceNextItem() {
     const item = activePlan.items[currentItemIndex];
     item.state = 'completed';
     item.endedAt = new Date().toISOString();
-    const plannedMs = item.plannedDurationMinutes * 60000;
-    item.actualMinutes = Math.round(plannedMs / 60000);
+    const ext = activeItem.extensionMinutes || item.extensionMinutes || 0;
+    item.extensionMinutes = ext;
+    item.actualMinutes = item.plannedDurationMinutes + ext;
   }
 
   // Find next pending item
@@ -258,9 +259,40 @@ export function initSessionChannels() {
     return true;
   });
 
+  ipcMain.handle(
+    'session:update-task-duration',
+    (_event, payload: { itemId: string; durationMinutes: number }) => {
+      const newDuration = Math.max(1, payload?.durationMinutes || 1);
+      if (!payload?.itemId) return false;
+
+      if (activeItem && activeItem.itemId === payload.itemId) {
+        activeItem.plannedDurationMinutes = newDuration;
+        sessionStore.setActiveItem(activeItem);
+      }
+
+      if (activePlan) {
+        const item = activePlan.items.find((i) => i.id === payload.itemId);
+        if (item) {
+          item.plannedDurationMinutes = newDuration;
+        }
+        sessionStore.setCurrentDayPlan(activePlan);
+      }
+
+      broadcastSessionUpdate();
+      return true;
+    }
+  );
+
   ipcMain.handle('session:extend-task', (_event, minutes: number) => {
     if (!activeItem) return false;
-    activeItem.extensionMinutes += minutes;
+    activeItem.extensionMinutes = Math.max(0, activeItem.extensionMinutes + minutes);
+    if (activePlan) {
+      const item = activePlan.items.find((i) => i.id === activeItem?.itemId);
+      if (item) {
+        item.extensionMinutes = activeItem.extensionMinutes;
+      }
+      sessionStore.setCurrentDayPlan(activePlan);
+    }
     sessionStore.setActiveItem(activeItem);
     broadcastSessionUpdate();
     return true;

@@ -15,6 +15,7 @@ interface SessionStore {
   startDay: (plan: DayPlan) => Promise<boolean>;
   updatePlanItems: (items: DayPlanItem[]) => Promise<boolean>;
   updateTaskTitle: (itemId: string, title: string) => Promise<boolean>;
+  updateTaskDuration: (itemId: string, durationMinutes: number) => Promise<boolean>;
   extendTask: (minutes: number) => Promise<boolean>;
   finishTask: () => Promise<boolean>;
   skipTask: () => Promise<boolean>;
@@ -38,6 +39,7 @@ declare global {
         startDay: (plan: DayPlan) => Promise<boolean>;
         updatePlanItems: (items: DayPlanItem[]) => Promise<boolean>;
         updateTaskTitle: (itemId: string, title: string) => Promise<boolean>;
+        updateTaskDuration: (itemId: string, durationMinutes: number) => Promise<boolean>;
         extendTask: (minutes: number) => Promise<boolean>;
         finishTask: () => Promise<boolean>;
         skipTask: () => Promise<boolean>;
@@ -140,6 +142,18 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   updateTaskTitle: async (itemId: string, title: string) => {
     if (typeof window !== 'undefined' && window.freedom?.session) {
       const success = await window.freedom.session.updateTaskTitle(itemId, title);
+      const plan = get().activePlan;
+      if (plan) {
+        firestoreService.saveDayPlan(plan);
+      }
+      return success;
+    }
+    return false;
+  },
+
+  updateTaskDuration: async (itemId: string, durationMinutes: number) => {
+    if (typeof window !== 'undefined' && window.freedom?.session) {
+      const success = await window.freedom.session.updateTaskDuration(itemId, durationMinutes);
       const plan = get().activePlan;
       if (plan) {
         firestoreService.saveDayPlan(plan);

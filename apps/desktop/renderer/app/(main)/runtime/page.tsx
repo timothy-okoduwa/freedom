@@ -14,6 +14,7 @@ export default function RuntimePage() {
     activePlan,
     remainingMs,
     updateTaskTitle,
+    updateTaskDuration,
     extendTask,
     finishTask,
     skipTask,
@@ -26,8 +27,12 @@ export default function RuntimePage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState('');
   const [isCustomExtendOpen, setIsCustomExtendOpen] = useState(false);
+  const [extendMode, setExtendMode] = useState<'add' | 'reduce'>('add');
   const [extendHours, setExtendHours] = useState(0);
   const [extendMinutes, setExtendMinutes] = useState(15);
+  const [isEditingNextDuration, setIsEditingNextDuration] = useState(false);
+  const [nextHours, setNextHours] = useState(0);
+  const [nextMinutes, setNextMinutes] = useState(0);
 
   // If no active session AND tour is active, supply mock active item & plan for the walkthrough demo
   const mockActiveItem = {
@@ -239,16 +244,17 @@ export default function RuntimePage() {
           
           {/* Extension Controls */}
           <div data-tour="runtime-extend-btn" className="flex items-center gap-2">
-            <Button variant="secondary" size="md" onClick={() => extendTask(10)}>
-              +10 min
+            <Button variant="secondary" size="md" onClick={() => extendTask(10)} title="Add 10 minutes">
+              +10m
             </Button>
-            <Button variant="secondary" size="md" onClick={() => extendTask(20)}>
-              +20 min
+            <Button variant="secondary" size="md" onClick={() => extendTask(-10)} title="Reduce 10 minutes">
+              -10m
             </Button>
             <Button
               variant="secondary"
               size="md"
               onClick={() => {
+                setExtendMode('add');
                 setExtendHours(0);
                 setExtendMinutes(15);
                 setIsCustomExtendOpen(true);
@@ -256,7 +262,7 @@ export default function RuntimePage() {
               className="flex items-center gap-1.5"
             >
               <Clock className="w-3.5 h-3.5 text-[#2F6FED]" />
-              <span>+ Custom</span>
+              <span>± Custom Time</span>
             </Button>
           </div>
 
@@ -277,18 +283,79 @@ export default function RuntimePage() {
       {/* Up Next Card */}
       {nextItem ? (
         <Card variant="surface" data-tour="runtime-queue-card" className="p-4 flex items-center justify-between bg-white dark:bg-[#18181B] border-neutral-200 dark:border-[#27272A]">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
             <span className="text-sm">{nextItem.type === 'break' ? '☕' : '💻'}</span>
-            <div>
+            <div className="truncate">
               <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 dark:text-zinc-500 block">
                 Up Next in Queue
               </span>
-              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">{nextItem.title}</span>
+              <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate block">{nextItem.title}</span>
             </div>
           </div>
-          <span className="font-mono text-xs text-[#2F6FED] font-medium">
-            {formatTaskDuration(nextItem.plannedDurationMinutes, nextItem.extensionMinutes)}
-          </span>
+          <div className="flex items-center gap-2 shrink-0">
+            {isEditingNextDuration ? (
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="number"
+                  min="0"
+                  max="24"
+                  value={nextHours}
+                  onChange={(e) => setNextHours(Math.max(0, parseInt(e.target.value) || 0))}
+                  className="w-10 px-1 py-0.5 text-xs font-mono font-bold rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                />
+                <span className="text-[10px] font-mono text-zinc-400">h</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="59"
+                  value={nextMinutes}
+                  onChange={(e) => setNextMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                  className="w-10 px-1 py-0.5 text-xs font-mono font-bold rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                />
+                <span className="text-[10px] font-mono text-zinc-400">m</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const total = (nextHours * 60) + nextMinutes;
+                    if (total > 0) {
+                      updateTaskDuration(nextItem.id, total);
+                    }
+                    setIsEditingNextDuration(false);
+                  }}
+                  className="p-1 rounded-lg bg-[#2F6FED] text-white hover:bg-[#2558BE] cursor-pointer"
+                  title="Save Duration"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingNextDuration(false)}
+                  className="p-1 rounded-lg bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 cursor-pointer"
+                  title="Cancel"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs text-[#2F6FED] font-medium">
+                  {formatTaskDuration(nextItem.plannedDurationMinutes, nextItem.extensionMinutes)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNextHours(Math.floor(nextItem.plannedDurationMinutes / 60));
+                    setNextMinutes(nextItem.plannedDurationMinutes % 60);
+                    setIsEditingNextDuration(true);
+                  }}
+                  className="p-1 rounded-lg text-zinc-400 hover:text-[#2F6FED] transition-colors cursor-pointer"
+                  title="Edit next task duration"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
         </Card>
       ) : (
         <Card variant="surface" data-tour="runtime-queue-card" className="p-4 text-center text-xs text-zinc-500 dark:text-zinc-400 bg-white dark:bg-[#18181B] border-neutral-200 dark:border-[#27272A]">
@@ -300,10 +367,36 @@ export default function RuntimePage() {
       <Modal
         isOpen={isCustomExtendOpen}
         onClose={() => setIsCustomExtendOpen(false)}
-        title="Add Custom Time to Active Task"
-        description="Specify duration to extend the current session."
+        title="Adjust Active Task Time"
+        description="Increase or reduce the duration of the current active session."
       >
         <div className="space-y-4 pt-2">
+          {/* Mode Switcher */}
+          <div className="grid grid-cols-2 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700">
+            <button
+              type="button"
+              onClick={() => setExtendMode('add')}
+              className={`py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                extendMode === 'add'
+                  ? 'bg-white dark:bg-zinc-700 text-[#2F6FED] shadow-xs'
+                  : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+              }`}
+            >
+              + Add Time
+            </button>
+            <button
+              type="button"
+              onClick={() => setExtendMode('reduce')}
+              className={`py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                extendMode === 'reduce'
+                  ? 'bg-white dark:bg-zinc-700 text-[#E5484D] shadow-xs'
+                  : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+              }`}
+            >
+              - Reduce Time
+            </button>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Hours</label>
@@ -336,10 +429,14 @@ export default function RuntimePage() {
             </div>
           </div>
 
-          <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40 text-xs text-[#2F6FED] font-mono flex items-center justify-between">
-            <span>Total Time Added:</span>
+          <div className={`p-3 rounded-xl border text-xs font-mono flex items-center justify-between ${
+            extendMode === 'add'
+              ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900/40 text-[#2F6FED]'
+              : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/40 text-[#E5484D]'
+          }`}>
+            <span>Total Time Adjustment:</span>
             <span className="font-bold">
-              {extendHours > 0 ? `${extendHours}h ${extendMinutes}m` : `${extendMinutes}m`} ({(extendHours * 60) + extendMinutes} minutes)
+              {extendMode === 'add' ? '+' : '-'}{extendHours > 0 ? `${extendHours}h ${extendMinutes}m` : `${extendMinutes}m`} ({extendMode === 'add' ? '+' : '-'}{(extendHours * 60) + extendMinutes} minutes)
             </span>
           </div>
 
@@ -348,17 +445,17 @@ export default function RuntimePage() {
               Cancel
             </Button>
             <Button
-              variant="primary"
+              variant={extendMode === 'add' ? 'primary' : 'destructive'}
               size="sm"
               onClick={() => {
                 const totalMins = (extendHours * 60) + extendMinutes;
                 if (totalMins > 0) {
-                  extendTask(totalMins);
+                  extendTask(extendMode === 'add' ? totalMins : -totalMins);
                 }
                 setIsCustomExtendOpen(false);
               }}
             >
-              Add Extension
+              {extendMode === 'add' ? 'Add Time' : 'Reduce Time'}
             </Button>
           </div>
         </div>

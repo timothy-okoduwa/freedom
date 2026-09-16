@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld('freedom', {
     startDay: (plan: DayPlan) => ipcRenderer.invoke('session:start-day', plan),
     updatePlanItems: (items: DayPlanItem[]) => ipcRenderer.invoke('session:update-plan-items', items),
     updateTaskTitle: (itemId: string, title: string) => ipcRenderer.invoke('session:update-task-title', { itemId, title }),
+    updateTaskDuration: (itemId: string, durationMinutes: number) => ipcRenderer.invoke('session:update-task-duration', { itemId, durationMinutes }),
     extendTask: (minutes: number) => ipcRenderer.invoke('session:extend-task', minutes),
     finishTask: () => ipcRenderer.invoke('session:finish-task'),
     skipTask: () => ipcRenderer.invoke('session:skip-task'),

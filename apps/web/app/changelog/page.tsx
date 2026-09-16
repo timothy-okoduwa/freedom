@@ -42,13 +42,58 @@ export default function ChangelogPage() {
 
         {/* Timeline Entries */}
         <div className="space-y-10">
-          {/* RELEASE v3.5 */}
+          {/* RELEASE v3.6 */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-xl space-y-6 relative overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
               <div className="flex items-center gap-3">
-                <span className="text-xl font-extrabold font-mono text-[#111]">v3.5.0</span>
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.6.0</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-[#1FAE6B] text-white text-[10px] font-mono font-bold uppercase tracking-wide">
                   LATEST RELEASE
+                </span>
+              </div>
+              <span className="text-xs font-mono text-[#888]">September 2026</span>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-[#111] flex items-center gap-2">
+                <span>⏱️ Queued & Running Task Duration Editing & Extended Time Persistence Fix</span>
+              </h3>
+              <ul className="space-y-3 text-sm text-[#333] leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Extended Task Duration Persistence Fix</strong>: Extended time added to active sessions (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">extensionMinutes</code>) is now fully preserved upon task completion and accurately saved into <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">actualMinutes</code> across History, Statistics, Heatmap, and Firestore.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Queued Task Duration Editing</strong>: Added full support for editing task duration (hours and minutes) for queued/pending items directly in the Day Plan Builder and Runtime engine preview.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Running Task Duration Adjustment (Increase & Reduce Time)</strong>: Enhanced active session controls with quick <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">+10m</code>, <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">-10m</code>, and custom time adjustment modes allowing both adding and reducing time on running tasks in real-time.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
+                    <strong>Updated Desktop Application & Installer Builds</strong>: Rebuilt and deployed local <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/Applications/Freedom.app</code>, macOS DMG installer (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom-1.0.0-arm64.dmg</code>), and Windows installer (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom Setup 1.0.0.exe</code>).
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* RELEASE v3.5 */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/10 shadow-lg space-y-6 relative overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-xl font-extrabold font-mono text-[#111]">v3.5.0</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-[#2F6FED] text-[10px] font-mono font-bold uppercase tracking-wide">
+                  STABLE
                 </span>
               </div>
               <span className="text-xs font-mono text-[#888]">September 2026</span>

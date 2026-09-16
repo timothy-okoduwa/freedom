@@ -25,7 +25,7 @@ import {
 
 export default function BuilderPage() {
   const router = useRouter();
-  const { user, activePlan, activeItem, startDay, updatePlanItems, updateTaskTitle } = useSessionStore();
+  const { user, activePlan, activeItem, startDay, updatePlanItems, updateTaskTitle, updateTaskDuration } = useSessionStore();
 
   const [items, setItems] = useState<DayPlanItem[]>([]);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
@@ -35,6 +35,8 @@ export default function BuilderPage() {
   const [newMinutes, setNewMinutes] = useState(25);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [editingHours, setEditingHours] = useState(0);
+  const [editingMinutes, setEditingMinutes] = useState(25);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -145,14 +147,16 @@ export default function BuilderPage() {
     return `${mins}m`;
   };
 
-  const handleSaveItemTitle = async (itemId: string, newTitle: string) => {
+  const handleSaveItemDetails = async (itemId: string, newTitle: string, newTotalMinutes: number) => {
     const trimmed = newTitle.trim();
+    const cleanMins = Math.max(1, newTotalMinutes || 1);
     if (!trimmed) return;
-    const updated = items.map((i) => (i.id === itemId ? { ...i, title: trimmed } : i));
+    const updated = items.map((i) => (i.id === itemId ? { ...i, title: trimmed, plannedDurationMinutes: cleanMins } : i));
     await syncItems(updated);
     if (activeItem && activeItem.itemId === itemId) {
       await updateTaskTitle(itemId, trimmed);
     }
+    await updateTaskDuration(itemId, cleanMins);
     setEditingItemId(null);
   };
 
@@ -437,36 +441,66 @@ export default function BuilderPage() {
 
                   <div className="truncate flex-1">
                     {editingItemId === item.id ? (
-                      <div className="flex items-center gap-1.5 my-0.5">
-                        <input
-                          type="text"
-                          value={editingTitle}
-                          onChange={(e) => setEditingTitle(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              handleSaveItemTitle(item.id, editingTitle);
-                            } else if (e.key === 'Escape') {
-                              setEditingItemId(null);
-                            }
-                          }}
-                          className="w-full text-xs font-semibold px-2 py-1 rounded-lg border border-[#2F6FED] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none"
-                          autoFocus
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleSaveItemTitle(item.id, editingTitle)}
-                          className="p-1 rounded-lg bg-[#2F6FED] text-white hover:bg-[#2558BE] cursor-pointer"
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setEditingItemId(null)}
-                          className="p-1 rounded-lg bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 cursor-pointer"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
+                      <div className="space-y-2 py-1 w-full">
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="text"
+                            value={editingTitle}
+                            onChange={(e) => setEditingTitle(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleSaveItemDetails(item.id, editingTitle, (editingHours * 60) + editingMinutes);
+                              } else if (e.key === 'Escape') {
+                                setEditingItemId(null);
+                              }
+                            }}
+                            className="w-full text-xs font-semibold px-2 py-1 rounded-lg border border-[#2F6FED] bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                            placeholder="Task title"
+                            autoFocus
+                          />
+                        </div>
+                        <div className="flex items-center gap-2 text-xs flex-wrap">
+                          <span className="text-[11px] font-mono text-zinc-500">Duration:</span>
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              min="0"
+                              max="24"
+                              value={editingHours}
+                              onChange={(e) => setEditingHours(Math.max(0, parseInt(e.target.value) || 0))}
+                              className="w-12 px-1.5 py-0.5 text-xs font-mono font-bold rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                            />
+                            <span className="text-[11px] font-mono text-zinc-400">h</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max="59"
+                              value={editingMinutes}
+                              onChange={(e) => setEditingMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0)))}
+                              className="w-12 px-1.5 py-0.5 text-xs font-mono font-bold rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                            />
+                            <span className="text-[11px] font-mono text-zinc-400">m</span>
+                          </div>
+                          <div className="flex items-center gap-1 ml-auto">
+                            <button
+                              type="button"
+                              onClick={() => handleSaveItemDetails(item.id, editingTitle, (editingHours * 60) + editingMinutes)}
+                              className="p-1 rounded-lg bg-[#2F6FED] text-white hover:bg-[#2558BE] cursor-pointer"
+                              title="Save Changes"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingItemId(null)}
+                              className="p-1 rounded-lg bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 cursor-pointer"
+                              title="Cancel"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 group/title">
@@ -481,9 +515,11 @@ export default function BuilderPage() {
                             onClick={() => {
                               setEditingItemId(item.id);
                               setEditingTitle(item.title);
+                              setEditingHours(Math.floor(item.plannedDurationMinutes / 60));
+                              setEditingMinutes(item.plannedDurationMinutes % 60);
                             }}
-                            className="p-0.5 text-zinc-400 opacity-0 group-hover/title:opacity-100 hover:text-[#2F6FED] transition-opacity cursor-pointer"
-                            title="Edit task name"
+                            className="p-0.5 text-zinc-400 opacity-0 group-hover/title:opacity-100 hover:text-[#2F6FED] transition-opacity cursor-pointer flex items-center gap-1"
+                            title="Edit task name and duration"
                           >
                             <Pencil className="w-3 h-3" />
                           </button>
@@ -501,10 +537,27 @@ export default function BuilderPage() {
                         ) : null}
                       </div>
                     )}
-                    <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono flex items-center gap-1 mt-0.5">
-                      <Clock className="w-3.5 h-3.5 text-neutral-400" />
-                      <span>{formatTaskDuration(item.plannedDurationMinutes, item.extensionMinutes)}</span>
-                    </div>
+                    {editingItemId !== item.id && (
+                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono flex items-center gap-1 mt-0.5">
+                        <Clock className="w-3.5 h-3.5 text-neutral-400" />
+                        <span>{formatTaskDuration(item.plannedDurationMinutes, item.extensionMinutes)}</span>
+                        {!ranBefore && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingItemId(item.id);
+                              setEditingTitle(item.title);
+                              setEditingHours(Math.floor(item.plannedDurationMinutes / 60));
+                              setEditingMinutes(item.plannedDurationMinutes % 60);
+                            }}
+                            className="p-0.5 text-zinc-400 hover:text-[#2F6FED] transition-colors cursor-pointer ml-1"
+                            title="Edit task duration"
+                          >
+                            <Pencil className="w-2.5 h-2.5" />
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -10,6 +10,7 @@ electron_1.contextBridge.exposeInMainWorld('freedom', {
         startDay: (plan) => electron_1.ipcRenderer.invoke('session:start-day', plan),
         updatePlanItems: (items) => electron_1.ipcRenderer.invoke('session:update-plan-items', items),
         updateTaskTitle: (itemId, title) => electron_1.ipcRenderer.invoke('session:update-task-title', { itemId, title }),
+        updateTaskDuration: (itemId, durationMinutes) => electron_1.ipcRenderer.invoke('session:update-task-duration', { itemId, durationMinutes }),
         extendTask: (minutes) => electron_1.ipcRenderer.invoke('session:extend-task', minutes),
         finishTask: () => electron_1.ipcRenderer.invoke('session:finish-task'),
         skipTask: () => electron_1.ipcRenderer.invoke('session:skip-task'),
