@@ -1,16 +1,48 @@
 import { Tray, Menu, nativeImage, app } from 'electron';
+import path from 'path';
+import fs from 'fs';
 import { getMainWindow } from './mainWindow';
 import { showWidget, hideWidget, getWidgetWindow } from './widgetWindow';
 
 let tray: Tray | null = null;
+
+function getTrayIcon(): Electron.NativeImage {
+  const possiblePaths = [
+    path.join(__dirname, '../../assets/trayTemplate.png'),
+    path.join(__dirname, '../assets/trayTemplate.png'),
+    path.join(__dirname, '../../public/trayTemplate.png'),
+    path.join(__dirname, '../public/trayTemplate.png'),
+    path.join(app.getAppPath(), 'assets/trayTemplate.png'),
+    path.join(app.getAppPath(), 'public/trayTemplate.png'),
+    path.join(process.resourcesPath, 'assets/trayTemplate.png'),
+    path.join(process.resourcesPath, 'app.asar/assets/trayTemplate.png'),
+    path.join(process.resourcesPath, 'app.asar/public/trayTemplate.png'),
+    path.join(process.cwd(), 'assets/trayTemplate.png'),
+    path.join(process.cwd(), 'apps/desktop/assets/trayTemplate.png'),
+    path.join(process.cwd(), 'apps/desktop/public/trayTemplate.png'),
+  ];
+
+  for (const iconPath of possiblePaths) {
+    if (fs.existsSync(iconPath)) {
+      const img = nativeImage.createFromPath(iconPath);
+      if (!img.isEmpty()) {
+        if (process.platform === 'darwin') {
+          img.setTemplateImage(true);
+        }
+        return img;
+      }
+    }
+  }
+
+  return nativeImage.createEmpty();
+}
 
 export function createTrayMenu(
   onTogglePause: () => void,
   isPaused: () => boolean,
   currentTaskTitle: () => string | null
 ): Tray {
-  // Create a clean default 16x16 icon for the tray
-  const icon = nativeImage.createEmpty();
+  const icon = getTrayIcon();
 
   tray = new Tray(icon);
   tray.setToolTip('Freedom — Automatic Execution Engine');

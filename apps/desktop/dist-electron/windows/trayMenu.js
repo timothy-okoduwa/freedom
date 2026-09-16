@@ -1,13 +1,45 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createTrayMenu = createTrayMenu;
 const electron_1 = require("electron");
+const path_1 = __importDefault(require("path"));
+const fs_1 = __importDefault(require("fs"));
 const mainWindow_1 = require("./mainWindow");
 const widgetWindow_1 = require("./widgetWindow");
 let tray = null;
+function getTrayIcon() {
+    const possiblePaths = [
+        path_1.default.join(__dirname, '../../assets/trayTemplate.png'),
+        path_1.default.join(__dirname, '../assets/trayTemplate.png'),
+        path_1.default.join(__dirname, '../../public/trayTemplate.png'),
+        path_1.default.join(__dirname, '../public/trayTemplate.png'),
+        path_1.default.join(electron_1.app.getAppPath(), 'assets/trayTemplate.png'),
+        path_1.default.join(electron_1.app.getAppPath(), 'public/trayTemplate.png'),
+        path_1.default.join(process.resourcesPath, 'assets/trayTemplate.png'),
+        path_1.default.join(process.resourcesPath, 'app.asar/assets/trayTemplate.png'),
+        path_1.default.join(process.resourcesPath, 'app.asar/public/trayTemplate.png'),
+        path_1.default.join(process.cwd(), 'assets/trayTemplate.png'),
+        path_1.default.join(process.cwd(), 'apps/desktop/assets/trayTemplate.png'),
+        path_1.default.join(process.cwd(), 'apps/desktop/public/trayTemplate.png'),
+    ];
+    for (const iconPath of possiblePaths) {
+        if (fs_1.default.existsSync(iconPath)) {
+            const img = electron_1.nativeImage.createFromPath(iconPath);
+            if (!img.isEmpty()) {
+                if (process.platform === 'darwin') {
+                    img.setTemplateImage(true);
+                }
+                return img;
+            }
+        }
+    }
+    return electron_1.nativeImage.createEmpty();
+}
 function createTrayMenu(onTogglePause, isPaused, currentTaskTitle) {
-    // Create a clean default 16x16 icon for the tray
-    const icon = electron_1.nativeImage.createEmpty();
+    const icon = getTrayIcon();
     tray = new electron_1.Tray(icon);
     tray.setToolTip('Freedom — Automatic Execution Engine');
     const updateMenu = () => {
