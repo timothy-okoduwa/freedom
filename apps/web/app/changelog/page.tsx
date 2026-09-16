@@ -80,6 +80,12 @@ export default function ChangelogPage() {
                 <li className="flex items-start gap-2.5">
                   <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
                   <div>
+                    <strong>Multi-Track Earphone Audio Selector & Mizmo — Hello</strong>: Integrated new track <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Mizmo — Hello</code> alongside <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Ninajirachi — iPod Touch</code>. Clicking the status bar Earphones icon opens an interactive track selector dropdown; clicking again stops music playback cleanly.
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2F6FED] font-bold shrink-0">✦</span>
+                  <div>
                     <strong>Updated Desktop Application & Installer Builds</strong>: Rebuilt and deployed local <code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">/Applications/Freedom.app</code>, macOS DMG installer (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom-1.0.0-arm64.dmg</code>), and Windows installer (<code className="bg-[#FAFAFA] px-1.5 py-0.5 rounded border border-black/10 text-xs font-mono">Freedom Setup 1.0.0.exe</code>).
                   </div>
                 </li>

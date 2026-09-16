@@ -3,21 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FreedomLogo } from '@freedom/ui';
-import { globalAudioStore } from '../lib/audioStore';
+import { globalAudioStore, AUDIO_TRACKS, type AudioTrack } from '../lib/audioStore';
 import { useUserOS } from '../hooks/useUserOS';
 
 export const Menubar: React.FC = () => {
   const os = useUserOS();
   const [time, setTime] = useState('10:42 AM');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState<AudioTrack>(AUDIO_TRACKS[0]);
   const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
   const [isCharging, setIsCharging] = useState<boolean>(false);
   const [isBluetoothOpen, setIsBluetoothOpen] = useState(false);
   const [isHeadphonesOpen, setIsHeadphonesOpen] = useState(false);
 
   useEffect(() => {
-    const unsub = globalAudioStore.subscribe((status) => {
-      setIsPlaying(status);
+    const unsub = globalAudioStore.subscribe((data) => {
+      setIsPlaying(data.isPlaying);
+      setCurrentTrack(data.currentTrack);
     });
 
     const updateTime = () => {
@@ -110,15 +112,19 @@ export const Menubar: React.FC = () => {
             </svg>
           </div>
 
-          {/* Headphones Icon with Music Popover */}
+          {/* Headphones Icon with Music Popover Dropdown */}
           <div className="relative">
             <button
               type="button"
               onClick={() => {
-                toggleAudio();
-                setIsHeadphonesOpen(!isHeadphonesOpen);
+                if (isPlaying) {
+                  globalAudioStore.stop();
+                  setIsHeadphonesOpen(false);
+                } else {
+                  setIsHeadphonesOpen(!isHeadphonesOpen);
+                }
               }}
-              title={isPlaying ? 'Pause Ninajirachi - iPod Touch' : 'Play Ninajirachi - iPod Touch'}
+              title={isPlaying ? `Playing: ${currentTrack.artist} - ${currentTrack.title} (Click to stop)` : 'Click to select music track'}
               className={`p-0.5 rounded transition-colors cursor-pointer ${
                 isPlaying || isHeadphonesOpen ? 'text-black bg-black/10' : 'text-[#555] hover:text-black'
               }`}
@@ -128,16 +134,64 @@ export const Menubar: React.FC = () => {
               </svg>
             </button>
 
-            {/* Glossy Music Popover Pill */}
+            {/* Glossy Music Track Selector Dropdown */}
             {(isHeadphonesOpen || isPlaying) && (
               <div className="absolute top-full right-0 mt-2.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-black/15 shadow-xl text-xs font-medium text-black flex items-center gap-2 whitespace-nowrap">
-                  <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-[#1FAE6B] animate-ping' : 'bg-neutral-400'}`} />
-                  <span className="font-sans font-semibold text-[#111]">Ninajirachi — iPod Touch</span>
+                <div className="p-2 rounded-2xl bg-white/95 backdrop-blur-md border border-black/15 shadow-2xl text-xs font-medium text-black min-w-[240px] space-y-1">
+                  <div className="px-2 py-1 flex items-center justify-between text-[10px] uppercase font-mono tracking-wider text-neutral-400 border-b border-black/5 pb-1.5 mb-1">
+                    <span>{isPlaying ? 'Now Playing' : 'Select Music Track'}</span>
+                    {isPlaying && (
+                      <span className="flex items-center gap-1 text-[#1FAE6B] font-bold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#1FAE6B] animate-ping" />
+                        Playing
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    {AUDIO_TRACKS.map((t) => {
+                      const isSelected = isPlaying && currentTrack.id === t.id;
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => {
+                            globalAudioStore.setTrackAndPlay(t);
+                            setIsHeadphonesOpen(false);
+                          }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-xl flex items-center justify-between transition-colors cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#2F6FED]/10 text-[#2F6FED] font-semibold'
+                              : 'hover:bg-black/5 text-[#333]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <span className="text-xs">{t.id === 'mizmo_hello' ? '🎵' : '🎧'}</span>
+                            <span className="truncate">{t.artist} — {t.title}</span>
+                          </div>
+                          {isSelected && (
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-[#2F6FED] shrink-0 ml-1">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
                   {isPlaying && (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-black ml-0.5">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
+                    <div className="pt-1.5 border-t border-black/5 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          globalAudioStore.stop();
+                          setIsHeadphonesOpen(false);
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-[#E5484D] text-[11px] font-semibold transition-colors cursor-pointer w-full text-center"
+                      >
+                        ⏹ Stop Music
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
