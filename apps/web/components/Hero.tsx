@@ -205,6 +205,18 @@ export const Hero: React.FC = () => {
         badgeText="Spongebob 🧽"
       />
 
+      {/* Solo Leveling Draggable Sticker (Hero Middle Right with Sound) */}
+      <DraggableSticker
+        src="/stuff/solo-leveling.gif"
+        alt="Solo Leveling"
+        soundSrc="/stuff/solo-level.mp3"
+        containerRef={containerRef}
+        className="absolute right-[4%] xl:right-[7%] top-[380px] hidden lg:block"
+        rotate={8}
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Solo Leveling theme ⚔️"
+      />
+
       {/* Cat Draggable Sticker (Hero Middle Left) */}
       <DraggableSticker
         src="/stuff/cat.jpg"

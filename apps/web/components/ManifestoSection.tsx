@@ -220,6 +220,17 @@ export const ManifestoSection: React.FC = () => {
         badgeText="Freedom Cat 🐱"
       />
 
+      {/* 5. Solo Leveling Gif with Sound */}
+      <DraggableSticker
+        src="/stuff/solo-leveling.gif"
+        alt="Solo Leveling"
+        soundSrc="/stuff/solo-level.mp3"
+        containerRef={containerRef}
+        className="absolute right-[6%] top-[50%] hidden lg:block rotate-[10deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Solo Leveling theme ⚔️"
+      />
+
       {/* 5. Among Us Imposter */}
       <motion.div
         key={`${resetKey}-imposter`}

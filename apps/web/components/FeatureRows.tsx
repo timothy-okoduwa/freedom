@@ -47,6 +47,16 @@ export const FeatureRows: React.FC = () => {
         imageClassName="w-16 h-16 object-contain drop-shadow-xl"
         badgeText="Hold/Drag for Pokemon theme 🎶"
       />
+
+      <DraggableSticker
+        src="/stuff/solo-leveling.gif"
+        alt="Solo Leveling"
+        soundSrc="/stuff/solo-level.mp3"
+        containerRef={containerRef}
+        className="absolute left-2 top-[85%] hidden xl:block rotate-[10deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Solo Leveling theme ⚔️"
+      />
       {/* SECTION HEADER */}
       <div className="text-center space-y-3 max-w-2xl mx-auto">
         <span className="text-xs uppercase font-mono tracking-widest text-[#2F6FED] font-semibold">

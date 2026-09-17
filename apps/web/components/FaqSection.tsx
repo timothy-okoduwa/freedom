@@ -107,6 +107,16 @@ export const FaqSection: React.FC = () => {
         imageClassName="w-14 h-14 object-contain drop-shadow-xl"
         badgeText="Hold/Drag for Naruto theme 🎶"
       />
+
+      <DraggableSticker
+        src="/stuff/solo-leveling.gif"
+        alt="Solo Leveling"
+        soundSrc="/stuff/solo-level.mp3"
+        containerRef={containerRef}
+        className="absolute -right-16 top-32 hidden lg:block rotate-[-6deg]"
+        imageClassName="w-14 h-14 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Solo Leveling theme ⚔️"
+      />
     </section>
   );
 };

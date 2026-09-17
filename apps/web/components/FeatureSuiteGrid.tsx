@@ -52,6 +52,16 @@ export const FeatureSuiteGrid: React.FC = () => {
         badgeText="Hold/Drag for Naruto theme 🎶"
       />
 
+      <DraggableSticker
+        src="/stuff/solo-leveling.gif"
+        alt="Solo Leveling"
+        soundSrc="/stuff/solo-level.mp3"
+        containerRef={containerRef}
+        className="absolute left-2 top-[75%] hidden lg:block rotate-[-6deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Solo Leveling theme ⚔️"
+      />
+
       {/* SECTION HEADER */}
       <div className="text-center space-y-4 max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF1FE] border border-[#2F6FED]/30 text-xs font-mono font-bold text-[#2F6FED] uppercase tracking-wider shadow-2xs">

@@ -39,6 +39,16 @@ export const PricingSection: React.FC = () => {
         imageClassName="w-16 h-16 object-contain drop-shadow-xl"
         badgeText="Hold/Drag for Pokemon theme 🎶"
       />
+
+      <DraggableSticker
+        src="/stuff/solo-leveling.gif"
+        alt="Solo Leveling"
+        soundSrc="/stuff/solo-level.mp3"
+        containerRef={containerRef}
+        className="absolute left-[5%] bottom-[120px] hidden xl:block rotate-[6deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Solo Leveling theme ⚔️"
+      />
       {/* Fluffy SVG Cloud Silhouettes floating in the sky */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-80">
         <svg className="absolute left-[5%] top-[10%] w-64 h-32 text-white/50 animate-float-slow" viewBox="0 0 200 100" fill="currentColor">

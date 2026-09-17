@@ -65,6 +65,16 @@ export const DemoPlayer: React.FC = () => {
         imageClassName="w-20 h-auto object-contain rounded-xl border border-black/10 shadow-lg"
         badgeText="Jon Hamm 🕺"
       />
+
+      <DraggableSticker
+        src="/stuff/solo-leveling.gif"
+        alt="Solo Leveling"
+        soundSrc="/stuff/solo-level.mp3"
+        containerRef={containerRef}
+        className="absolute -right-16 bottom-4 hidden xl:block rotate-[-10deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Solo Leveling theme ⚔️"
+      />
       <MacWindow
         title="Freedom Execution Engine v2.0"
         caption="freedom-runtime.mov"

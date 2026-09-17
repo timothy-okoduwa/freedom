@@ -113,6 +113,16 @@ export const FeedbackWall: React.FC = () => {
         imageClassName="w-16 h-16 object-contain drop-shadow-xl"
         badgeText="Hold/Drag for Pokemon theme 🎶"
       />
+
+      <DraggableSticker
+        src="/stuff/solo-leveling.gif"
+        alt="Solo Leveling"
+        soundSrc="/stuff/solo-level.mp3"
+        containerRef={containerRef}
+        className="absolute right-[5%] bottom-[120px] hidden xl:block rotate-[-8deg]"
+        imageClassName="w-16 h-16 object-contain drop-shadow-xl"
+        badgeText="Hold/Drag for Solo Leveling theme ⚔️"
+      />
       {/* Label */}
       <div className="text-center mb-6">
         <span className="text-xs uppercase font-mono tracking-widest text-[#2F6FED] font-semibold">
